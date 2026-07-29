@@ -1,0 +1,390 @@
+
+/* =========================================================
+   Aastha Visual Polish Layer
+   Loads after styles.css and is intentionally non-destructive.
+   ========================================================= */
+
+:root {
+  --polish-max-prose: 760px;
+  --polish-radius-sm: 12px;
+  --polish-radius-md: 18px;
+  --polish-radius-lg: 28px;
+  --polish-transition: 180ms ease;
+  --polish-focus: 0 0 0 4px rgba(212, 175, 55, .28);
+}
+
+/* Better reading rhythm */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  min-height: 55vh;
+}
+
+.prose {
+  max-width: var(--polish-max-prose);
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose p,
+.prose li {
+  font-size: 1.02rem;
+  line-height: 1.78;
+}
+
+.prose p {
+  margin-block: 1em;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  scroll-margin-top: 120px;
+}
+
+.prose h2 {
+  position: relative;
+  margin-top: 2.25em;
+  margin-bottom: .7em;
+  padding-bottom: .42em;
+  letter-spacing: -.01em;
+  border-bottom: 1px solid var(--line);
+}
+
+.prose h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 76px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--burgundy), var(--gold));
+}
+
+.prose h3 {
+  margin-top: 1.7em;
+  margin-bottom: .55em;
+  font-size: 1.28rem;
+}
+
+.prose ul,
+.prose ol {
+  display: grid;
+  gap: .48rem;
+  padding-left: 1.35rem;
+}
+
+.prose strong {
+  color: var(--ink);
+}
+
+/* Softer, more premium cards */
+.card,
+.location-card,
+.sidebar-card,
+.hero-card,
+.faq-item,
+.directory-link {
+  border-color: color-mix(in srgb, var(--line) 85%, var(--gold) 15%);
+}
+
+.card,
+.location-card,
+.directory-link {
+  transition:
+    transform var(--polish-transition),
+    box-shadow var(--polish-transition),
+    border-color var(--polish-transition);
+}
+
+@media (hover: hover) {
+  .card:hover,
+  .location-card:hover,
+  .directory-link:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--gold) 58%, var(--line));
+    box-shadow: 0 18px 44px rgba(70, 28, 42, .10);
+  }
+}
+
+.card h3,
+.location-card h2 {
+  line-height: 1.28;
+}
+
+/* Buttons and links */
+.button,
+.theme-toggle,
+.primary-nav > a,
+.nav-item > button {
+  transition:
+    transform var(--polish-transition),
+    background-color var(--polish-transition),
+    color var(--polish-transition),
+    border-color var(--polish-transition),
+    box-shadow var(--polish-transition);
+}
+
+@media (hover: hover) {
+  .button:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--polish-focus);
+}
+
+.text-link,
+.prose a:not(.button),
+.card a:not(.button) {
+  text-decoration-color: color-mix(in srgb, var(--gold) 72%, transparent);
+  text-decoration-thickness: .11em;
+  text-underline-offset: .22em;
+}
+
+/* Cleaner hero blocks */
+.page-hero {
+  padding-block: clamp(48px, 7vw, 78px);
+}
+
+.page-hero .lead {
+  max-width: 760px;
+}
+
+.hero-actions {
+  align-items: center;
+}
+
+/* Better callouts */
+.notice,
+.medical-disclaimer {
+  border-left-width: 5px;
+  box-shadow: 0 10px 28px rgba(70, 28, 42, .06);
+}
+
+.medical-disclaimer {
+  margin-top: 2.4rem;
+  font-size: .92rem;
+}
+
+/* FAQ polish */
+.faq-list {
+  gap: 14px;
+}
+
+.faq-item {
+  overflow: clip;
+}
+
+.faq-item button {
+  min-height: 62px;
+  font-size: 1rem;
+}
+
+.faq-panel {
+  line-height: 1.7;
+}
+
+/* Responsive tables */
+.prose table,
+.hours {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--polish-radius-sm);
+  overflow: hidden;
+}
+
+.prose table th,
+.prose table td,
+.hours th,
+.hours td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.prose table tr:last-child td,
+.hours tr:last-child td {
+  border-bottom: 0;
+}
+
+.prose table th {
+  background: var(--burgundy-soft);
+  color: var(--burgundy);
+  text-align: left;
+}
+
+/* Long-page enhancements */
+.reading-progress {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 2000;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--burgundy), var(--gold));
+  box-shadow: 0 1px 6px rgba(123, 30, 58, .28);
+  pointer-events: none;
+}
+
+.article-toc {
+  margin: 0 0 2rem;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--polish-radius-md);
+  background:
+    linear-gradient(135deg, var(--cream), color-mix(in srgb, var(--burgundy-soft) 62%, var(--white)));
+}
+
+.article-toc h2 {
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+  font-size: 1.18rem;
+}
+
+.article-toc h2::after {
+  display: none;
+}
+
+.article-toc ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  gap: .3rem;
+}
+
+.article-toc a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.article-toc a:hover {
+  color: var(--burgundy);
+  text-decoration: underline;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 82px;
+  z-index: 1150;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--burgundy);
+  box-shadow: 0 12px 28px rgba(48, 20, 29, .18);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity var(--polish-transition),
+    visibility var(--polish-transition),
+    transform var(--polish-transition);
+  cursor: pointer;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Sidebar feels anchored without becoming heavy */
+@media (min-width: 1041px) {
+  .content-layout {
+    align-items: start;
+  }
+
+  .sidebar-card {
+    top: 116px;
+  }
+}
+
+/* Mobile niceties */
+@media (max-width: 700px) {
+  .container,
+  .narrow {
+    width: min(calc(100% - 24px), var(--container));
+  }
+
+  .page-hero h1 {
+    font-size: clamp(2.1rem, 11vw, 3.1rem);
+  }
+
+  .page-hero .lead,
+  .hero p.lead {
+    font-size: 1.04rem;
+  }
+
+  .card,
+  .hero-card,
+  .sidebar-card,
+  .location-card .location-body {
+    padding: 20px;
+  }
+
+  .prose p,
+  .prose li {
+    font-size: 1rem;
+    line-height: 1.72;
+  }
+
+  .prose h2 {
+    font-size: 1.62rem;
+  }
+
+  .back-to-top {
+    right: 14px;
+    bottom: 72px;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+  }
+}
+
+/* Dark-mode refinements */
+html[data-theme="dark"] .article-toc {
+  background: linear-gradient(135deg, #21191c, #2a1c22);
+}
+
+html[data-theme="dark"] .back-to-top {
+  background: #241b1f;
+}
+
+html[data-theme="dark"] .prose table th {
+  background: #2f2026;
+  color: var(--gold);
+}
+
+/* Respect motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

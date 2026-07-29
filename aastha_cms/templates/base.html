@@ -1,0 +1,146 @@
+{% load static wagtailcore_tags wagtailimages_tags wagtailuserbar %}
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script>
+    (() => {
+      const saved = localStorage.getItem("aastha-theme");
+      const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
+    })();
+  </script>
+  <title>{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | {{ settings.home.SiteSettings.short_name }}{% endblock %}</title>
+  <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
+  {% if page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}
+  <link rel="canonical" href="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}">
+  <meta property="og:description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:site_name" content="{{ settings.home.SiteSettings.clinic_name }}">
+  {% if page.social_image %}
+    {% image page.social_image fill-1200x630 as social_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ social_image.url }}">
+  {% elif settings.home.SiteSettings.default_social_image %}
+    {% image settings.home.SiteSettings.default_social_image fill-1200x630 as social_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ social_image.url }}">
+  {% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  {% if settings.home.SiteSettings.search_console_verification %}
+    <meta name="google-site-verification" content="{{ settings.home.SiteSettings.search_console_verification }}">
+  {% endif %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/professional.css' %}">
+  <link rel="stylesheet" href="{% static 'css/release-v24.css' %}">
+  <link rel="stylesheet" href="{% static 'css/aastha_cms.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body
+  class="release-v24 {% block body_class %}{% endblock %}"
+  data-whatsapp-url="{{ settings.home.SiteSettings.whatsapp_url }}"
+  data-clinic-short-name="{{ settings.home.SiteSettings.short_name }}"
+>
+  {% wagtailuserbar %}
+  {% with site_settings=settings.home.SiteSettings %}
+    {% if site_settings.show_global_banner and site_settings.global_banner_text %}
+      <aside class="cms-site-banner">
+        {% if site_settings.global_banner_link %}<a href="{{ site_settings.global_banner_link }}">{% endif %}
+        {{ site_settings.global_banner_text }}
+        {% if site_settings.global_banner_link %}</a>{% endif %}
+      </aside>
+    {% endif %}
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="cms-site-header">
+      <div class="cms-utility">
+        <div class="container">
+          <span>Consultation {{ site_settings.currency_symbol }}{{ site_settings.consultation_fee|floatformat:"0" }}</span>
+          <a href="tel:+91{{ site_settings.primary_phone_digits }}">{{ site_settings.primary_mobile }}</a>
+          <a href="{{ site_settings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+      <div class="container cms-nav-row">
+        <a class="cms-brand" href="/" aria-label="{{ site_settings.short_name }} home">
+          {% if site_settings.logo %}
+            {% image site_settings.logo width-280 as logo %}
+            <img src="{{ logo.url }}" alt="{{ site_settings.clinic_name }}" width="{{ logo.width }}" height="{{ logo.height }}">
+          {% else %}
+            <span class="cms-brand-mark" aria-hidden="true">A</span>
+            <span><strong>{{ site_settings.short_name }}</strong><small>{{ site_settings.tagline }}</small></span>
+          {% endif %}
+        </a>
+        <button class="cms-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">Menu</button>
+        <nav id="site-navigation" class="cms-navigation" aria-label="Main navigation">
+          {% if site_settings.header_navigation %}
+            {% for item in site_settings.header_navigation %}
+              <a href="{{ item.value.url }}"{% if item.value.new_tab %} target="_blank" rel="noopener"{% endif %}>{{ item.value.label }}</a>
+            {% endfor %}
+          {% else %}
+            <a href="/conditions/">Conditions</a>
+            <a href="/treatments/">Treatments</a>
+            <a href="/blog/">Blog</a>
+            <a href="/dr-cheena-langer/">Doctor</a>
+            <a href="/locations/">Locations</a>
+            <a href="/contact/">Contact</a>
+          {% endif %}
+          <a href="/search/">Search</a>
+          <a class="button cms-nav-cta" href="/book-appointment/">Book appointment</a>
+          <button class="cms-theme-toggle" type="button" aria-label="Switch colour theme">◐</button>
+        </nav>
+      </div>
+    </header>
+    {% block content %}{% endblock %}
+    <footer class="cms-site-footer">
+      <div class="container cms-footer-grid">
+        <section>
+          <h2>{{ site_settings.clinic_name }}</h2>
+          <p>{{ site_settings.tagline }}</p>
+          {% if site_settings.footer_text %}{{ site_settings.footer_text|richtext }}{% endif %}
+        </section>
+        <section>
+          <h2>Clinics</h2>
+          {% for clinic in clinic_locations %}
+            <address><strong>{{ clinic.name }}</strong><br>{{ clinic.address|linebreaksbr }}</address>
+          {% empty %}
+            <p>Clinic locations can be added from the admin.</p>
+          {% endfor %}
+        </section>
+        <section>
+          <h2>Contact</h2>
+          <p><a href="tel:+91{{ site_settings.primary_phone_digits }}">{{ site_settings.primary_mobile }}</a><br>
+          <a href="tel:+91{{ site_settings.secondary_phone_digits }}">{{ site_settings.secondary_mobile }}</a><br>
+          <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></p>
+          <p class="cms-social-links">
+            {% if site_settings.instagram_url %}<a href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
+            {% if site_settings.youtube_url %}<a href="{{ site_settings.youtube_url }}" target="_blank" rel="noopener">YouTube</a>{% endif %}
+            {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}" target="_blank" rel="noopener">Facebook</a>{% endif %}
+          </p>
+        </section>
+        <section>
+          <h2>Quick links</h2>
+          <nav aria-label="Footer navigation">
+            {% for item in site_settings.footer_navigation %}
+              <a href="{{ item.value.url }}"{% if item.value.new_tab %} target="_blank" rel="noopener"{% endif %}>{{ item.value.label }}</a>
+            {% empty %}
+              <a href="/privacy-policy/">Privacy policy</a>
+              <a href="/terms-and-conditions/">Terms</a>
+              <a href="/medical-disclaimer/">Medical disclaimer</a>
+            {% endfor %}
+          </nav>
+        </section>
+      </div>
+      <div class="container cms-footer-bottom">
+        <span>© {% now "Y" %} {{ site_settings.short_name }}</span>
+        <span>{{ site_settings.emergency_note }}</span>
+      </div>
+    </footer>
+  {% endwith %}
+  <script src="{% static 'js/aastha_cms.js' %}" defer></script>
+  {% block extra_js %}{% endblock %}
+  {% if settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.home.SiteSettings.analytics_id }}"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","{{ settings.home.SiteSettings.analytics_id }}");</script>
+  {% endif %}
+</body>
+</html>

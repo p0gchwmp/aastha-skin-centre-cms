@@ -1,0 +1,7 @@
+{% load wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-gallery cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  <div class="cms-gallery-grid cms-columns-{{ value.columns }}">
+    {% for item in value.items %}<figure>{% if item.link %}<a href="{{ item.link.url }}"{% if item.link.new_tab %} target="_blank" rel="noopener"{% endif %}>{% endif %}{% image item.image fill-900x700-c100 alt=item.alt_text %}{% if item.link %}</a>{% endif %}{% if item.caption %}<figcaption>{{ item.caption }}</figcaption>{% endif %}</figure>{% endfor %}
+  </div>
+</section>

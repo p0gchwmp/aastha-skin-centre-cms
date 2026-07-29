@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+{% block content %}
+<main id="main-content">
+  {% include "home/partials/page_hero.html" %}
+  <section class="section"><div class="container {% if page.show_consultation_sidebar %}content-layout{% endif %}">
+    <article class="prose article-stack">
+      {% include_block page.body %}
+      {% if page.show_clinic_choices %}{% include "home/partials/clinic_choices.html" %}{% endif %}
+      {% if page.show_medical_disclaimer %}
+        <p class="medical-disclaimer"><strong>Medical disclaimer:</strong> {{ settings.home.SiteSettings.medical_disclaimer }}</p>
+      {% endif %}
+    </article>
+    {% if page.show_consultation_sidebar %}{% include "home/partials/consultation_sidebar.html" %}{% endif %}
+  </div></section>
+</main>
+{% endblock %}

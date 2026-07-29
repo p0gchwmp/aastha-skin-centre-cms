@@ -1,0 +1,15 @@
+{% extends "home/flexible_page.html" %}
+{% load wagtailimages_tags %}
+{% block extra_head %}
+{% if page.doctor %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Physician",
+  "name": "{{ page.doctor.name|escapejs }}",
+  "description": "{{ page.doctor.short_bio|escapejs }}",
+  "medicalSpecialty": "Dermatology"
+}
+</script>
+{% endif %}
+{% endblock %}

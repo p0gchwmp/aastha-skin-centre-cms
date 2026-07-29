@@ -1,0 +1,5 @@
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-pricing cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  <dl>{% for item in value.items %}<div><dt>{{ item.label }}</dt><dd>{% if item.use_global_consultation_fee %}{{ settings.home.SiteSettings.currency_symbol }}{{ settings.home.SiteSettings.consultation_fee|floatformat:"0" }}{% elif item.price %}{{ settings.home.SiteSettings.currency_symbol }}{{ item.price|floatformat:"0" }}{% else %}Ask the clinic{% endif %}{% if item.description %}<small>{{ item.description }}</small>{% endif %}</dd></div>{% endfor %}</dl>
+  {% if value.note %}<p>{{ value.note }}</p>{% endif %}
+</section>

@@ -1,0 +1,38 @@
+databases:
+  - name: aastha-cms-db
+    plan: basic-256mb
+    region: singapore
+    diskSizeGB: 5
+    ipAllowList: []
+
+services:
+  - type: web
+    name: aastha-skin-centre-cms
+    runtime: python
+    plan: starter
+    region: singapore
+    buildCommand: ./build.sh
+    startCommand: gunicorn aastha_cms.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /healthz/
+    autoDeployTrigger: commit
+    disk:
+      name: aastha-cms-media
+      mountPath: /var/data/media
+      sizeGB: 1
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: aastha_cms.settings.production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aastha-cms-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MEDIA_ROOT
+        value: /var/data/media
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false

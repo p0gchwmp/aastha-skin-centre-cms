@@ -1,0 +1,15 @@
+{% extends "home/flexible_page.html" %}
+{% block extra_head %}
+{% if page.clinic %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MedicalClinic",
+  "name": "{{ settings.home.SiteSettings.clinic_name|escapejs }} – {{ page.clinic.name|escapejs }}",
+  "address": "{{ page.clinic.address|escapejs }}",
+  "telephone": "{{ page.clinic.landline|escapejs }}",
+  "hasMap": "{{ page.clinic.google_maps_url|escapejs }}"
+}
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+{% block body_class %}cms-home-page{% endblock %}
+{% block content %}
+<main id="main-content">
+  {% if page.body %}
+    {% include_block page.body %}
+  {% else %}
+    {% include "home/partials/page_hero.html" %}
+    <section class="section"><div class="container">
+      <div class="section-heading"><div><span class="quiet-label">Website editor ready</span><h2>Add homepage sections without code</h2><p>Open this page in the admin and add heroes, cards, galleries, videos, carousels, doctors, clinics and calls to action.</p></div></div>
+    </div></section>
+  {% endif %}
+</main>
+{% endblock %}

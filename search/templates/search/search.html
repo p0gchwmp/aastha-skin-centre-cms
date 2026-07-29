@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+{% block body_class %}template-searchresults{% endblock %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<main id="main-content" class="section">
+  <div class="container cms-search-page">
+    <span class="eyebrow">Find a page</span>
+    <h1>Search the website</h1>
+    <form class="cms-search-form" action="{% url 'search' %}" method="get">
+      <label for="site-search-query">What are you looking for?</label>
+      <div><input id="site-search-query" type="search" name="query"{% if search_query %} value="{{ search_query }}"{% endif %}><button type="submit" class="button">Search</button></div>
+    </form>
+
+    {% if search_results %}
+      <div class="cms-search-results">
+        {% for result in search_results %}
+          <article>
+            <h2><a href="{% pageurl result %}">{{ result }}</a></h2>
+            {% if result.search_description %}<p>{{ result.search_description }}</p>{% endif %}
+          </article>
+        {% endfor %}
+      </div>
+      {% if search_results.has_previous or search_results.has_next %}
+        <nav class="cms-pagination" aria-label="Search result pages">
+          {% if search_results.has_previous %}<a class="button button-secondary" href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.previous_page_number }}">Previous</a>{% endif %}
+          <span>Page {{ search_results.number }} of {{ search_results.paginator.num_pages }}</span>
+          {% if search_results.has_next %}<a class="button button-secondary" href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.next_page_number }}">Next</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% elif search_query %}
+      <div class="cms-empty-state"><h2>No results found</h2><p>Try a shorter phrase, or browse Conditions, Treatments or the Blog.</p></div>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

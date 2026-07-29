@@ -1,0 +1,7 @@
+{% load wagtailimages_tags %}
+<figure{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-image cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.link %}<a href="{{ value.link.url }}"{% if value.link.new_tab %} target="_blank" rel="noopener"{% endif %}>{% endif %}
+  {% if value.crop == "square" %}{% image value.image fill-900x900-c100 alt=value.alt_text %}{% elif value.crop == "portrait" %}{% image value.image fill-800x1100-c100 alt=value.alt_text %}{% elif value.crop == "original" %}{% image value.image width-1400 alt=value.alt_text %}{% else %}{% image value.image fill-1400x800-c100 alt=value.alt_text %}{% endif %}
+  {% if value.link %}</a>{% endif %}
+  {% if value.caption %}<figcaption>{{ value.caption }}</figcaption>{% endif %}
+</figure>

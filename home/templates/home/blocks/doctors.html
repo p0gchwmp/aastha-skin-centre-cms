@@ -1,0 +1,5 @@
+{% load wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-people cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  <div class="cms-card-grid cms-columns-3">{% for doctor in value.doctors %}<article class="cms-card">{% if doctor.photo %}{% image doctor.photo fill-600x700-c100 %}{% endif %}<div><h3>{{ doctor.name }}</h3><p><strong>{{ doctor.qualifications }}</strong><br>{{ doctor.role }}</p><p>{{ doctor.short_bio }}</p></div></article>{% endfor %}</div>
+</section>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+{% block content %}
+<main id="main-content">
+  {% include "home/partials/page_hero.html" %}
+  {% if page.body %}{% include_block page.body %}{% endif %}
+  <section class="journal-section"><div class="container">
+    <div class="section-heading"><div><span class="quiet-label">{{ page.get_index_kind_display }}</span><h2>Browse {{ page.title }}</h2><p>Every card opens a dedicated page that can be edited independently.</p></div></div>
+    <div class="journal-grid">
+      {% for entry in entries %}
+        <a class="journal-card" href="{% pageurl entry %}">
+          {% if entry.hero_image %}{% image entry.hero_image fill-640x360-c100 %}{% else %}<img src="/assets/images/professional/medical-care.svg" alt="" width="640" height="360">{% endif %}
+          <div>
+            {% if entry.eyebrow %}<span>{{ entry.eyebrow }}</span>{% endif %}
+            <h2>{{ entry.title }}</h2>
+            <p>{{ entry.introduction|default:entry.search_description|truncatewords:28 }}</p>
+            <strong>Open page <span aria-hidden="true">→</span></strong>
+          </div>
+        </a>
+      {% empty %}
+        <article class="cms-empty-state"><h2>No pages yet</h2><p>Add a child page from the admin. It will appear here automatically.</p></article>
+      {% endfor %}
+    </div>
+    {% if entries.paginator.num_pages > 1 %}
+      <nav class="cms-pagination" aria-label="Directory pages">
+        {% if entries.has_previous %}<a class="button button-secondary" href="?page={{ entries.previous_page_number }}">Previous</a>{% endif %}
+        <span>Page {{ entries.number }} of {{ entries.paginator.num_pages }}</span>
+        {% if entries.has_next %}<a class="button button-secondary" href="?page={{ entries.next_page_number }}">Next</a>{% endif %}
+      </nav>
+    {% endif %}
+  </div></section>
+</main>
+{% endblock %}

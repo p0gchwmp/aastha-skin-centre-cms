@@ -1,0 +1,33 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+<section class="page-hero page-hero--professional cms-page-hero cms-media-{{ page.hero_media_position }}">
+  <div class="container">
+    <div class="page-hero-copy">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        {% if page.get_parent and not page.get_parent.is_root %}
+          <span aria-hidden="true">/</span><a href="{% pageurl page.get_parent %}">{{ page.get_parent.title }}</a>
+        {% endif %}
+        <span aria-hidden="true">/</span><span aria-current="page">{{ page.title }}</span>
+      </nav>
+      {% if page.eyebrow %}<span class="eyebrow">{{ page.eyebrow }}</span>{% endif %}
+      <h1>{{ page.title }}</h1>
+      {% if page.introduction %}<p class="lead">{{ page.introduction }}</p>{% endif %}
+      <div class="hero-actions">
+        {% if page.url != "/book-appointment/" %}<a class="button" href="/book-appointment/">Book an appointment</a>{% endif %}
+        <a class="button button-secondary" href="{{ settings.home.SiteSettings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp the clinic</a>
+      </div>
+      {% if page.review_status != "approved" %}
+        <p class="cms-review-badge">{{ page.get_review_status_display }}</p>
+      {% elif page.medical_review_date %}
+        <p class="blog-meta">Medically reviewed {{ page.medical_review_date }}{% if page.reviewed_by %} by {{ page.reviewed_by.name }}{% endif %}</p>
+      {% endif %}
+    </div>
+    {% if page.hero_image %}
+      <div class="page-hero-art">{% image page.hero_image fill-720x520-c100 alt=page.title %}</div>
+    {% elif page.hero_video_url %}
+      <div class="page-hero-art cms-video-frame"><iframe src="{{ page.hero_video_url }}" title="{{ page.title }} video" loading="lazy" allowfullscreen></iframe></div>
+    {% else %}
+      <div class="page-hero-art"><img src="/assets/images/professional/medical-care.svg" alt="" width="560" height="360"></div>
+    {% endif %}
+  </div>
+</section>

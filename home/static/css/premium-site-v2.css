@@ -1,0 +1,714 @@
+
+/* =====================================================================
+   Aastha Premium Site v2 — complete inner-page and dark-mode system
+   Loaded LAST. It intentionally replaces the earlier cleanup look.
+   ===================================================================== */
+:root {
+  --v2-burgundy: #7d153d;
+  --v2-burgundy-2: #a4265a;
+  --v2-plum: #3a1727;
+  --v2-gold: #d7b34a;
+  --v2-cream: #fffaf5;
+  --v2-blush: #f8e9ef;
+  --v2-paper: #ffffff;
+  --v2-ink: #241a1f;
+  --v2-muted: #6f6067;
+  --v2-line: #eadde2;
+  --v2-success: #24735d;
+  --v2-shadow-sm: 0 8px 28px rgba(73, 22, 44, .08);
+  --v2-shadow: 0 24px 70px rgba(73, 22, 44, .13);
+  --v2-radius: 24px;
+  --v2-radius-sm: 15px;
+  --v2-content: 1180px;
+  --v2-prose: 790px;
+}
+
+html { scroll-behavior: smooth; }
+body.premium-v2 {
+  background: #fff;
+  color: var(--v2-ink);
+}
+.premium-v2 .container { width: min(calc(100% - 32px), var(--v2-content)); }
+.premium-v2 main { overflow: clip; }
+
+/* Header — compact, readable and stable in both themes. */
+.premium-v2 .site-header {
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid rgba(92,44,63,.10);
+  box-shadow: 0 7px 24px rgba(54,18,34,.05);
+  backdrop-filter: blur(18px);
+}
+.premium-v2 .nav-shell { min-height: 84px; }
+.premium-v2 .brand { min-width: 220px; }
+.premium-v2 .brand strong { color: var(--v2-ink); font-size: 1.08rem; }
+.premium-v2 .brand small { color: var(--v2-muted); }
+.premium-v2 .primary-nav { gap: 3px; }
+.premium-v2 .primary-nav > a,
+.premium-v2 .nav-item > button,
+.premium-v2 .theme-toggle {
+  min-height: 43px;
+  border-radius: 12px;
+  color: #382a31;
+  font-weight: 750;
+}
+.premium-v2 .primary-nav > a:hover,
+.premium-v2 .primary-nav > a.is-current,
+.premium-v2 .nav-item > button:hover,
+.premium-v2 .nav-item > button[aria-expanded="true"] {
+  background: #f7e8ee;
+  color: var(--v2-burgundy);
+}
+.premium-v2 .primary-nav > .button {
+  color: #fff !important;
+  background: linear-gradient(135deg,var(--v2-burgundy),var(--v2-burgundy-2)) !important;
+  box-shadow: 0 10px 24px rgba(125,21,61,.20);
+}
+.premium-v2 .dropdown {
+  border: 1px solid var(--v2-line);
+  border-radius: 18px;
+  box-shadow: var(--v2-shadow);
+}
+.premium-v2 .dropdown a { border-radius: 10px; }
+
+/* Better page hero on EVERY inner page. */
+.premium-v2 .page-hero.page-hero--professional {
+  padding: clamp(46px, 7vw, 86px) 0;
+  background:
+    radial-gradient(circle at 82% 24%, rgba(205,82,124,.18), transparent 30%),
+    radial-gradient(circle at 68% 88%, rgba(215,179,74,.14), transparent 26%),
+    linear-gradient(135deg,#fffaf6 0%,#fbedf2 100%);
+  border-bottom: 1px solid var(--v2-line);
+}
+.premium-v2 .page-hero.page-hero--professional > .container {
+  display: grid;
+  grid-template-columns: minmax(0,1.25fr) minmax(280px,.75fr);
+  gap: clamp(36px,6vw,84px);
+  align-items: center;
+}
+.premium-v2 .page-hero-copy { max-width: 760px; }
+.premium-v2 .page-hero-copy nav,
+.premium-v2 .breadcrumbs { color: #7c6971; font-size: .9rem; }
+.premium-v2 .page-hero-copy .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 25px;
+  color: var(--v2-burgundy);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.premium-v2 .page-hero-copy .eyebrow::before {
+  content: "";
+  width: 32px;
+  height: 2px;
+  background: var(--v2-gold);
+}
+.premium-v2 .page-hero h1 {
+  max-width: 850px;
+  margin: 15px 0 19px;
+  font-size: clamp(2.55rem,5.2vw,5.2rem);
+  line-height: .99;
+  letter-spacing: -.045em;
+  color: var(--v2-ink);
+}
+.premium-v2 .page-hero .lead {
+  max-width: 690px;
+  margin: 0;
+  color: #5f5158;
+  font-size: clamp(1.04rem,1.5vw,1.22rem);
+  line-height: 1.72;
+}
+.premium-v2 .page-hero-art {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  padding: clamp(22px,3vw,38px);
+  border: 1px solid rgba(125,21,61,.10);
+  border-radius: 34px;
+  background: rgba(255,255,255,.72);
+  box-shadow: var(--v2-shadow);
+}
+.premium-v2 .page-hero-art img { width: 100%; max-width: 470px; max-height: 360px; object-fit: contain; }
+.premium-v2 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 27px; }
+.premium-v2 .button {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+.premium-v2 .button:not(.button-secondary) {
+  color: #fff !important;
+  background: linear-gradient(135deg,var(--v2-burgundy),var(--v2-burgundy-2));
+  border-color: var(--v2-burgundy);
+  box-shadow: 0 11px 25px rgba(125,21,61,.20);
+}
+.premium-v2 .button-secondary {
+  color: var(--v2-burgundy) !important;
+  background: rgba(255,255,255,.85) !important;
+  border: 1px solid rgba(125,21,61,.45) !important;
+}
+
+/* Compact benefit strip under hero. */
+.premium-v2 .premium-summary-strip {
+  margin-top: -28px;
+  position: relative;
+  z-index: 3;
+}
+.premium-v2 .premium-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--v2-line);
+  border-radius: 20px;
+  background: var(--v2-line);
+  box-shadow: var(--v2-shadow-sm);
+}
+.premium-v2 .premium-summary-item { padding: 21px 22px; background: #fff; }
+.premium-v2 .premium-summary-item strong { display: block; color: var(--v2-ink); font-size: .98rem; }
+.premium-v2 .premium-summary-item span { display: block; margin-top: 4px; color: var(--v2-muted); font-size: .88rem; line-height: 1.45; }
+
+/* All article pages: professional editorial layout. */
+.premium-v2 .section:has(.content-layout) { padding: clamp(46px,6vw,82px) 0; background: #fff; }
+.premium-v2 .content-layout {
+  display: grid;
+  grid-template-columns: minmax(0,var(--v2-prose)) minmax(280px,330px);
+  gap: clamp(34px,5vw,72px);
+  align-items: start;
+}
+.premium-v2 article.prose { max-width: none; color: var(--v2-ink); }
+.premium-v2 article.prose > :first-child { margin-top: 0; }
+.premium-v2 article.prose p { color: #564950; font-size: 1.02rem; line-height: 1.82; }
+.premium-v2 article.prose > p { max-width: 760px; }
+.premium-v2 article.prose h2 {
+  margin: 0 0 17px;
+  padding: 0;
+  border: 0;
+  color: var(--v2-ink);
+  font-size: clamp(1.65rem,2.8vw,2.45rem);
+  line-height: 1.16;
+  letter-spacing: -.025em;
+}
+.premium-v2 article.prose h2::after { display: none; }
+.premium-v2 article.prose h3 {
+  margin: 30px 0 11px;
+  color: #331f29;
+  font-size: clamp(1.18rem,2vw,1.48rem);
+  line-height: 1.28;
+}
+.premium-v2 article.prose h3::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 3px;
+  margin: 0 10px 5px 0;
+  border-radius: 99px;
+  background: var(--v2-gold);
+}
+.premium-v2 .premium-content-section {
+  margin: 0 0 26px;
+  padding: clamp(24px,3.3vw,38px);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius);
+  background: #fff;
+  box-shadow: 0 10px 38px rgba(69,21,42,.055);
+}
+.premium-v2 .premium-content-section:nth-of-type(even) { background: #fffafc; }
+.premium-v2 .premium-content-section > :last-child { margin-bottom: 0; }
+
+/* Real bullets, not endless loose paragraphs. */
+.premium-v2 .premium-bullet-grid,
+.premium-v2 article.prose ul:not(.related-link-grid),
+.premium-v2 article.prose ol {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+  margin: 18px 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.premium-v2 .premium-bullet-grid li,
+.premium-v2 article.prose ul:not(.related-link-grid) > li,
+.premium-v2 article.prose ol > li {
+  position: relative;
+  min-height: 52px;
+  margin: 0;
+  padding: 14px 15px 14px 43px;
+  border: 1px solid #eadde2;
+  border-radius: 13px;
+  background: #fffafc;
+  color: #43343b;
+  line-height: 1.5;
+}
+.premium-v2 .premium-bullet-grid li::before,
+.premium-v2 article.prose ul:not(.related-link-grid) > li::before,
+.premium-v2 article.prose ol > li::before {
+  content: "✓";
+  position: absolute;
+  left: 15px;
+  top: 13px;
+  color: var(--v2-success);
+  font-weight: 950;
+}
+.premium-v2 article.prose ol { counter-reset: v2-counter; }
+.premium-v2 article.prose ol > li { counter-increment: v2-counter; }
+.premium-v2 article.prose ol > li::before { content: counter(v2-counter); color: var(--v2-burgundy); }
+.premium-v2 .premium-bullet-grid a,
+.premium-v2 article.prose li a { color: var(--v2-burgundy); font-weight: 800; text-decoration: none; }
+
+/* Progressive disclosure for very long clinical pages. */
+.premium-v2 details.premium-content-details {
+  margin: 0 0 15px;
+  overflow: hidden;
+  border: 1px solid var(--v2-line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 26px rgba(69,21,42,.04);
+}
+.premium-v2 details.premium-content-details > summary {
+  position: relative;
+  display: block;
+  padding: 20px 58px 20px 23px;
+  color: var(--v2-ink);
+  font-family: var(--heading-font, Georgia, serif);
+  font-size: 1.32rem;
+  font-weight: 800;
+  line-height: 1.26;
+  cursor: pointer;
+  list-style: none;
+}
+.premium-v2 details.premium-content-details > summary::-webkit-details-marker { display:none; }
+.premium-v2 details.premium-content-details > summary::after {
+  content: "+";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f8e8ee;
+  color: var(--v2-burgundy);
+  font-family: Arial,sans-serif;
+  font-size: 1.2rem;
+}
+.premium-v2 details.premium-content-details[open] > summary::after { content: "−"; }
+.premium-v2 .premium-details-body { padding: 0 23px 23px; }
+
+/* Compact TOC instead of the giant checkbox grid. */
+.premium-v2 .article-toc { display:none !important; }
+.premium-v2 .premium-toc {
+  margin-bottom: 24px;
+  padding: 18px;
+  border: 1px solid var(--v2-line);
+  border-radius: 18px;
+  background: linear-gradient(135deg,#fffaf5,#f9edf2);
+}
+.premium-v2 .premium-toc strong { display:block; margin-bottom:10px; color:var(--v2-ink); }
+.premium-v2 .premium-toc-links { display:flex; flex-wrap:wrap; gap:8px; }
+.premium-v2 .premium-toc a {
+  padding: 8px 11px;
+  border: 1px solid #ead3dc;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--v2-burgundy);
+  font-size: .84rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+/* Consultation sidebar. */
+.premium-v2 .sidebar-card,
+.premium-v2 .premium-sidebar-card {
+  position: sticky;
+  top: 112px;
+  padding: 26px;
+  border: 1px solid var(--v2-line);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 90% 8%,rgba(210,87,130,.12),transparent 35%),
+    #fff;
+  box-shadow: var(--v2-shadow-sm);
+}
+.premium-v2 .sidebar-card h2,
+.premium-v2 .premium-sidebar-card h2 { margin:0 0 10px; font-size:1.55rem; color:var(--v2-ink); }
+.premium-v2 .sidebar-card p,
+.premium-v2 .premium-sidebar-card p { color:var(--v2-muted); line-height:1.65; }
+.premium-v2 .sidebar-card .button,
+.premium-v2 .premium-sidebar-card .button { width:100%; margin-top:9px; }
+.premium-v2 .premium-side-meta { display:grid; gap:8px; margin:17px 0; padding:15px 0; border-top:1px solid var(--v2-line); border-bottom:1px solid var(--v2-line); }
+.premium-v2 .premium-side-meta span { color:var(--v2-muted); font-size:.9rem; }
+.premium-v2 .premium-side-meta strong { color:var(--v2-ink); }
+
+/* Related care and location cards. */
+.premium-v2 .related-care { padding:25px; border-radius:20px; background:#fff8fb; }
+.premium-v2 .related-link-chip { min-height:42px; background:#fff; box-shadow:0 4px 12px rgba(73,22,44,.04); }
+.premium-v2 .premium-location-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+.premium-v2 .premium-location-card { padding:22px; border:1px solid var(--v2-line); border-radius:18px; background:#fffafc; }
+.premium-v2 .premium-location-card h3 { margin-top:0; }
+.premium-v2 .premium-location-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; }
+.premium-v2 .premium-location-actions a { padding:9px 12px; border-radius:10px; background:#fff; border:1px solid #dec6d0; color:var(--v2-burgundy); font-weight:800; text-decoration:none; }
+
+/* FAQs and final CTA. */
+.premium-v2 .faq-pro-list details { border-color:var(--v2-line); border-radius:15px; background:#fff; }
+.premium-v2 .faq-pro-list summary { padding:19px 54px 19px 20px; color:var(--v2-ink); }
+.premium-v2 .faq-answer { color:var(--v2-muted); }
+.premium-v2 .inner-cta,
+.premium-v2 .home-cta {
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 86% 12%,rgba(255,255,255,.18),transparent 30%),
+    linear-gradient(135deg,#65152f,#a9285a);
+  box-shadow:0 24px 60px rgba(94,18,49,.25);
+}
+.premium-v2 .inner-cta p,
+.premium-v2 .home-cta p { color:#f8eaf0 !important; }
+.premium-v2 .inner-cta .button,
+.premium-v2 .home-cta .button { background:#fff !important; color:#6b1733 !important; border-color:#fff !important; }
+.premium-v2 .inner-cta .button-secondary,
+.premium-v2 .home-cta .button-secondary { background:transparent !important; color:#fff !important; border-color:rgba(255,255,255,.72) !important; }
+.premium-v2 .medical-disclaimer { border-left:4px solid var(--v2-gold); border-radius:14px; background:#fff9e9; color:#675c3f; }
+
+/* Hub, blog and contact pages. */
+.premium-v2 .hub-section { padding:clamp(50px,7vw,90px) 0; }
+.premium-v2 .hub-category-grid,
+.premium-v2 .guide-grid { gap:22px; }
+.premium-v2 .hub-category,
+.premium-v2 .patient-guide-card,
+.premium-v2 .about-story-card,
+.premium-v2 .clinic-location-card {
+  border-radius:23px;
+  border:1px solid var(--v2-line);
+  box-shadow:var(--v2-shadow-sm);
+}
+.premium-v2 .hub-link { min-height:96px; border-radius:15px; background:#fff; }
+.premium-v2 .hub-link:hover { transform:translateY(-2px); box-shadow:var(--v2-shadow-sm); }
+.premium-v2 .patient-guide-card img { padding:20px; background:linear-gradient(135deg,#fceef3,#fff9ed); }
+.premium-v2 .contact-action-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:25px 0 40px; }
+.premium-v2 .contact-action-card { padding:20px; border:1px solid var(--v2-line); border-radius:17px; background:#fff; box-shadow:var(--v2-shadow-sm); text-decoration:none; }
+.premium-v2 .contact-action-card strong { display:block; color:var(--v2-ink); }
+.premium-v2 .contact-action-card span { display:block; margin-top:5px; color:var(--v2-muted); font-size:.9rem; }
+.premium-v2 .contact-action-card:hover { transform:translateY(-2px); }
+.premium-v2 .premium-form { padding:clamp(24px,4vw,38px); border:1px solid var(--v2-line); border-radius:24px; background:#fff; box-shadow:var(--v2-shadow-sm); }
+.premium-v2 .premium-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+.premium-v2 .premium-form label { display:grid; gap:7px; color:var(--v2-ink); font-weight:800; }
+.premium-v2 .premium-form input,
+.premium-v2 .premium-form select,
+.premium-v2 .premium-form textarea { width:100%; padding:13px 14px; border:1px solid #d9c9cf; border-radius:11px; background:#fff; color:var(--v2-ink); font:inherit; }
+.premium-v2 .premium-form textarea { min-height:130px; resize:vertical; }
+.premium-v2 .premium-form .full { grid-column:1/-1; }
+
+/* Footer. */
+.premium-v2 .site-footer { background:#23171d; }
+.premium-v2 .site-footer h2 { color:#f4d474; }
+.premium-v2 .site-footer a { color:#f6edf1; }
+.premium-v2 .site-footer p,
+.premium-v2 .site-footer .small { color:#cdbdc4; }
+
+/* Dark mode — complete contrast system rather than piecemeal fixes. */
+html[data-theme="dark"] body.premium-v2 { background:#0f0c0e; color:#f7f0f3; }
+html[data-theme="dark"] .premium-v2 .site-header { background:rgba(18,13,16,.97); border-color:#35252d; }
+html[data-theme="dark"] .premium-v2 .brand strong,
+html[data-theme="dark"] .premium-v2 .primary-nav > a,
+html[data-theme="dark"] .premium-v2 .nav-item > button,
+html[data-theme="dark"] .premium-v2 .theme-toggle { color:#f8f1f4 !important; }
+html[data-theme="dark"] .premium-v2 .brand small { color:#bbaeb4; }
+html[data-theme="dark"] .premium-v2 .primary-nav > a:hover,
+html[data-theme="dark"] .premium-v2 .primary-nav > a.is-current,
+html[data-theme="dark"] .premium-v2 .nav-item > button:hover,
+html[data-theme="dark"] .premium-v2 .nav-item > button[aria-expanded="true"],
+html[data-theme="dark"] .premium-v2 .theme-toggle { background:#2a1a22 !important; color:#fff !important; }
+html[data-theme="dark"] .premium-v2 .dropdown { background:#1b1418; border-color:#3c2932; }
+html[data-theme="dark"] .premium-v2 .dropdown a { color:#f3e8ed; }
+html[data-theme="dark"] .premium-v2 .dropdown a:hover { background:#2b1b23; }
+html[data-theme="dark"] .premium-v2 .page-hero.page-hero--professional {
+  background:
+    radial-gradient(circle at 82% 24%,rgba(162,39,88,.22),transparent 30%),
+    linear-gradient(135deg,#120e10,#201219);
+  border-color:#35242d;
+}
+html[data-theme="dark"] .premium-v2 .page-hero h1,
+html[data-theme="dark"] .premium-v2 article.prose h2,
+html[data-theme="dark"] .premium-v2 article.prose h3,
+html[data-theme="dark"] .premium-v2 .sidebar-card h2,
+html[data-theme="dark"] .premium-v2 .premium-sidebar-card h2,
+html[data-theme="dark"] .premium-v2 .premium-summary-item strong,
+html[data-theme="dark"] .premium-v2 .contact-action-card strong { color:#fff8fb !important; }
+html[data-theme="dark"] .premium-v2 .page-hero .lead,
+html[data-theme="dark"] .premium-v2 article.prose p,
+html[data-theme="dark"] .premium-v2 .sidebar-card p,
+html[data-theme="dark"] .premium-v2 .premium-sidebar-card p,
+html[data-theme="dark"] .premium-v2 .premium-summary-item span,
+html[data-theme="dark"] .premium-v2 .contact-action-card span { color:#cdbfc5 !important; }
+html[data-theme="dark"] .premium-v2 .page-hero-art,
+html[data-theme="dark"] .premium-v2 .premium-content-section,
+html[data-theme="dark"] .premium-v2 .premium-summary-item,
+html[data-theme="dark"] .premium-v2 .sidebar-card,
+html[data-theme="dark"] .premium-v2 .premium-sidebar-card,
+html[data-theme="dark"] .premium-v2 details.premium-content-details,
+html[data-theme="dark"] .premium-v2 .premium-location-card,
+html[data-theme="dark"] .premium-v2 .hub-category,
+html[data-theme="dark"] .premium-v2 .hub-link,
+html[data-theme="dark"] .premium-v2 .patient-guide-card,
+html[data-theme="dark"] .premium-v2 .about-story-card,
+html[data-theme="dark"] .premium-v2 .clinic-location-card,
+html[data-theme="dark"] .premium-v2 .contact-action-card,
+html[data-theme="dark"] .premium-v2 .premium-form,
+html[data-theme="dark"] .premium-v2 .faq-pro-list details { background:#1a1417 !important; border-color:#3a2931 !important; color:#f8f1f4 !important; }
+html[data-theme="dark"] .premium-v2 .premium-content-section:nth-of-type(even) { background:#1d1519 !important; }
+html[data-theme="dark"] .premium-v2 .premium-bullet-grid li,
+html[data-theme="dark"] .premium-v2 article.prose ul:not(.related-link-grid) > li,
+html[data-theme="dark"] .premium-v2 article.prose ol > li { background:#21181d !important; border-color:#3e2b34 !important; color:#eadfe4 !important; }
+html[data-theme="dark"] .premium-v2 .premium-toc { background:#1c1418; border-color:#3a2931; }
+html[data-theme="dark"] .premium-v2 .premium-toc strong { color:#fff; }
+html[data-theme="dark"] .premium-v2 .premium-toc a { background:#261a20; border-color:#44303a; color:#f3b3ca; }
+html[data-theme="dark"] .premium-v2 details.premium-content-details > summary,
+html[data-theme="dark"] .premium-v2 .faq-pro-list summary { color:#fff5f9 !important; }
+html[data-theme="dark"] .premium-v2 .premium-details-body,
+html[data-theme="dark"] .premium-v2 .faq-answer { color:#ccbec4; }
+html[data-theme="dark"] .premium-v2 .button-secondary { background:#23171d !important; color:#ffd8e6 !important; border-color:#93415f !important; }
+html[data-theme="dark"] .premium-v2 .medical-disclaimer { background:#2a2417 !important; border-color:#d7b34a !important; color:#e7dbb6 !important; }
+html[data-theme="dark"] .premium-v2 .premium-form input,
+html[data-theme="dark"] .premium-v2 .premium-form select,
+html[data-theme="dark"] .premium-v2 .premium-form textarea { background:#120e10; border-color:#49333d; color:#fff; }
+html[data-theme="dark"] .premium-v2 .hub-section,
+html[data-theme="dark"] .premium-v2 .section:has(.content-layout) { background:#0f0c0e !important; color:#f7f0f3; }
+
+/* Mobile and tablet. */
+@media (max-width: 1040px) {
+  .premium-v2 .page-hero.page-hero--professional > .container { grid-template-columns:1fr; }
+  .premium-v2 .page-hero-art { max-width:620px; min-height:250px; }
+  .premium-v2 .content-layout { grid-template-columns:1fr; }
+  .premium-v2 .sidebar-card,.premium-v2 .premium-sidebar-card { position:relative; top:auto; }
+  .premium-v2 .contact-action-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 720px) {
+  .premium-v2 .container { width:min(calc(100% - 22px),var(--v2-content)); }
+  .premium-v2 .page-hero.page-hero--professional { padding:36px 0 58px; }
+  .premium-v2 .page-hero h1 { font-size:clamp(2.3rem,12vw,3.55rem); }
+  .premium-v2 .page-hero-art { min-height:210px; border-radius:24px; }
+  .premium-v2 .premium-summary-grid { grid-template-columns:1fr; }
+  .premium-v2 .premium-bullet-grid,
+  .premium-v2 article.prose ul:not(.related-link-grid),
+  .premium-v2 article.prose ol,
+  .premium-v2 .premium-location-grid,
+  .premium-v2 .premium-form-grid,
+  .premium-v2 .contact-action-grid { grid-template-columns:1fr; }
+  .premium-v2 .premium-content-section { padding:22px 18px; border-radius:18px; }
+  .premium-v2 .hero-actions .button { width:100%; }
+  .premium-v2 .premium-form .full { grid-column:auto; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .premium-v2 * { scroll-behavior:auto !important; transition:none !important; }
+}
+/* =====================================================================
+   Aastha Premium v2.1 — high-contrast dark mode correction
+   Targets the utility bar, clinic address blocks, contact cards and
+   light-coloured surfaces that remained unreadable in night mode.
+   ===================================================================== */
+
+html[data-theme="dark"] body.premium-v2 {
+  --v2-dark-page: #0e0a0c;
+  --v2-dark-surface: #191216;
+  --v2-dark-surface-2: #22171d;
+  --v2-dark-line: #51313f;
+  --v2-dark-text: #fff8fb;
+  --v2-dark-muted: #e2d2d9;
+  --v2-dark-gold: #f6d76c;
+}
+
+/* Top utility strip: consultation fee, numbers and social links. */
+html[data-theme="dark"] .premium-v2 .topbar {
+  background: linear-gradient(90deg, #661433 0%, #8c1e4d 50%, #65122f 100%) !important;
+  border-bottom-color: rgba(255,255,255,.28) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .premium-v2 .topbar,
+html[data-theme="dark"] .premium-v2 .topbar-inner,
+html[data-theme="dark"] .premium-v2 .topbar-inner > span,
+html[data-theme="dark"] .premium-v2 .topbar strong,
+html[data-theme="dark"] .premium-v2 .topbar [data-global-fee] {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .premium-v2 .topbar [data-global-fee] {
+  color: #ffe48a !important;
+  font-weight: 900 !important;
+}
+
+html[data-theme="dark"] .premium-v2 .topbar a,
+html[data-theme="dark"] .premium-v2 .topbar-contact a,
+html[data-theme="dark"] .premium-v2 .topbar-social a {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-decoration-color: rgba(255,255,255,.68) !important;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+html[data-theme="dark"] .premium-v2 .topbar-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+html[data-theme="dark"] .premium-v2 .topbar-social a {
+  padding: 4px 7px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.11);
+}
+
+/* Main header and active navigation. */
+html[data-theme="dark"] .premium-v2 .primary-nav > a.is-current {
+  background: #7d2148 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.15);
+}
+
+html[data-theme="dark"] .premium-v2 .primary-nav > .button,
+html[data-theme="dark"] .premium-v2 .primary-nav > a.button {
+  color: #ffffff !important;
+  background: linear-gradient(135deg,#a9265b,#d23d78) !important;
+  border-color: #d95a8c !important;
+}
+
+/* Homepage clinic cards: addresses and timing boxes. */
+html[data-theme="dark"] .premium-v2 .location-pro-card {
+  background: var(--v2-dark-surface) !important;
+  border-color: var(--v2-dark-line) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .location-pro-card .location-copy {
+  background: var(--v2-dark-surface) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .location-pro-card h3,
+html[data-theme="dark"] .premium-v2 .location-pro-card address,
+html[data-theme="dark"] .premium-v2 .location-pro-card .location-hours,
+html[data-theme="dark"] .premium-v2 .location-pro-card .location-hours strong,
+html[data-theme="dark"] .premium-v2 .location-pro-card .location-copy p {
+  color: var(--v2-dark-text) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .premium-v2 .location-pro-card address {
+  font-weight: 650;
+  line-height: 1.65;
+}
+
+html[data-theme="dark"] .premium-v2 .location-pro-card .location-hours {
+  background: #2b1c23 !important;
+  border: 1px solid #5a3544 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .premium-v2 .location-pro-card .location-hours strong {
+  color: var(--v2-dark-gold) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .location-pro-card .button-secondary {
+  background: #2b1b23 !important;
+  color: #ffffff !important;
+  border-color: #c15a82 !important;
+}
+
+/* Contact-page clinic blocks. */
+html[data-theme="dark"] .premium-v2 .premium-location-card {
+  background: var(--v2-dark-surface-2) !important;
+  border-color: var(--v2-dark-line) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .premium-location-card h2,
+html[data-theme="dark"] .premium-v2 .premium-location-card h3,
+html[data-theme="dark"] .premium-v2 .premium-location-card p,
+html[data-theme="dark"] .premium-v2 .premium-location-card strong,
+html[data-theme="dark"] .premium-v2 .premium-location-card address {
+  color: var(--v2-dark-text) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .premium-v2 .premium-location-card p {
+  line-height: 1.72;
+}
+
+html[data-theme="dark"] .premium-v2 .premium-location-card strong {
+  color: var(--v2-dark-gold) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .premium-location-actions a {
+  background: #351f29 !important;
+  border-color: #7e4059 !important;
+  color: #ffffff !important;
+}
+
+/* Call, WhatsApp, email and appointment cards. */
+html[data-theme="dark"] .premium-v2 .contact-action-card,
+html[data-theme="dark"] .premium-v2 a.contact-action-card {
+  background: #20161b !important;
+  border-color: var(--v2-dark-line) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .contact-action-card strong,
+html[data-theme="dark"] .premium-v2 .contact-action-card span,
+html[data-theme="dark"] .premium-v2 .contact-action-card a {
+  color: var(--v2-dark-text) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .premium-v2 a[href^="tel:"],
+html[data-theme="dark"] .premium-v2 a[href^="mailto:"],
+html[data-theme="dark"] .premium-v2 .site-footer a[href^="tel:"],
+html[data-theme="dark"] .premium-v2 .site-footer a[href^="mailto:"] {
+  color: #fff5f9 !important;
+  opacity: 1 !important;
+}
+
+/* Contact form labels, text and placeholders. */
+html[data-theme="dark"] .premium-v2 .premium-form h2,
+html[data-theme="dark"] .premium-v2 .premium-form label,
+html[data-theme="dark"] .premium-v2 .premium-form p {
+  color: var(--v2-dark-text) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .premium-v2 .premium-form p {
+  color: var(--v2-dark-muted) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .premium-form input::placeholder,
+html[data-theme="dark"] .premium-v2 .premium-form textarea::placeholder {
+  color: #bfaeb6 !important;
+  opacity: 1;
+}
+
+/* Eliminate white-on-white remnants from older styles. */
+html[data-theme="dark"] .premium-v2 .location-hours,
+html[data-theme="dark"] .premium-v2 .premium-side-meta,
+html[data-theme="dark"] .premium-v2 .related-care {
+  color: var(--v2-dark-text) !important;
+}
+
+html[data-theme="dark"] .premium-v2 .related-care {
+  background: #1d1418 !important;
+  border-color: var(--v2-dark-line) !important;
+}
+
+@media (max-width: 700px) {
+  html[data-theme="dark"] .premium-v2 .topbar-inner {
+    color: #ffffff !important;
+  }
+
+  html[data-theme="dark"] .premium-v2 .topbar-social {
+    gap: 6px;
+  }
+}
