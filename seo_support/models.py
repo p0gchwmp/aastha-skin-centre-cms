@@ -10,9 +10,10 @@ from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.snippets.models import register_snippet
 
 
+TIME_24H = r"(?:[01]\d|2[0-3]):[0-5]\d"
+TIME_INTERVAL = rf"{TIME_24H}-{TIME_24H}"
 HOURS_PATTERN = re.compile(
-    r"^(closed|(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d"
-    r"(?:,(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d)*))$",
+    rf"^(?:closed|{TIME_INTERVAL}(?:,{TIME_INTERVAL})*)$",
     re.IGNORECASE,
 )
 DAY_FIELDS = (
