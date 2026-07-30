@@ -82,9 +82,15 @@ def site_collections(request):
         "site_is_public": site_is_public,
         "public_site_url": settings.PUBLIC_SITE_URL,
         "canonical_url": canonical_url,
-        "structured_data_json": json.dumps(
-            {"@context": "https://schema.org", "@graph": graph},
-            ensure_ascii=False,
-            separators=(",", ":"),
+        # The homepage already carries its curated schema in CMS content.
+        # Add the global graph everywhere else to avoid duplicate entities.
+        "structured_data_json": (
+            ""
+            if request.path == "/"
+            else json.dumps(
+                {"@context": "https://schema.org", "@graph": graph},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
         ),
     }
