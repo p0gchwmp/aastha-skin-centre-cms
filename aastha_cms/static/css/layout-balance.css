@@ -128,6 +128,180 @@
   height: 100%;
 }
 
+/* =====================================================================
+   Dark-mode readability
+   Older design layers used light-theme muted colours inside dark surfaces.
+   These final overrides keep secondary copy comfortably readable while
+   preserving the burgundy, blush and gold visual identity.
+   ===================================================================== */
+
+html[data-theme="dark"] .release-v24 {
+  --dark-readable-heading: #fff7fa;
+  --dark-readable-body: #eadde3;
+  --dark-readable-muted: #d3c1ca;
+  --dark-readable-link: #f3a8c3;
+  --dark-readable-accent: #ef84ac;
+  --dark-readable-border: #62404f;
+  --dark-readable-surface: #1b1217;
+  --dark-readable-soft: #24171e;
+}
+
+html[data-theme="dark"] .release-v24 .trust-ribbon {
+  background: var(--dark-readable-surface);
+  border-color: var(--dark-readable-border);
+}
+
+html[data-theme="dark"] .release-v24 .trust-item {
+  border-color: var(--dark-readable-border);
+}
+
+html[data-theme="dark"] .release-v24 .trust-item strong {
+  color: var(--dark-readable-accent) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .release-v24 .trust-item span:not(.trust-icon) {
+  color: var(--dark-readable-muted) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .release-v24 .trust-icon {
+  color: #74183d !important;
+  background: #fff2f6 !important;
+  border: 1px solid #f0ccd9;
+}
+
+html[data-theme="dark"] .release-v24 .faq-pro-list details,
+html[data-theme="dark"] .release-v24 .faq-clean-list details,
+html[data-theme="dark"] .release-v24 .faq-item {
+  color: var(--dark-readable-body) !important;
+  background: var(--dark-readable-surface) !important;
+  border-color: var(--dark-readable-border) !important;
+}
+
+html[data-theme="dark"] .release-v24 .faq-pro-list summary,
+html[data-theme="dark"] .release-v24 .faq-clean-list summary,
+html[data-theme="dark"] .release-v24 .faq-item button {
+  color: var(--dark-readable-heading) !important;
+  background: var(--dark-readable-surface) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .release-v24 .faq-answer,
+html[data-theme="dark"] .release-v24 .faq-answer p,
+html[data-theme="dark"] .release-v24 .faq-answer li,
+html[data-theme="dark"] .release-v24 .faq-answer span,
+html[data-theme="dark"] .release-v24 .faq-answer strong {
+  color: var(--dark-readable-body) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .release-v24 .faq-answer a {
+  color: var(--dark-readable-link) !important;
+}
+
+html[data-theme="dark"] .release-v24 :where(
+  .premium-summary-item,
+  .hub-category,
+  .hub-link,
+  .about-story-card,
+  .clinic-location-card,
+  .value-card,
+  .process-step,
+  .hours-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .journal-card,
+  .concern-card,
+  .treatment-card,
+  .why-card,
+  .location-pro-card,
+  .patient-guide-card,
+  .cms-card,
+  .appointment-fact-card,
+  .care-sidebar-card
+) {
+  border-color: var(--dark-readable-border) !important;
+}
+
+html[data-theme="dark"] .release-v24 :where(
+  .premium-summary-item,
+  .hub-category,
+  .hub-link,
+  .about-story-card,
+  .clinic-location-card,
+  .value-card,
+  .process-step,
+  .hours-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .journal-card,
+  .concern-card,
+  .treatment-card,
+  .why-card,
+  .location-pro-card,
+  .patient-guide-card,
+  .cms-card,
+  .appointment-fact-card,
+  .care-sidebar-card
+) :where(p, address, li, small) {
+  color: var(--dark-readable-muted) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .release-v24 :where(
+  .premium-summary-item,
+  .hub-category,
+  .hub-link,
+  .about-story-card,
+  .clinic-location-card,
+  .value-card,
+  .process-step,
+  .hours-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .journal-card,
+  .concern-card,
+  .treatment-card,
+  .why-card,
+  .location-pro-card,
+  .patient-guide-card,
+  .cms-card,
+  .appointment-fact-card,
+  .care-sidebar-card
+) :where(h2, h3, h4, strong) {
+  color: var(--dark-readable-heading) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .release-v24 :where(
+  .hub-link,
+  .journal-card,
+  .patient-guide-card,
+  .location-pro-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .care-sidebar-card
+) a:not(.button) {
+  color: var(--dark-readable-link) !important;
+}
+
+html[data-theme="dark"] .release-v24 .medical-disclaimer,
+html[data-theme="dark"] .release-v24 .contact-note,
+html[data-theme="dark"] .release-v24 .hub-notice,
+html[data-theme="dark"] .release-v24 .emergency-card {
+  color: #f3e5ae !important;
+  background: #2b2515 !important;
+  border-color: #75652d !important;
+}
+
+html[data-theme="dark"] .release-v24 .medical-disclaimer strong,
+html[data-theme="dark"] .release-v24 .contact-note strong,
+html[data-theme="dark"] .release-v24 .hub-notice strong,
+html[data-theme="dark"] .release-v24 .emergency-card strong {
+  color: #fff2b8 !important;
+}
+
 /* Tablet: wide directory panels become balanced two-column grids. */
 @media (max-width: 960px) {
   .release-v24 .hub-category--wide .hub-link-grid > .hub-link,
