@@ -29,7 +29,7 @@ class DarkModeReadabilityTests(SimpleTestCase):
 
     def test_problem_components_have_final_dark_mode_overrides(self):
         self.assertIn(
-            'html[data-theme="dark"] .release-v24 .trust-item span',
+            'html[data-theme="dark"] .release-v24 .trust-item span:not(.trust-icon)',
             self.stylesheet,
         )
         self.assertIn(
