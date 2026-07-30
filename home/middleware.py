@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from django.conf import settings as django_settings
+from django.http import HttpResponse
 
 from .models import SiteSettings
 
@@ -27,6 +28,41 @@ class StagingRobotsMiddleware:
             and host == django_settings.PUBLIC_SITE_HOST
         ):
             response["X-Robots-Tag"] = "noindex, nofollow"
+        return response
+
+
+class CanonicalHostRedirectMiddleware:
+    """Redirect approved alternate custom hosts to the canonical public origin.
+
+    This middleware is deliberately opt-in through ``CANONICAL_REDIRECT_HOSTS``.
+    Render aliases are never redirected: they must remain available for health
+    checks, deployment verification and rollback while carrying ``noindex``.
+    HTTP 308 preserves the request method if an old-domain form URL is followed.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        public_url = django_settings.PUBLIC_SITE_URL
+        public_host = django_settings.PUBLIC_SITE_HOST
+        redirect_hosts = django_settings.CANONICAL_REDIRECT_HOSTS
+        host = request.get_host().split(":", 1)[0].lower()
+
+        should_redirect = bool(
+            public_url
+            and public_host
+            and not public_host.endswith(".onrender.com")
+            and host in redirect_hosts
+            and host != public_host
+            and not host.endswith(".onrender.com")
+        )
+        if not should_redirect:
+            return self.get_response(request)
+
+        response = HttpResponse(status=308)
+        response["Location"] = f"{public_url}{request.get_full_path()}"
+        response["Cache-Control"] = "public, max-age=3600"
         return response
 
 
