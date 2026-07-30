@@ -1,3 +1,5 @@
+from django.test import override_settings
+
 from home.models import HomePage
 
 from wagtail.models import Page, Site
@@ -40,3 +42,30 @@ class HomeTests(WagtailPageTestCase):
     def test_homepage_template_used(self):
         response = self.client.get(self.homepage.url)
         self.assertTemplateUsed(response, "home/home_page.html")
+
+
+class PublicSiteSwitchTests(WagtailPageTestCase):
+    @override_settings(PUBLIC_SITE_HOST="", PUBLIC_SITE_URL="")
+    def test_staging_robots_blocks_crawlers(self):
+        response = self.client.get("/robots.txt", HTTP_HOST="staging.onrender.com")
+        self.assertContains(response, "Disallow: /")
+
+    @override_settings(
+        PUBLIC_SITE_HOST="aastha-skin-centre-cms.onrender.com",
+        PUBLIC_SITE_URL="https://aastha-skin-centre-cms.onrender.com",
+    )
+    def test_public_robots_allows_crawlers_and_uses_public_sitemap(self):
+        response = self.client.get(
+            "/robots.txt",
+            HTTP_HOST="aastha-skin-centre-cms.onrender.com",
+        )
+        self.assertContains(response, "Allow: /")
+        self.assertContains(
+            response,
+            "https://aastha-skin-centre-cms.onrender.com/sitemap.xml",
+        )
+
+    @override_settings(PUBLIC_SITE_HOST="", PUBLIC_SITE_URL="")
+    def test_staging_responses_send_noindex_header(self):
+        response = self.client.get("/robots.txt", HTTP_HOST="staging.onrender.com")
+        self.assertEqual(response["X-Robots-Tag"], "noindex, nofollow")
