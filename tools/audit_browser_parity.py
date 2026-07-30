@@ -17,6 +17,13 @@ from playwright.sync_api import Browser, Locator, Page, sync_playwright
 
 DEFAULT_CMS = "https://aastha-skin-centre-cms.onrender.com"
 DEFAULT_STATIC = "https://aastha-skin-centre-staging.onrender.com"
+VISUAL_POLISH_CSS = (
+    Path(__file__).resolve().parents[1]
+    / "home"
+    / "static"
+    / "css"
+    / "visual-polish.css"
+)
 ROUTES = [
     "/",
     "/treatments/acne-treatment/",
@@ -66,6 +73,18 @@ def navigate(page: Page, origin: str, route: str) -> None:
     )
     page.wait_for_selector("main#main-content", timeout=30_000)
     page.wait_for_timeout(750)
+
+
+def apply_visual_polish(page: Page) -> None:
+    """Use the proposed polish layer on both sides of screenshot comparisons.
+
+    The retained static service is a rollback reference and is intentionally not
+    redeployed for every CMS-only refinement. Injecting the same stylesheet into
+    both pages keeps the parity audit focused on structural or rendering drift
+    while allowing an intentional shared visual improvement to be reviewed.
+    """
+    page.add_style_tag(content=VISUAL_POLISH_CSS.read_text(encoding="utf-8"))
+    page.wait_for_timeout(100)
 
 
 def screenshot(page: Page, path: Path) -> tuple[int, int]:
@@ -291,6 +310,8 @@ def main() -> int:
                 try:
                     navigate(static_page, args.static, route)
                     navigate(cms_page, args.cms, route)
+                    apply_visual_polish(static_page)
+                    apply_visual_polish(cms_page)
                     static_path = args.output / f"{slug}--{viewport_name}--static.png"
                     cms_path = args.output / f"{slug}--{viewport_name}--cms.png"
                     diff_path = args.output / f"{slug}--{viewport_name}--diff.png"
