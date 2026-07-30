@@ -8,6 +8,7 @@ from django import template
 
 from home.models import ClinicLocation, Doctor, SiteSettings
 from home.seo import build_structured_data
+from seo_support.schema import enrich_structured_data
 
 register = template.Library()
 
@@ -36,6 +37,8 @@ def seo_schema(context, page=None) -> str:
         doctors = Doctor.objects.filter(is_active=True, live=True).order_by(
             "sort_order", "name"
         )
+    clinics = list(clinics)
+    doctors = list(doctors)
 
     configured_origin = context.get("public_site_url", "")
     origin = configured_origin or f"{request.scheme}://{request.get_host()}"
@@ -52,5 +55,12 @@ def seo_schema(context, page=None) -> str:
         site_settings=site_settings,
         clinics=clinics,
         doctors=doctors,
+    )
+    payload = enrich_structured_data(
+        payload,
+        clinics=clinics,
+        doctors=doctors,
+        request=request,
+        origin=origin,
     )
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
