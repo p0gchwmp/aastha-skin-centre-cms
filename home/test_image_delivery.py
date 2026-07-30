@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.conf import settings
 from django.test import SimpleTestCase
 
@@ -10,7 +8,8 @@ class ImageDeliveryTests(SimpleTestCase):
     def test_first_image_is_prioritised_and_following_images_are_lazy(self):
         source = (
             '<main><img src="hero.jpg" width="720" height="520">'
-            '<img src="card.jpg" width="640" height="360" loading="eager">'</n            '</main>'
+            '<img src="card.jpg" width="640" height="360" loading="eager">'
+            '</main>'
         )
         result = optimise_image_delivery(source)
 
