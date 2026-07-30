@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "home.middleware.StagingRobotsMiddleware",
+    "home.middleware.CanonicalHostRedirectMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -107,7 +108,7 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -217,3 +218,12 @@ WAGTAILDOCS_MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB
 # (without a trailing slash) only when this deployment should be indexable.
 PUBLIC_SITE_URL = os.environ.get("PUBLIC_SITE_URL", "").strip().rstrip("/")
 PUBLIC_SITE_HOST = urlparse(PUBLIC_SITE_URL).netloc.split(":", 1)[0].lower()
+
+# Optional comma-separated custom hostnames that should permanently redirect to
+# PUBLIC_SITE_URL after DNS cutover. Leave blank on staging. Render aliases are
+# never redirected, so they remain available for health checks and rollback QA.
+CANONICAL_REDIRECT_HOSTS = {
+    host.strip().lower().split(":", 1)[0]
+    for host in os.environ.get("CANONICAL_REDIRECT_HOSTS", "").split(",")
+    if host.strip()
+}
