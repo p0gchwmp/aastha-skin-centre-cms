@@ -29,3 +29,24 @@ class VisualPolishAssetTests(SimpleTestCase):
         self.assertIn(".journal-card:last-child:nth-child(3n + 1)", stylesheet)
         self.assertIn("grid-auto-rows: 1fr", stylesheet)
         self.assertIn("@media (max-width: 700px)", stylesheet)
+
+    def test_browser_audit_keeps_strict_parity_for_unmodified_routes(self):
+        audit = (settings.BASE_DIR / "tools" / "audit_browser_parity.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn('POLISHED_ROUTES = {"/", "/conditions/", "/treatments/"}', audit)
+        self.assertIn('return "layout-metrics" if route in POLISHED_ROUTES', audit)
+        self.assertIn('validation_mode: str = "pixel-parity"', audit)
+        self.assertIn("result.similarity < args.minimum_similarity", audit)
+
+    def test_polished_route_audit_checks_measurable_layout_quality(self):
+        audit = (settings.BASE_DIR / "tools" / "audit_browser_parity.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("horizontal overflow", audit)
+        self.assertIn("card heights differ", audit)
+        self.assertIn("actions are not bottom-aligned", audit)
+        self.assertIn("incomplete final row is not centred", audit)
+        self.assertIn("MAX_LAYOUT_HEIGHT_DELTA_RATIO = 0.04", audit)
