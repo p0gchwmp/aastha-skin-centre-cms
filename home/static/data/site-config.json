@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "last_updated": "2026-07-28",
+  "clinic": {
+    "name": "Aastha Skin & Dermato-Cosmetic Centre",
+    "short_name": "Aastha Skin Centre",
+    "email": "aasthaskinsurgs@gmail.com",
+    "consultation_fee": 500,
+    "currency_symbol": "₹",
+    "follow_up_days": 10,
+    "follow_up_included": true,
+    "online_response": "30–60 minutes during clinic hours",
+    "appointment_confirmation_text": "Submitting this form requests an appointment. Your appointment is confirmed only after the clinic contacts you.",
+    "emergency_note": "Clinic phone numbers are not emergency-service numbers."
+  },
+  "contact": {
+    "primary_mobile": "7006613362",
+    "secondary_mobile": "9796676541",
+    "whatsapp_mobile": "7006613362"
+  },
+  "social": {
+    "instagram": "https://www.instagram.com/aastha_skin_centre/",
+    "youtube": "https://www.youtube.com/@aasthaskincentre",
+    "facebook": "https://www.facebook.com/"
+  },
+  "locations": {
+    "karan_nagar": {
+      "name": "Karan Nagar",
+      "address": "Lane 2, Karan Nagar, near Amphalla Chowk, Jammu, Jammu & Kashmir – 180005",
+      "landline": "0191-3509230",
+      "google_maps": "https://maps.app.goo.gl/pHCQ1r4crKuZBSi98",
+      "reception_hours": "Mon–Sat 10:00 AM–8:00 PM · Sun 10:00 AM–3:00 PM",
+      "doctor_hours": "Mon–Sat 11:00 AM–4:00 PM · Sun 11:00 AM–3:00 PM",
+      "procedure_hours": "Mon–Sat 11:00 AM–8:00 PM · Sun 11:00 AM–3:00 PM"
+    },
+    "paloura": {
+      "name": "Paloura Chowk",
+      "address": "Paloura Chowk, Top Paloura, opposite Government Senior Secondary School, Jammu, Jammu & Kashmir – 181121",
+      "landline": "0191-3135864",
+      "google_maps": "https://maps.app.goo.gl/kh4AqZoUkscpEgWc8",
+      "reception_hours": "Mon–Sat 10:00 AM–8:00 PM · Sun 10:00 AM–2:00 PM",
+      "doctor_hours": "Mon–Sat 6:00 PM–8:00 PM · Sun 10:30 AM–12:00 PM",
+      "procedure_hours": "Mon–Sat 10:00 AM–8:00 PM · Sun 10:30 AM–12:00 PM"
+    }
+  },
+  "theme": {
+    "default": "system",
+    "allow_toggle": true
+  },
+  "blog": {
+    "enabled": true,
+    "auto_link_max_per_keyword_per_page": 1,
+    "exclude_paths": [
+      "/blog/",
+      "/privacy-policy/",
+      "/terms-and-conditions/",
+      "/medical-disclaimer/",
+      "/book-appointment/",
+      "/contact/"
+    ]
+  }
+}
