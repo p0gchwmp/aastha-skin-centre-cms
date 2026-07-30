@@ -110,7 +110,14 @@
         data.get('message') ? `Message: ${data.get('message')}` : ''
       ].filter(Boolean);
 
-      window.open(`https://wa.me/917006613362?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
+      const whatsappUrl =
+        document.body?.dataset.whatsappUrl ||
+        'https://wa.me/917006613362';
+      window.open(
+        `${whatsappUrl}?text=${encodeURIComponent(lines.join('\\n'))}`,
+        '_blank',
+        'noopener,noreferrer'
+      );
     });
   }
 
