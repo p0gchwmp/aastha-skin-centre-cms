@@ -1,0 +1,362 @@
+/* =====================================================================
+   Aastha visual consistency layer
+   Keeps cards, grids, actions and section rhythm aligned without changing
+   page content or clinical meaning. Loaded after all existing design layers.
+   ===================================================================== */
+
+.release-v24,
+.release-v24 *,
+.release-v24 *::before,
+.release-v24 *::after {
+  box-sizing: border-box;
+}
+
+.release-v24 :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.release-v24 :where(p, li, address) {
+  text-wrap: pretty;
+}
+
+/* A shared, predictable grid rhythm. */
+.release-v24 :where(
+  .concern-grid,
+  .treatment-grid,
+  .why-grid,
+  .value-grid,
+  .process-grid,
+  .clinic-location-grid,
+  .location-pro-grid,
+  .clinic-choice-grid,
+  .contact-action-grid,
+  .focus-link-grid,
+  .service-link-grid,
+  .location-contact-grid,
+  .hours-grid,
+  .journal-grid,
+  .hub-category-grid,
+  .hub-link-grid,
+  .premium-summary-grid
+) {
+  align-items: stretch;
+}
+
+/* Cards use the same vertical logic: content first, action at the bottom. */
+.release-v24 :where(
+  .concern-card,
+  .treatment-card,
+  .why-card,
+  .value-card,
+  .process-step,
+  .about-story-card,
+  .clinic-location-card,
+  .location-pro-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .appointment-fact-card,
+  .location-contact-card,
+  .hours-card,
+  .care-sidebar-card,
+  .journal-card,
+  .hub-category,
+  .focus-link-grid > a,
+  .service-link-grid > a
+) {
+  min-width: 0;
+  height: 100%;
+}
+
+.release-v24 :where(
+  .why-card,
+  .value-card,
+  .process-step,
+  .about-story-card,
+  .clinic-location-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .appointment-fact-card,
+  .location-contact-card,
+  .hours-card,
+  .care-sidebar-card,
+  .hub-category
+) {
+  display: flex;
+  flex-direction: column;
+}
+
+.release-v24 :where(
+  .concern-card .card-link,
+  .treatment-card .text-link,
+  .location-actions,
+  .inline-actions,
+  .contact-action-card strong,
+  .appointment-fact-card .button,
+  .location-contact-card a:last-child
+) {
+  margin-top: auto;
+}
+
+.release-v24 :where(
+  .concern-card,
+  .treatment-card,
+  .why-card,
+  .value-card,
+  .process-step,
+  .about-story-card,
+  .clinic-location-card,
+  .location-pro-card,
+  .clinic-choice-grid > article,
+  .contact-action-card,
+  .appointment-fact-card,
+  .location-contact-card,
+  .hours-card,
+  .journal-card,
+  .hub-category,
+  .hub-link,
+  .focus-link-grid > a,
+  .service-link-grid > a
+) {
+  border-radius: 18px;
+}
+
+/* Directory pages: fill each category cleanly and centre incomplete rows. */
+.release-v24 .hub-category {
+  gap: 0;
+}
+
+.release-v24 .hub-category-heading {
+  min-height: 76px;
+}
+
+.release-v24 .hub-link-grid {
+  flex: 1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+}
+
+.release-v24 .hub-link-grid > .hub-link {
+  grid-column: span 2;
+  min-height: 112px;
+  justify-content: flex-start;
+}
+
+.release-v24 .hub-link::after {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.release-v24 .hub-category--wide .hub-link-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.release-v24 .hub-category--wide .hub-link-grid > .hub-link {
+  grid-column: span 2;
+}
+
+@media (min-width: 701px) {
+  .release-v24 .hub-category:not(.hub-category--wide)
+    .hub-link-grid > .hub-link:last-child:nth-child(odd) {
+    grid-column: 2 / span 2;
+  }
+
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(3n + 1) {
+    grid-column: 3 / span 2;
+  }
+
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:nth-last-child(2):nth-child(3n + 1) {
+    grid-column: 2 / span 2;
+  }
+
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(3n + 2) {
+    grid-column: 4 / span 2;
+  }
+}
+
+/* Journal cards: equal content zones and balanced incomplete final rows. */
+.release-v24 .journal-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.release-v24 .journal-card {
+  grid-column: span 2;
+}
+
+.release-v24 .journal-card > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.release-v24 .journal-card > div > strong:last-child {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+@media (min-width: 861px) {
+  .release-v24 .journal-card:last-child:nth-child(3n + 1) {
+    grid-column: 3 / span 2;
+  }
+
+  .release-v24 .journal-card:nth-last-child(2):nth-child(3n + 1) {
+    grid-column: 2 / span 2;
+  }
+
+  .release-v24 .journal-card:last-child:nth-child(3n + 2) {
+    grid-column: 4 / span 2;
+  }
+}
+
+/* Home and clinic pages: equal text areas, aligned controls and calm spacing. */
+.release-v24 .why-card p,
+.release-v24 .value-card p,
+.release-v24 .process-step p,
+.release-v24 .hours-card p,
+.release-v24 .appointment-fact-card p {
+  flex: 1;
+}
+
+.release-v24 .location-pro-card .location-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.release-v24 .location-actions {
+  padding-top: 6px;
+}
+
+.release-v24 .clinic-choice-grid > article .inline-actions {
+  padding-top: 8px;
+}
+
+.release-v24 .premium-summary-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 92px;
+}
+
+.release-v24 .faq-clean-list summary,
+.release-v24 .faq-pro-list summary {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+}
+
+.release-v24 .article-cta,
+.release-v24 .home-cta {
+  overflow: hidden;
+}
+
+/* Tablet: two balanced journal columns and natural directory sizing. */
+@media (min-width: 701px) and (max-width: 860px) {
+  .release-v24 .journal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .release-v24 .journal-card,
+  .release-v24 .journal-card:last-child:nth-child(3n + 1),
+  .release-v24 .journal-card:nth-last-child(2):nth-child(3n + 1),
+  .release-v24 .journal-card:last-child:nth-child(3n + 2) {
+    grid-column: auto;
+  }
+
+  .release-v24 .journal-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    width: min(100%, calc((100% - 18px) / 2));
+    justify-self: center;
+  }
+}
+
+/* Mobile: remove artificial heights and keep every edge aligned to the viewport. */
+@media (max-width: 700px) {
+  .release-v24 :where(
+    .concern-card,
+    .treatment-card,
+    .why-card,
+    .value-card,
+    .process-step,
+    .about-story-card,
+    .clinic-location-card,
+    .location-pro-card,
+    .clinic-choice-grid > article,
+    .contact-action-card,
+    .appointment-fact-card,
+    .location-contact-card,
+    .hours-card,
+    .journal-card,
+    .hub-category,
+    .hub-link,
+    .focus-link-grid > a,
+    .service-link-grid > a
+  ) {
+    min-height: 0;
+    height: auto;
+  }
+
+  .release-v24 .hub-category-heading {
+    min-height: 0;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .release-v24 .hub-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .release-v24 .hub-link-grid,
+  .release-v24 .hub-category--wide .hub-link-grid,
+  .release-v24 .journal-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .release-v24 .hub-link-grid > .hub-link,
+  .release-v24 .hub-category--wide .hub-link-grid > .hub-link,
+  .release-v24 .journal-card,
+  .release-v24 .journal-card:last-child:nth-child(3n + 1),
+  .release-v24 .journal-card:nth-last-child(2):nth-child(3n + 1),
+  .release-v24 .journal-card:last-child:nth-child(3n + 2) {
+    grid-column: 1;
+    width: 100%;
+  }
+
+  .release-v24 .hub-link {
+    padding: 15px;
+  }
+
+  .release-v24 .journal-card > div {
+    padding: 18px;
+  }
+
+  .release-v24 .location-pro-card {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .release-v24 .location-pro-card .location-copy {
+    padding: 20px 17px;
+  }
+
+  .release-v24 .location-actions,
+  .release-v24 .inline-actions,
+  .release-v24 .hero-actions {
+    align-items: stretch;
+  }
+
+  .release-v24 .location-actions .button,
+  .release-v24 .inline-actions .button,
+  .release-v24 .hero-actions .button {
+    width: 100%;
+  }
+
+  .release-v24 .faq-clean-list summary,
+  .release-v24 .faq-pro-list summary {
+    min-height: 54px;
+  }
+}
