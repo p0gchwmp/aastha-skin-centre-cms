@@ -14,7 +14,7 @@ from playwright.sync_api import Browser, Page, sync_playwright
 DEFAULT_CMS = "https://aastha-skin-centre-cms.onrender.com"
 CHECKS = [
     ("/", ".trust-ribbon .trust-item strong", 4.5),
-    ("/", ".trust-ribbon .trust-item span", 4.5),
+    ("/", ".trust-ribbon .trust-item span:not(.trust-icon)", 4.5),
     ("/", ".trust-ribbon .trust-icon", 4.5),
     ("/book-appointment/", ".faq-pro-list summary, .faq-clean-list summary", 4.5),
     ("/book-appointment/", ".faq-answer p", 4.5),
@@ -34,9 +34,7 @@ def open_dark_page(browser: Browser, origin: str, route: str) -> Page:
     context = browser.new_context(
         viewport={"width": 1440, "height": 1000}, color_scheme="dark"
     )
-    context.add_init_script(
-        "localStorage.setItem('aastha-theme', 'dark');"
-    )
+    context.add_init_script("localStorage.setItem('aastha-theme', 'dark');")
     page = context.new_page()
     page.goto(
         urljoin(origin.rstrip("/") + "/", route.lstrip("/")),
@@ -53,7 +51,7 @@ def contrast_records(page: Page, selector: str) -> list[dict[str, object]]:
         """
         elements => {
           const parse = value => {
-            const match = value.match(/rgba?\\(([^)]+)\\)/);
+            const match = value.match(/rgba?\(([^)]+)\)/);
             if (!match) return null;
             const parts = match[1].split(',').map(part => Number(part.trim()));
             return {r: parts[0], g: parts[1], b: parts[2], a: parts[3] ?? 1};
@@ -93,7 +91,7 @@ def contrast_records(page: Page, selector: str) -> list[dict[str, object]]:
               const foreground = parse(getComputedStyle(element).color);
               const background = backgroundFor(element);
               return {
-                text: element.textContent.trim().replace(/\\s+/g, ' ').slice(0, 120),
+                text: element.textContent.trim().replace(/\s+/g, ' ').slice(0, 120),
                 foreground: getComputedStyle(element).color,
                 background: `rgb(${background.r}, ${background.g}, ${background.b})`,
                 ratio: foreground ? contrast(foreground, background) : 0,
