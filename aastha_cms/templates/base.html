@@ -56,7 +56,10 @@
     {% block content %}{% endblock %}
     <div data-site-footer></div>
   {% endwith %}
-  <script src="{% static 'js/site.js' %}" defer></script>\n  <script src="{% static 'js/professional.js' %}" defer></script>\n  <script src="{% static 'js/release-v24.js' %}" defer></script>\n  <script src="{% static 'js/aastha_cms.js' %}" defer></script>
+  <script src="{% static 'js/site.js' %}" defer></script>
+  <script src="{% static 'js/professional.js' %}" defer></script>
+  <script src="{% static 'js/release-v24.js' %}" defer></script>
+  <script src="{% static 'js/aastha_cms.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
   {% if settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.home.SiteSettings.analytics_id }}"></script>
