@@ -8,7 +8,12 @@ from .models import SiteSettings
 
 
 class StagingRobotsMiddleware:
-    """Keep development and Render staging hosts out of search indexes."""
+    """Keep development and Render staging hosts out of search indexes.
+
+    A Render service can accidentally be configured as ``PUBLIC_SITE_URL``
+    during staging. Temporary ``*.onrender.com`` hosts must nevertheless remain
+    non-indexable; only the clinic's final custom domain may be public.
+    """
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -16,7 +21,8 @@ class StagingRobotsMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         host = request.get_host().split(":", 1)[0].lower()
-        if django_settings.DEBUG or not (
+        is_render_host = host.endswith(".onrender.com")
+        if django_settings.DEBUG or is_render_host or not (
             django_settings.PUBLIC_SITE_HOST
             and host == django_settings.PUBLIC_SITE_HOST
         ):
