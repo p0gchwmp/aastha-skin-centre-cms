@@ -1,4 +1,4 @@
-{% load static wagtailcore_tags wagtailimages_tags wagtailuserbar %}
+{% load static wagtailcore_tags wagtailimages_tags wagtailuserbar seo_tags %}
 <!doctype html>
 <html lang="en-IN">
 <head>
@@ -21,22 +21,28 @@
   </style>
   <title>{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | {{ settings.home.SiteSettings.short_name }}{% endblock %}</title>
   <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
-  {% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% elif page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}
+  {% block robots_meta %}{% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% elif page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}{% endblock %}
   <link rel="canonical" href="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ canonical_url }}{% endif %}">
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:locale" content="en_IN">
   <meta property="og:title" content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}">
   <meta property="og:description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
   <meta property="og:url" content="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ canonical_url }}{% endif %}">
   <meta property="og:site_name" content="{{ settings.home.SiteSettings.clinic_name }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}">
+  <meta name="twitter:description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
   {% if page.social_image %}
     {% image page.social_image fill-1200x630 as social_image %}
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ social_image.url }}">
+    <meta property="og:image" content="{% if public_site_url %}{{ public_site_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{{ social_image.url }}">
+    <meta name="twitter:image" content="{% if public_site_url %}{{ public_site_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{{ social_image.url }}">
   {% elif settings.home.SiteSettings.default_social_image %}
     {% image settings.home.SiteSettings.default_social_image fill-1200x630 as social_image %}
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ social_image.url }}">
+    <meta property="og:image" content="{% if public_site_url %}{{ public_site_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{{ social_image.url }}">
+    <meta name="twitter:image" content="{% if public_site_url %}{{ public_site_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{{ social_image.url }}">
   {% endif %}
-  <meta name="twitter:card" content="summary_large_image">
-  {% if structured_data_json %}<script type="application/ld+json">{{ structured_data_json|safe }}</script>{% endif %}
+  {% seo_schema page as page_structured_data_json %}
+  {% if page_structured_data_json %}<script type="application/ld+json">{{ page_structured_data_json|safe }}</script>{% endif %}
   {% if settings.home.SiteSettings.search_console_verification %}
     <meta name="google-site-verification" content="{{ settings.home.SiteSettings.search_console_verification }}">
   {% endif %}

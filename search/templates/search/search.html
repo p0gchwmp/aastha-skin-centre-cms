@@ -3,7 +3,8 @@
 
 {% block body_class %}template-searchresults{% endblock %}
 
-{% block title %}Search{% endblock %}
+{% block title %}Search | {{ settings.home.SiteSettings.short_name }}{% endblock %}
+{% block robots_meta %}{% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% else %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
 
 {% block content %}
 <main id="main-content" class="section">
