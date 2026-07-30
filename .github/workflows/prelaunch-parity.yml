@@ -74,7 +74,7 @@ jobs:
 
       - name: Run desktop, mobile and interaction audit
         run: |
-          python tools/audit_browser_parity.py \
+          python tools/audit_browser_parity_hydrated.py \
             --cms http://127.0.0.1:8000 \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/local-browser
@@ -144,7 +144,7 @@ jobs:
 
       - name: Run deployed desktop, mobile and interaction audit
         run: |
-          python tools/audit_browser_parity.py \
+          python tools/audit_browser_parity_hydrated.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/deployed-browser
