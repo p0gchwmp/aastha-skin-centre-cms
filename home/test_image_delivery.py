@@ -30,7 +30,7 @@ class ImageDeliveryTests(SimpleTestCase):
         self.assertEqual(optimise_image_delivery(source), source)
 
     def test_future_wagtail_templates_define_loading_policy(self):
-        templates = settings.PROJECT_DIR / "templates" / "home"
+        templates = settings.BASE_DIR / "home" / "templates" / "home"
         hero = (templates / "blocks" / "hero.html").read_text(encoding="utf-8")
         cards = (templates / "blocks" / "card_grid.html").read_text(
             encoding="utf-8"
