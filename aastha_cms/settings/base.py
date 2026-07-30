@@ -30,6 +30,7 @@ BASE_DIR = PROJECT_DIR.parent
 INSTALLED_APPS = [
     "home",
     "search",
+    "seo_support",
     "wagtail.contrib.settings",
     "wagtail.contrib.sitemaps",
     "wagtail.contrib.forms",
@@ -108,7 +109,7 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {

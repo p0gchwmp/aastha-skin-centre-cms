@@ -44,6 +44,7 @@ jobs:
           bash -n tools/create_portable_database_backup.sh
           bash -n tools/create_media_backup.sh
           python -m py_compile tools/audit_domain_cutover.py
+          python -m py_compile tools/audit_seo_foundation.py
           python manage.py makemigrations --check --dry-run
           python manage.py check
           python manage.py test
@@ -54,6 +55,8 @@ jobs:
           python manage.py migrate --no-input
           python manage.py initialize_cms
           python manage.py check_launch_config
+          python manage.py audit_seo_content \
+            --json audit-artifacts/local-seo-content.json
 
       - name: Start local CMS
         run: |
