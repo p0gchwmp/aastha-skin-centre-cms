@@ -13,7 +13,7 @@
     <div class="journal-grid">
       {% for entry in entries %}
         <a class="journal-card" href="{% pageurl entry %}">
-          {% if entry.hero_image %}{% image entry.hero_image fill-640x360-c100 %}{% else %}<img src="/assets/images/professional/medical-care.svg" alt="" width="640" height="360">{% endif %}
+          {% if entry.hero_image %}{% image entry.hero_image fill-640x360-c100 loading="lazy" decoding="async" %}{% else %}<img src="/assets/images/professional/medical-care.svg" alt="" width="640" height="360" loading="lazy" decoding="async">{% endif %}
           <div>
             {% if entry.eyebrow %}<span>{{ entry.eyebrow }}</span>{% endif %}
             <h2>{{ entry.title }}</h2>

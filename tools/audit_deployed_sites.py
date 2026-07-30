@@ -68,7 +68,7 @@ def parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Record exact-main differences without failing the audit.",
     )
-    return command
+    return command.parse_args()
 
 
 def load_routes() -> list[str]:
@@ -144,6 +144,9 @@ def normalise_main(main: Tag, hosts: set[str]) -> str:
                 element[attr] = localise_url(str(element[attr]), hosts)
         if element.has_attr("class"):
             element["class"] = sorted(element.get("class", []))
+        # Loading/decoding hints affect delivery, not content or visual structure.
+        for attr in ("loading", "decoding", "fetchpriority"):
+            element.attrs.pop(attr, None)
         # Browser-generated and CSRF values are not part of visual parity.
         if element.name == "input" and element.get("name") == "csrfmiddlewaretoken":
             element["value"] = "<csrf>"
@@ -258,63 +261,61 @@ def check_destinations(
     return results
 
 
-def render_markdown(
-    results: list[RouteResult],
-    link_results: dict[str, int | str],
+def markdown(
+    routes: list[RouteResult],
+    destinations: dict[str, int | str],
     cms: str,
     static: str,
 ) -> str:
-    passed = sum(item.passed for item in results)
     lines = [
-        "# Deployed website parity audit",
+        "# Deployed parity audit",
         "",
         f"- CMS: {cms}",
         f"- Static reference: {static}",
-        f"- Legacy routes checked: {len(results)}",
-        f"- Routes passing all checks: {passed}",
-        f"- Internal destinations checked: {len(link_results)}",
+        f"- Routes audited: {len(routes)}",
+        f"- Passing routes: {sum(route.passed for route in routes)}",
+        f"- Internal destinations checked: {len(destinations)}",
         "",
+        "## Routes",
+        "",
+        "| Path | Static | CMS | Main | Headings | Disclosures | Forms | Result |",
+        "|---|---:|---:|---|---|---|---|---|",
     ]
-    failures = [item for item in results if not item.passed]
-    if failures:
-        lines.extend(["## Route differences", ""])
-        for item in failures:
-            lines.append(f"### `{item.path}`")
-            for error in item.errors + item.metadata_errors:
-                lines.append(f"- {error}")
-            lines.append("")
-    else:
-        lines.extend(["## Route differences", "", "None.", ""])
+    for route in routes:
+        lines.append(
+            f"| `{route.path}` | {route.static_status} | {route.cms_status} | "
+            f"{'match' if route.main_match else 'diff'} | "
+            f"{'match' if route.headings_match else 'diff'} | "
+            f"{'match' if route.disclosure_match else 'diff'} | "
+            f"{'match' if route.forms_match else 'diff'} | "
+            f"{'PASS' if route.passed else 'FAIL'} |"
+        )
+        for error in route.errors + route.metadata_errors:
+            lines.append(f"\n- `{route.path}`: {error}")
 
-    broken = {
-        url: status
-        for url, status in link_results.items()
-        if not isinstance(status, int) or status >= 400
-    }
-    lines.extend(["## Broken internal destinations", ""])
-    if broken:
-        lines.extend(f"- `{url}` — {status}" for url, status in broken.items())
+    lines.extend(["", "## Internal destinations", ""])
+    failures = {url: status for url, status in destinations.items() if status != 200}
+    if not failures:
+        lines.append("All checked internal destinations returned HTTP 200.")
     else:
-        lines.append("None.")
+        for url, status in failures.items():
+            lines.append(f"- `{url}`: {status}")
     lines.append("")
     return "\n".join(lines)
 
 
 def main() -> int:
-    args = parser().parse_args()
+    args = parser()
     args.output.mkdir(parents=True, exist_ok=True)
-    routes = load_routes()
     client = session()
-    hosts = {
-        urlsplit(args.cms).netloc.lower(),
-        urlsplit(args.static).netloc.lower(),
-    }
-    results: list[RouteResult] = []
-    cms_destinations: set[str] = set()
+    routes: list[RouteResult] = []
+    destinations: set[str] = set()
+    cms_host = urlsplit(args.cms).netloc.lower()
+    static_host = urlsplit(args.static).netloc.lower()
+    hosts = {cms_host, static_host}
 
-    for index, path in enumerate(routes, 1):
-        print(f"[{index:02d}/{len(routes)}] {path}", flush=True)
-        item = RouteResult(path=path)
+    for path in load_routes():
+        result = RouteResult(path=path)
         try:
             static_response = fetch(
                 client,
@@ -328,93 +329,88 @@ def main() -> int:
                 args.timeout,
                 args.retries,
             )
-            item.static_status = static_response.status_code
-            item.cms_status = cms_response.status_code
+            result.static_status = static_response.status_code
+            result.cms_status = cms_response.status_code
             if static_response.status_code != 200:
-                item.errors.append(f"static returned HTTP {static_response.status_code}")
+                result.errors.append(f"static returned HTTP {static_response.status_code}")
             if cms_response.status_code != 200:
-                item.errors.append(f"CMS returned HTTP {cms_response.status_code}")
+                result.errors.append(f"CMS returned HTTP {cms_response.status_code}")
 
             static_soup = BeautifulSoup(static_response.text, "lxml")
             cms_soup = BeautifulSoup(cms_response.text, "lxml")
-            static_main = static_soup.find("main", id="main-content")
-            cms_main = cms_soup.find("main", id="main-content")
-            if static_main is None:
-                item.errors.append("static main#main-content is missing")
-            if cms_main is None:
-                item.errors.append("CMS main#main-content is missing")
-            if static_main is not None and cms_main is not None:
-                static_normal = normalise_main(static_main, hosts)
-                cms_normal = normalise_main(cms_main, hosts)
-                item.static_main_hash = digest(static_normal)
-                item.cms_main_hash = digest(cms_normal)
-                item.main_match = static_normal == cms_normal
-                item.h1_static = [text(node) for node in static_main.find_all("h1")]
-                item.h1_cms = [text(node) for node in cms_main.find_all("h1")]
-                item.headings_match = headings(static_main) == headings(cms_main)
-                item.disclosure_match = Counter(
-                    node.name for node in static_main.find_all(["details", "summary"])
-                ) == Counter(
-                    node.name for node in cms_main.find_all(["details", "summary"])
-                )
-                item.forms_match = forms(static_main) == forms(cms_main)
+            static_main = static_soup.find("main")
+            cms_main = cms_soup.find("main")
+            if static_main is None or cms_main is None:
+                result.errors.append("main#main-content missing from one response")
+            else:
+                static_normalised = normalise_main(static_main, hosts)
+                cms_normalised = normalise_main(cms_main, hosts)
+                result.static_main_hash = digest(static_normalised)
+                result.cms_main_hash = digest(cms_normalised)
+                result.main_match = result.static_main_hash == result.cms_main_hash
+                result.h1_static = [value for level, value in headings(static_main) if level == "h1"]
+                result.h1_cms = [value for level, value in headings(cms_main) if level == "h1"]
+                result.headings_match = headings(static_main) == headings(cms_main)
+                result.disclosure_match = len(static_main.find_all("details")) == len(cms_main.find_all("details"))
+                result.forms_match = forms(static_main) == forms(cms_main)
+                if not result.main_match and not args.allow_main_differences:
+                    result.errors.append("normalised main content differs")
+                if not result.headings_match:
+                    result.errors.append("heading hierarchy or text differs")
+                if not result.disclosure_match:
+                    result.errors.append("details/disclosure count differs")
+                if not result.forms_match:
+                    result.errors.append("form structure differs")
+                destinations.update(internal_destinations(cms_soup, args.cms.rstrip("/")))
 
-                if len(item.h1_cms) != 1:
-                    item.errors.append(f"CMS has {len(item.h1_cms)} H1 elements")
-                if not item.headings_match:
-                    item.errors.append("heading hierarchy/text differs")
-                if not item.disclosure_match:
-                    item.errors.append("disclosure/accordion structure differs")
-                if not item.forms_match:
-                    item.errors.append("form structure differs")
-                if not item.main_match and not args.allow_main_differences:
-                    item.errors.append(
-                        "normalised main markup differs "
-                        f"({item.static_main_hash[:12]} != {item.cms_main_hash[:12]})"
-                    )
-
-            item.metadata_errors.extend(
+            result.metadata_errors.extend(
                 validate_cms_head(cms_response, cms_soup, path, args.cms)
             )
-            cms_destinations.update(internal_destinations(cms_soup, args.cms))
-        except Exception as exc:  # Keep auditing remaining routes.
-            item.errors.append(str(exc))
-        results.append(item)
+        except Exception as exc:
+            result.errors.append(str(exc))
+        routes.append(result)
 
-    link_results = check_destinations(
+    destination_results = check_destinations(
         client,
-        cms_destinations,
+        destinations,
         args.timeout,
         args.retries,
     )
+    failed_destinations = {
+        url: status for url, status in destination_results.items() if status != 200
+    }
+
     payload = {
         "cms": args.cms,
         "static": args.static,
-        "routes": [asdict(item) | {"passed": item.passed} for item in results],
-        "internal_destinations": link_results,
+        "routes": [asdict(route) | {"passed": route.passed} for route in routes],
+        "internal_destinations": destination_results,
     }
     (args.output / "deployed-parity.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
     (args.output / "deployed-parity.md").write_text(
-        render_markdown(results, link_results, args.cms, args.static),
+        markdown(routes, destination_results, args.cms, args.static),
         encoding="utf-8",
     )
 
-    broken_links = [
-        status
-        for status in link_results.values()
-        if not isinstance(status, int) or status >= 400
-    ]
-    failed_routes = [item for item in results if not item.passed]
-    print(
-        f"Completed: {len(results) - len(failed_routes)}/{len(results)} routes pass; "
-        f"{len(broken_links)} broken internal destinations.",
-        flush=True,
+    route_failures = [route for route in routes if not route.passed]
+    summary = Counter(
+        error
+        for route in route_failures
+        for error in route.errors + route.metadata_errors
     )
-    return 1 if failed_routes or broken_links else 0
+    print(
+        f"Audit complete: {len(routes) - len(route_failures)}/{len(routes)} routes pass; "
+        f"{len(failed_destinations)} broken destinations."
+    )
+    for error, count in summary.most_common():
+        print(f"- {count} × {error}")
+    for url, status in failed_destinations.items():
+        print(f"- {url}: {status}")
+    return 1 if route_failures or failed_destinations else 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

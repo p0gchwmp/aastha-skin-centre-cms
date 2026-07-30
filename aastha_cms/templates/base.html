@@ -11,6 +11,14 @@
       document.documentElement.dataset.theme = saved || (dark ? "dark" : "light");
     })();
   </script>
+  <style>
+    /* Header markup is hydrated by deferred JavaScript. Reserve its final flow
+       height immediately so the page content never jumps after first paint. */
+    [data-site-header] { display: block; min-height: 118px; }
+    @media (max-width: 700px) {
+      [data-site-header] { min-height: 110px; }
+    }
+  </style>
   <title>{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | {{ settings.home.SiteSettings.short_name }}{% endblock %}</title>
   <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
   {% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% elif page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}
