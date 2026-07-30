@@ -1,0 +1,168 @@
+/* =====================================================================
+   Aastha layout balance layer
+   Keeps repeated cards, panels and calls-to-action visually aligned even
+   when headings, descriptions or link counts vary between items.
+   ===================================================================== */
+
+.release-v24 .hub-category,
+.release-v24 .about-story-card,
+.release-v24 .clinic-location-card,
+.release-v24 .value-card,
+.release-v24 .process-step,
+.release-v24 .hours-card,
+.release-v24 .clinic-choice-grid > article,
+.release-v24 .contact-action-card,
+.release-v24 .journal-card,
+.release-v24 .concern-card,
+.release-v24 .treatment-card,
+.release-v24 .why-card,
+.release-v24 .location-pro-card,
+.release-v24 .patient-guide-card,
+.release-v24 .cms-card {
+  box-sizing: border-box;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Directory panels: fill equal-height rows and centre incomplete final rows. */
+.release-v24 .hub-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.release-v24 .hub-category .hub-link-grid {
+  flex: 1;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: minmax(92px, 1fr);
+  align-content: stretch;
+}
+
+.release-v24 .hub-category .hub-link-grid > .hub-link {
+  grid-column: span 3;
+  height: 100%;
+  justify-content: flex-start;
+}
+
+.release-v24 .hub-category--wide .hub-link-grid > .hub-link {
+  grid-column: span 2;
+}
+
+.release-v24 .hub-link::after {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* One card left in a two-column row. */
+.release-v24 .hub-category:not(.hub-category--wide)
+  .hub-link-grid > .hub-link:last-child:nth-child(2n + 1) {
+  grid-column: 2 / span 3;
+}
+
+/* One card left in a three-column row. */
+.release-v24 .hub-category--wide
+  .hub-link-grid > .hub-link:last-child:nth-child(3n + 1) {
+  grid-column: 3 / span 2;
+}
+
+/* Two cards left in a three-column row. */
+.release-v24 .hub-category--wide
+  .hub-link-grid > .hub-link:nth-last-child(2):nth-child(3n + 1) {
+  grid-column: 2 / span 2;
+}
+
+.release-v24 .hub-category--wide
+  .hub-link-grid > .hub-link:last-child:nth-child(3n + 2) {
+  grid-column: 4 / span 2;
+}
+
+/* Repeated grids should stretch every item to the row height. */
+.release-v24 .journal-grid,
+.release-v24 .clinic-choice-grid,
+.release-v24 .contact-action-grid,
+.release-v24 .value-grid,
+.release-v24 .process-grid,
+.release-v24 .hours-grid,
+.release-v24 .concern-grid,
+.release-v24 .treatment-grid,
+.release-v24 .why-grid,
+.release-v24 .location-pro-grid,
+.release-v24 .premium-summary-grid,
+.release-v24 .about-story-grid,
+.release-v24 .clinic-location-grid,
+.release-v24 .guide-grid,
+.release-v24 .cms-card-grid {
+  align-items: stretch;
+}
+
+/* Keep variable-length copy from moving the final action up or down. */
+.release-v24 .journal-card > div,
+.release-v24 .patient-guide-body,
+.release-v24 .location-pro-card .location-copy,
+.release-v24 .cms-card > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.release-v24 .journal-card > div > strong:last-child,
+.release-v24 .patient-guide-body .guide-link,
+.release-v24 .location-pro-card .location-actions {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.release-v24 .clinic-choice-grid > article {
+  display: flex;
+  flex-direction: column;
+}
+
+.release-v24 .clinic-choice-grid > article .inline-actions {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.release-v24 .premium-summary-item,
+.release-v24 .trust-item,
+.release-v24 .clean-list--three > li {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+/* Tablet: wide directory panels become balanced two-column grids. */
+@media (max-width: 960px) {
+  .release-v24 .hub-category--wide .hub-link-grid > .hub-link,
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:nth-last-child(2):nth-child(3n + 1),
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(3n + 1),
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(3n + 2) {
+    grid-column: span 3;
+  }
+
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(2n + 1) {
+    grid-column: 2 / span 3;
+  }
+}
+
+/* Mobile: one card per row; content height should remain natural. */
+@media (max-width: 720px) {
+  .release-v24 .hub-category .hub-link-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .release-v24 .hub-category .hub-link-grid > .hub-link,
+  .release-v24 .hub-category--wide .hub-link-grid > .hub-link,
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:nth-last-child(2):nth-child(3n + 1),
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(3n + 1),
+  .release-v24 .hub-category--wide
+    .hub-link-grid > .hub-link:last-child:nth-child(3n + 2) {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-self: stretch;
+  }
+}
