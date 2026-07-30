@@ -15,9 +15,10 @@ class StagingRobotsMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if (
-            django_settings.DEBUG
-            or request.get_host().split(":", 1)[0].endswith(".onrender.com")
+        host = request.get_host().split(":", 1)[0].lower()
+        if django_settings.DEBUG or not (
+            django_settings.PUBLIC_SITE_HOST
+            and host == django_settings.PUBLIC_SITE_HOST
         ):
             response["X-Robots-Tag"] = "noindex, nofollow"
         return response
