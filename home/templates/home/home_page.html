@@ -2,7 +2,7 @@
 {% load wagtailcore_tags %}
 {% block body_class %}cms-home-page{% endblock %}
 {% block content %}
-<main id="main-content">
+<main id="main-content" class="home-main">
   {% if page.body %}
     {% include_block page.body %}
   {% else %}
