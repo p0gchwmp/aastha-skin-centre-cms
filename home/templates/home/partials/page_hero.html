@@ -23,11 +23,11 @@
       {% endif %}
     </div>
     {% if page.hero_image %}
-      <div class="page-hero-art">{% image page.hero_image fill-720x520-c100 alt=page.title %}</div>
+      <div class="page-hero-art">{% image page.hero_image fill-720x520-c100 alt=page.title loading="eager" decoding="async" fetchpriority="high" %}</div>
     {% elif page.hero_video_url %}
       <div class="page-hero-art cms-video-frame"><iframe src="{{ page.hero_video_url }}" title="{{ page.title }} video" loading="lazy" allowfullscreen></iframe></div>
     {% else %}
-      <div class="page-hero-art"><img src="/assets/images/professional/medical-care.svg" alt="" width="560" height="360"></div>
+      <div class="page-hero-art"><img src="/assets/images/professional/medical-care.svg" alt="" width="560" height="360" loading="eager" decoding="async" fetchpriority="high"></div>
     {% endif %}
   </div>
 </section>
