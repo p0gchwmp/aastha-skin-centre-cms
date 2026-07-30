@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - agent/live-parity-and-form-fixes
   pull_request:
   workflow_dispatch:
 
@@ -92,7 +91,6 @@ jobs:
           retention-days: 14
 
   deployed-render-audit:
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     needs: local-branch-audit
     runs-on: ubuntu-latest
     timeout-minutes: 45
