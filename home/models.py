@@ -469,6 +469,51 @@ def re_digits(value: str) -> str:
     return "".join(character for character in value if character.isdigit())
 
 
+@register_snippet
+class ExactPageLayout(models.Model):
+    """Verified static-page markup used by the public parity renderer.
+
+    These records preserve the original page hierarchy, illustrations,
+    accordions, cards and form markup exactly. Editors can update a snapshot
+    directly or disable it to return that route to the structured page builder.
+    """
+
+    path = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text="Public path including leading and trailing slash.",
+    )
+    html = models.TextField(
+        help_text=(
+            "Trusted complete <main> element. Only administrators should edit "
+            "this HTML."
+        )
+    )
+    enabled = models.BooleanField(
+        default=True,
+        help_text=(
+            "When disabled, the route uses its ordinary Wagtail page-builder "
+            "layout."
+        ),
+    )
+    source_hash = models.CharField(max_length=64, blank=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    panels = [
+        FieldPanel("path"),
+        FieldPanel("enabled"),
+        FieldPanel("html"),
+    ]
+
+    class Meta:
+        ordering = ["path"]
+        verbose_name = "Exact page layout"
+        verbose_name_plural = "Exact page layouts"
+
+    def __str__(self):
+        return self.path
+
+
 class BaseFlexiblePage(Page):
     eyebrow = models.CharField(max_length=120, blank=True)
     introduction = models.TextField(blank=True)
