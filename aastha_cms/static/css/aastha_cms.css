@@ -642,3 +642,17 @@ figcaption {
     transition-duration: .01ms !important;
   }
 }
+
+
+/*
+ * Static-design parity
+ * Advanced HTML blocks contain the original static sections. Wagtail's editor
+ * wrapper must be layout-neutral so those sections retain the exact original
+ * full-width backgrounds, spacing and container geometry.
+ */
+.block-advanced_html > .cms-advanced-html {
+  width: 100%;
+  max-width: none;
+  margin-top: 0;
+  margin-bottom: 0;
+}
