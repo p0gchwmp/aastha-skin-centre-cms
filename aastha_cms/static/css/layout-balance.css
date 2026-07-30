@@ -160,7 +160,7 @@ html[data-theme="dark"] .release-v24 .trust-item strong {
   opacity: 1 !important;
 }
 
-html[data-theme="dark"] .release-v24 .trust-item span {
+html[data-theme="dark"] .release-v24 .trust-item span:not(.trust-icon) {
   color: var(--dark-readable-muted) !important;
   opacity: 1 !important;
 }
