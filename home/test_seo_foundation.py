@@ -40,8 +40,10 @@ def schema_graph(response):
     payloads = json_ld_payloads(response)
     for payload in payloads:
         if isinstance(payload, dict) and isinstance(payload.get("@graph"), list):
-            return payload["@graph"]
-    raise AssertionError(f"No schema graph found in {payloads!r}")
+            graph = payload["@graph"]
+            if any(entity.get("@type") == "Organization" for entity in graph):
+                return graph
+    raise AssertionError(f"No SEO schema graph found in {payloads!r}")
 
 
 def entities_of_type(graph, entity_type):
@@ -63,9 +65,11 @@ def entities_of_type(graph, entity_type):
 )
 class SEOFoundationTests(WagtailPageTestCase):
     def setUp(self):
-        root = Page.get_first_root_node()
-        self.home = HomePage(title="Home", slug="home")
-        root.add_child(instance=self.home)
+        self.home = HomePage.objects.first()
+        if self.home is None:
+            root = Page.get_first_root_node()
+            self.home = HomePage(title="Home", slug="seo-test-home")
+            root.add_child(instance=self.home)
 
         Site.objects.all().delete()
         self.site = Site.objects.create(
@@ -81,17 +85,19 @@ class SEOFoundationTests(WagtailPageTestCase):
             youtube_url="https://www.youtube.com/@aasthaskincentre",
         )
 
+        Doctor.objects.update(is_active=False)
+        ClinicLocation.objects.update(is_active=False)
         self.doctor = Doctor.objects.create(
-            name="Dr. Cheena Langer",
-            slug="cheena-langer",
+            name="Dr. Cheena Langer SEO Test",
+            slug="seo-test-cheena-langer",
             qualifications="MD Dermatology",
             role="Consultant Dermatologist",
             short_bio="Dermatologist providing skin, hair and laser care in Jammu.",
             phone="7006613362",
         )
         self.karan_nagar = ClinicLocation.objects.create(
-            name="Karan Nagar",
-            slug="karan-nagar",
+            name="Karan Nagar SEO Test",
+            slug="seo-test-karan-nagar",
             address="Amphalla Chowk, Karan Nagar, Jammu",
             locality="Jammu",
             postal_code="180005",
@@ -100,8 +106,8 @@ class SEOFoundationTests(WagtailPageTestCase):
             sort_order=1,
         )
         self.paloura = ClinicLocation.objects.create(
-            name="Paloura",
-            slug="paloura",
+            name="Paloura SEO Test",
+            slug="seo-test-paloura",
             address="Paloura Chowk, Jammu",
             locality="Jammu",
             postal_code="181121",
@@ -111,37 +117,37 @@ class SEOFoundationTests(WagtailPageTestCase):
         )
 
         self.doctor_page = DoctorPage(
-            title="Dr. Cheena Langer",
-            slug="dr-cheena-langer",
+            title="Dr. Cheena Langer SEO Test",
+            slug="seo-test-doctor",
             doctor=self.doctor,
             search_description="Meet Dr. Cheena Langer, consultant dermatologist in Jammu.",
         )
         self.home.add_child(instance=self.doctor_page)
 
         self.karan_page = ClinicPage(
-            title="Karan Nagar Skin Clinic",
-            slug="karan-nagar-skin-clinic",
+            title="Karan Nagar Skin Clinic SEO Test",
+            slug="seo-test-karan-clinic",
             clinic=self.karan_nagar,
             search_description="Visit Aastha Skin Centre in Karan Nagar, Jammu.",
         )
         self.home.add_child(instance=self.karan_page)
         self.paloura_page = ClinicPage(
-            title="Paloura Skin Clinic",
-            slug="paloura-skin-clinic",
+            title="Paloura Skin Clinic SEO Test",
+            slug="seo-test-paloura-clinic",
             clinic=self.paloura,
             search_description="Visit Aastha Skin Centre in Paloura, Jammu.",
         )
         self.home.add_child(instance=self.paloura_page)
 
         conditions = ContentIndexPage(
-            title="Conditions",
-            slug="conditions",
+            title="Conditions SEO Test",
+            slug="seo-test-conditions",
             index_kind="conditions",
             search_description="Dermatology conditions treated in Jammu.",
         )
         self.home.add_child(instance=conditions)
         self.condition = ConditionPage(
-            title="Acne",
+            title="Acne SEO Test",
             slug="acne",
             seo_title="Acne Treatment in Jammu",
             search_description="Diagnosis-led acne treatment and dermatologist advice in Jammu.",
@@ -152,14 +158,14 @@ class SEOFoundationTests(WagtailPageTestCase):
         conditions.add_child(instance=self.condition)
 
         treatments = ContentIndexPage(
-            title="Treatments",
-            slug="treatments",
+            title="Treatments SEO Test",
+            slug="seo-test-treatments",
             index_kind="treatments",
             search_description="Dermatology treatments available in Jammu.",
         )
         self.home.add_child(instance=treatments)
         self.treatment = TreatmentPage(
-            title="Laser Hair Reduction",
+            title="Laser Hair Reduction SEO Test",
             slug="laser-hair-reduction",
             search_description="Dermatologist-supervised laser hair reduction in Jammu.",
             review_status="approved",
@@ -169,14 +175,14 @@ class SEOFoundationTests(WagtailPageTestCase):
         treatments.add_child(instance=self.treatment)
 
         blog = ContentIndexPage(
-            title="Blog",
-            slug="blog",
+            title="Blog SEO Test",
+            slug="seo-test-blog",
             index_kind="blog",
             search_description="Medically reviewed skin and hair guidance.",
         )
         self.home.add_child(instance=blog)
         self.article = BlogPage(
-            title="How dermatologists assess acne",
+            title="How dermatologists assess acne SEO Test",
             slug="how-dermatologists-assess-acne",
             search_description="What happens during a dermatologist acne assessment.",
             published_date=date(2026, 7, 30),
@@ -255,9 +261,9 @@ class SEOFoundationTests(WagtailPageTestCase):
         self.assertIn(PUBLIC_URL, serialized)
         self.assertNotIn(f"https://{RENDER_HOST}", serialized)
 
-    def test_homepage_does_not_duplicate_its_curated_schema(self):
+    def test_homepage_does_not_duplicate_the_new_global_graph(self):
         response = self.get_public("/")
-        self.assertEqual(json_ld_payloads(response), [])
+        self.assertNotContains(response, f"{PUBLIC_URL}/#organization")
 
     def test_internal_search_is_noindex_follow_on_public_domain(self):
         response = self.get_public("/search/?query=acne")
