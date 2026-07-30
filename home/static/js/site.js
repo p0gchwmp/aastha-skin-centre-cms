@@ -71,6 +71,67 @@
 
   const digits = value => String(value || "").replace(/\D/g, "");
 
+  function applyCmsSettings(config) {
+    const data = document.body?.dataset || {};
+    const setting = (key, fallback) =>
+      Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback;
+    const numberSetting = (key, fallback) => {
+      const value = setting(key, "");
+      const parsed = Number(value);
+      return value !== "" && Number.isFinite(parsed) ? parsed : fallback;
+    };
+    return {
+      ...config,
+      clinic: {
+        ...config.clinic,
+        name: setting("clinicName", config.clinic.name),
+        short_name: setting("clinicShortName", config.clinic.short_name),
+        email: setting("email", config.clinic.email),
+        consultation_fee: numberSetting(
+          "consultationFee",
+          config.clinic.consultation_fee
+        ),
+        currency_symbol: setting(
+          "currencySymbol",
+          config.clinic.currency_symbol
+        ),
+        follow_up_days: numberSetting(
+          "followUpDays",
+          config.clinic.follow_up_days
+        ),
+        appointment_confirmation_text: setting(
+          "appointmentConfirmationText",
+          config.clinic.appointment_confirmation_text
+        ),
+        emergency_note: setting(
+          "emergencyNote",
+          config.clinic.emergency_note
+        )
+      },
+      contact: {
+        ...config.contact,
+        primary_mobile: setting(
+          "primaryMobile",
+          config.contact.primary_mobile
+        ),
+        secondary_mobile: setting(
+          "secondaryMobile",
+          config.contact.secondary_mobile
+        ),
+        whatsapp_mobile: setting(
+          "whatsappMobile",
+          config.contact.whatsapp_mobile
+        )
+      },
+      social: {
+        ...config.social,
+        instagram: setting("instagramUrl", config.social.instagram),
+        youtube: setting("youtubeUrl", config.social.youtube),
+        facebook: setting("facebookUrl", config.social.facebook)
+      }
+    };
+  }
+
   async function loadConfig() {
     try {
       const response = await fetch("/assets/data/site-config.json", { cache: "no-store" });
@@ -416,7 +477,7 @@
   }
 
   async function boot() {
-    const config = await loadConfig();
+    const config = applyCmsSettings(await loadConfig());
     window.AASTHA_SITE_CONFIG = config;
 
     document.querySelectorAll("[data-site-header]").forEach(el => el.innerHTML = buildHeader(config));
