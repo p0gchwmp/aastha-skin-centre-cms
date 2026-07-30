@@ -80,9 +80,11 @@ After deployment:
    redeploy.
 7. Verify HTTPS, sitemap, canonical URLs, robots, calls, WhatsApp and forms.
 
-Read [ADMIN_GUIDE.md](ADMIN_GUIDE.md) before editing and
+Read [ADMIN_GUIDE.md](ADMIN_GUIDE.md) before editing,
 [docs/BACKUP_AND_RECOVERY.md](docs/BACKUP_AND_RECOVERY.md) before launch or any
-bulk content operation.
+bulk content operation, and
+[docs/DOMAIN_CUTOVER.md](docs/DOMAIN_CUTOVER.md) before touching DNS or public
+indexing.
 
 ## Safe operating notes
 
