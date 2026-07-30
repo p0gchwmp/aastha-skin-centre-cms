@@ -85,6 +85,12 @@ jobs:
             --cms http://127.0.0.1:8000 \
             --output audit-artifacts/local-dark-readability
 
+      - name: Audit frontend performance budgets
+        run: |
+          python tools/audit_frontend_performance.py \
+            --cms http://127.0.0.1:8000 \
+            --output audit-artifacts/local-performance
+
       - name: Include local server log
         if: always()
         run: cp /tmp/aastha-local.log audit-artifacts/local-server.log || true
@@ -149,6 +155,13 @@ jobs:
           python tools/audit_dark_mode_readability.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --output audit-artifacts/deployed-dark-readability
+
+      - name: Audit deployed frontend performance budgets
+        if: github.event_name != 'pull_request'
+        run: |
+          python tools/audit_frontend_performance.py \
+            --cms https://aastha-skin-centre-cms.onrender.com \
+            --output audit-artifacts/deployed-performance
 
       - name: Upload deployed parity evidence
         if: always()
