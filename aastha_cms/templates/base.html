@@ -52,92 +52,11 @@
         {% if site_settings.global_banner_link %}</a>{% endif %}
       </aside>
     {% endif %}
-    <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="cms-site-header">
-      <div class="cms-utility">
-        <div class="container">
-          <span>Consultation {{ site_settings.currency_symbol }}{{ site_settings.consultation_fee|floatformat:"0" }}</span>
-          <a href="tel:+91{{ site_settings.primary_phone_digits }}">{{ site_settings.primary_mobile }}</a>
-          <a href="{{ site_settings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
-        </div>
-      </div>
-      <div class="container cms-nav-row">
-        <a class="cms-brand" href="/" aria-label="{{ site_settings.short_name }} home">
-          {% if site_settings.logo %}
-            {% image site_settings.logo width-280 as logo %}
-            <img src="{{ logo.url }}" alt="{{ site_settings.clinic_name }}" width="{{ logo.width }}" height="{{ logo.height }}">
-          {% else %}
-            <span class="cms-brand-mark" aria-hidden="true">A</span>
-            <span><strong>{{ site_settings.short_name }}</strong><small>{{ site_settings.tagline }}</small></span>
-          {% endif %}
-        </a>
-        <button class="cms-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">Menu</button>
-        <nav id="site-navigation" class="cms-navigation" aria-label="Main navigation">
-          {% if site_settings.header_navigation %}
-            {% for item in site_settings.header_navigation %}
-              <a href="{{ item.value.url }}"{% if item.value.new_tab %} target="_blank" rel="noopener"{% endif %}>{{ item.value.label }}</a>
-            {% endfor %}
-          {% else %}
-            <a href="/conditions/">Conditions</a>
-            <a href="/treatments/">Treatments</a>
-            <a href="/blog/">Blog</a>
-            <a href="/dr-cheena-langer/">Doctor</a>
-            <a href="/locations/">Locations</a>
-            <a href="/contact/">Contact</a>
-          {% endif %}
-          <a href="/search/">Search</a>
-          <a class="button cms-nav-cta" href="/book-appointment/">Book appointment</a>
-          <button class="cms-theme-toggle" type="button" aria-label="Switch colour theme">◐</button>
-        </nav>
-      </div>
-    </header>
+    <div data-site-header></div>
     {% block content %}{% endblock %}
-    <footer class="cms-site-footer">
-      <div class="container cms-footer-grid">
-        <section>
-          <h2>{{ site_settings.clinic_name }}</h2>
-          <p>{{ site_settings.tagline }}</p>
-          {% if site_settings.footer_text %}{{ site_settings.footer_text|richtext }}{% endif %}
-        </section>
-        <section>
-          <h2>Clinics</h2>
-          {% for clinic in clinic_locations %}
-            <address><strong>{{ clinic.name }}</strong><br>{{ clinic.address|linebreaksbr }}</address>
-          {% empty %}
-            <p>Clinic locations can be added from the admin.</p>
-          {% endfor %}
-        </section>
-        <section>
-          <h2>Contact</h2>
-          <p><a href="tel:+91{{ site_settings.primary_phone_digits }}">{{ site_settings.primary_mobile }}</a><br>
-          <a href="tel:+91{{ site_settings.secondary_phone_digits }}">{{ site_settings.secondary_mobile }}</a><br>
-          <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></p>
-          <p class="cms-social-links">
-            {% if site_settings.instagram_url %}<a href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
-            {% if site_settings.youtube_url %}<a href="{{ site_settings.youtube_url }}" target="_blank" rel="noopener">YouTube</a>{% endif %}
-            {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}" target="_blank" rel="noopener">Facebook</a>{% endif %}
-          </p>
-        </section>
-        <section>
-          <h2>Quick links</h2>
-          <nav aria-label="Footer navigation">
-            {% for item in site_settings.footer_navigation %}
-              <a href="{{ item.value.url }}"{% if item.value.new_tab %} target="_blank" rel="noopener"{% endif %}>{{ item.value.label }}</a>
-            {% empty %}
-              <a href="/privacy-policy/">Privacy policy</a>
-              <a href="/terms-and-conditions/">Terms</a>
-              <a href="/medical-disclaimer/">Medical disclaimer</a>
-            {% endfor %}
-          </nav>
-        </section>
-      </div>
-      <div class="container cms-footer-bottom">
-        <span>© {% now "Y" %} {{ site_settings.short_name }}</span>
-        <span>{{ site_settings.emergency_note }}</span>
-      </div>
-    </footer>
+    <div data-site-footer></div>
   {% endwith %}
-  <script src="{% static 'js/aastha_cms.js' %}" defer></script>
+  <script src="{% static 'js/site.js' %}" defer></script>\n  <script src="{% static 'js/professional.js' %}" defer></script>\n  <script src="{% static 'js/release-v24.js' %}" defer></script>\n  <script src="{% static 'js/aastha_cms.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
   {% if settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.home.SiteSettings.analytics_id }}"></script>
