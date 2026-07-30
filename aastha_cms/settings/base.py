@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 
 import dj_database_url
 
@@ -210,3 +211,9 @@ WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'tx
 
 # Maximum upload size for documents in bytes.
 WAGTAILDOCS_MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB
+
+
+# Public-site switch. Leave blank while staging; set to the final public origin
+# (without a trailing slash) only when this deployment should be indexable.
+PUBLIC_SITE_URL = os.environ.get("PUBLIC_SITE_URL", "").strip().rstrip("/")
+PUBLIC_SITE_HOST = urlparse(PUBLIC_SITE_URL).netloc.split(":", 1)[0].lower()

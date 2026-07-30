@@ -3,11 +3,19 @@ from django.db import connection
 from django.http import HttpResponse, JsonResponse
 
 
+def _is_public_request(request):
+    host = request.get_host().split(":", 1)[0].lower()
+    return bool(settings.PUBLIC_SITE_HOST and host == settings.PUBLIC_SITE_HOST)
+
+
 def robots_txt(request):
-    if settings.DEBUG or request.get_host().endswith(".onrender.com"):
+    if not _is_public_request(request):
         body = "User-agent: *\nDisallow: /\n"
     else:
-        body = "User-agent: *\nAllow: /\nSitemap: https://www.aasthaskincentre.in/sitemap.xml\n"
+        body = (
+            "User-agent: *\nAllow: /\n"
+            f"Sitemap: {settings.PUBLIC_SITE_URL}/sitemap.xml\n"
+        )
     return HttpResponse(body, content_type="text/plain")
 
 
