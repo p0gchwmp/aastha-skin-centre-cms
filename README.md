@@ -80,11 +80,14 @@ After deployment:
    redeploy.
 7. Verify HTTPS, sitemap, canonical URLs, robots, calls, WhatsApp and forms.
 
-Read [ADMIN_GUIDE.md](ADMIN_GUIDE.md) before editing.
+Read [ADMIN_GUIDE.md](ADMIN_GUIDE.md) before editing and
+[docs/BACKUP_AND_RECOVERY.md](docs/BACKUP_AND_RECOVERY.md) before launch or any
+bulk content operation.
 
 ## Safe operating notes
 
-- Never commit `.env`, passwords, `db.sqlite3`, `media/` or `staticfiles/`.
+- Never commit `.env`, passwords, `db.sqlite3`, `media/`, `staticfiles/` or backup
+  archives.
 - Back up the database and uploaded media before a major redesign or bulk edit.
 - Uploaded media requires persistent or cloud storage; an ephemeral web service
   will lose uploads on restart.
