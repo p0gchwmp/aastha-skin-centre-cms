@@ -82,7 +82,7 @@ def page_with_observers(browser: Browser, viewport: dict[str, int]) -> Page:
 
 def inspect(page: Page) -> dict[str, object]:
     return page.evaluate(
-        """
+        r"""
         () => {
           const resources = performance.getEntriesByType('resource');
           const encoded = entry => Number(entry.encodedBodySize || 0);
@@ -97,6 +97,8 @@ def inspect(page: Page) -> dict[str, object]:
               width: Number(image.getAttribute('width') || image.width || 0),
               height: Number(image.getAttribute('height') || image.height || 0),
               visible: rect.width > 0 && rect.height > 0,
+              aboveFold: rect.width > 0 && rect.height > 0
+                && rect.top < window.innerHeight && rect.bottom > 0,
             };
           });
           const scripts = [...document.querySelectorAll('script[src]')].map(script => ({
@@ -160,8 +162,9 @@ def validate(result: PerformanceResult, details: dict[str, object]) -> None:
     if details.get("observerError"):
         result.errors.append(f"performance observer failed: {details['observerError']}")
 
-    visible_images = [image for image in images if image["visible"]]
-    for image in visible_images:
+    rendered_images = [image for image in images if image["visible"]]
+    above_fold_images = [image for image in rendered_images if image["aboveFold"]]
+    for image in rendered_images:
         if not image["width"] or not image["height"]:
             result.errors.append(
                 f"image has no intrinsic dimensions: {image['src']}"
@@ -171,17 +174,22 @@ def validate(result: PerformanceResult, details: dict[str, object]) -> None:
                 f"image is missing decoding=async: {image['src']}"
             )
 
-    if visible_images:
-        first = visible_images[0]
-        if first["loading"] == "lazy":
-            result.errors.append("first visible content image is lazy-loaded")
-        if first["fetchpriority"] != "high":
-            result.errors.append("first visible content image lacks fetchpriority=high")
-        for image in visible_images[1:]:
-            if image["loading"] != "lazy":
-                result.errors.append(
-                    f"non-primary image is not lazy-loaded: {image['src']}"
-                )
+    primary = above_fold_images[0] if above_fold_images else None
+    if primary:
+        if primary["loading"] == "lazy":
+            result.errors.append("first above-fold content image is lazy-loaded")
+        if primary["fetchpriority"] != "high":
+            result.errors.append(
+                "first above-fold content image lacks fetchpriority=high"
+            )
+
+    for image in rendered_images:
+        if image is primary or image["aboveFold"]:
+            continue
+        if image["loading"] != "lazy":
+            result.errors.append(
+                f"below-fold image is not lazy-loaded: {image['src']}"
+            )
 
     for script in scripts:
         if not script["async"] and not script["defer"] and script["type"] != "module":
