@@ -44,7 +44,7 @@ def search(request):
     except EmptyPage:
         search_results = paginator.page(paginator.num_pages)
 
-    return TemplateResponse(
+    response = TemplateResponse(
         request,
         "search/search.html",
         {
@@ -52,3 +52,5 @@ def search(request):
             "search_results": search_results,
         },
     )
+    response["X-Robots-Tag"] = "noindex, follow"
+    return response
