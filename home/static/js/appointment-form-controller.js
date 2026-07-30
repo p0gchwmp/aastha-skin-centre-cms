@@ -92,6 +92,20 @@
         document.body?.dataset.whatsappMobile || "7006613362"
       ).slice(-10);
       const whatsappUrl = configuredUrl || `https://wa.me/91${whatsappNumber}`;
+
+      // Deliberately expose only non-sensitive conversion dimensions. Patient
+      // names, mobile numbers, concerns, notes and OPD numbers are never sent to
+      // analytics.
+      document.dispatchEvent(
+        new CustomEvent("aastha:appointment-request-opened", {
+          detail: {
+            clinic,
+            hasPreferredDate: Boolean(date),
+            hasPreferredTime: Boolean(time)
+          }
+        })
+      );
+
       window.open(
         `${whatsappUrl}?text=${encodeURIComponent(lines.join("\n"))}`,
         "_blank",
