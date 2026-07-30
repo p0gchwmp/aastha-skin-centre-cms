@@ -1,7 +1,11 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags exact_pages %}
 {% block body_class %}cms-home-page{% endblock %}
 {% block content %}
+{% exact_page_main as exact_main %}
+{% if exact_main %}
+{{ exact_main }}
+{% else %}
 <main id="main-content" class="home-main">
   {% if page.body %}
     {% include_block page.body %}
@@ -12,4 +16,5 @@
     </div></section>
   {% endif %}
 </main>
+{% endif %}
 {% endblock %}

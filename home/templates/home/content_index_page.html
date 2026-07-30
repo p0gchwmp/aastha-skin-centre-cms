@@ -1,6 +1,10 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags exact_pages %}
 {% block content %}
+{% exact_page_main as exact_main %}
+{% if exact_main %}
+{{ exact_main }}
+{% else %}
 <main id="main-content">
   {% include "home/partials/page_hero.html" %}
   {% if page.body %}{% include_block page.body %}{% endif %}
@@ -30,4 +34,5 @@
     {% endif %}
   </div></section>
 </main>
+{% endif %}
 {% endblock %}
