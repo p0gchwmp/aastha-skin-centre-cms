@@ -19,6 +19,13 @@ class AppointmentFrontendContractTests(SimpleTestCase):
             / "js"
             / "appointment-form-controller.js"
         ).read_text(encoding="utf-8")
+        self.analytics = (
+            Path(settings.BASE_DIR)
+            / "home"
+            / "static"
+            / "js"
+            / "analytics-events.js"
+        ).read_text(encoding="utf-8")
 
     def test_single_submission_controller_is_loaded_last(self):
         controller_position = self.base_template.index(
@@ -31,6 +38,10 @@ class AppointmentFrontendContractTests(SimpleTestCase):
         self.assertGreater(
             controller_position,
             self.base_template.index("site.js"),
+        )
+        self.assertGreater(
+            controller_position,
+            self.base_template.index("analytics-events.js"),
         )
 
     def test_controller_owns_submit_during_capture_phase(self):
@@ -46,3 +57,55 @@ class AppointmentFrontendContractTests(SimpleTestCase):
         ):
             self.assertIn(field_name, self.controller)
         self.assertIn("window.open(", self.controller)
+
+    def test_appointment_event_excludes_patient_information(self):
+        event_start = self.controller.index(
+            'new CustomEvent("aastha:appointment-request-opened"'
+        )
+        event_end = self.controller.index(
+            ")\n      );",
+            event_start,
+        )
+        event_source = self.controller[event_start:event_end]
+        for sensitive_name in (
+            "name",
+            "mobile",
+            "concern",
+            "patientType",
+            "opd",
+            "age",
+            "gender",
+            "note",
+        ):
+            self.assertNotIn(f"{sensitive_name},", event_source)
+        for allowed_name in (
+            "clinic",
+            "hasPreferredDate",
+            "hasPreferredTime",
+        ):
+            self.assertIn(allowed_name, event_source)
+
+    def test_tracking_is_disabled_until_an_analytics_id_exists(self):
+        self.assertIn('data-analytics-enabled="{% if settings.home.SiteSettings.analytics_id', self.base_template)
+        self.assertIn('body.dataset.analyticsEnabled !== "true"', self.analytics)
+
+    def test_conversion_events_cover_core_patient_actions(self):
+        for event_name in (
+            '"contact_click"',
+            '"map_click"',
+            '"appointment_cta_click"',
+            '"outbound_profile_click"',
+            '"branch_select"',
+            '"generate_lead"',
+        ):
+            self.assertIn(event_name, self.analytics)
+
+    def test_analytics_source_never_reads_sensitive_form_fields(self):
+        for selector in (
+            '[name="mobile"]',
+            '[name="name"]',
+            '[name="concern"]',
+            '[name="notes"]',
+            '[name="opd"]',
+        ):
+            self.assertNotIn(selector, self.analytics)
