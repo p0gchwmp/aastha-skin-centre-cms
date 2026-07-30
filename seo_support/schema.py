@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from home.models import ClinicLocation, Doctor
 from home.seo import _clinic_id, _doctor_id
 
@@ -11,10 +13,7 @@ from home.seo import _clinic_id, _doctor_id
 def _optional_profile(instance):
     try:
         return instance.seo_profile
-    except instance._meta.apps.get_model(
-        "seo_support",
-        "ClinicSEOProfile" if isinstance(instance, ClinicLocation) else "DoctorSEOProfile",
-    ).DoesNotExist:
+    except ObjectDoesNotExist:
         return None
 
 
