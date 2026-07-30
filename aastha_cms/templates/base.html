@@ -13,12 +13,12 @@
   </script>
   <title>{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | {{ settings.home.SiteSettings.short_name }}{% endblock %}</title>
   <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
-  {% if page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}
-  <link rel="canonical" href="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+  {% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% elif page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}
+  <link rel="canonical" href="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ canonical_url }}{% endif %}">
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:title" content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}">
   <meta property="og:description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
-  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:url" content="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ canonical_url }}{% endif %}">
   <meta property="og:site_name" content="{{ settings.home.SiteSettings.clinic_name }}">
   {% if page.social_image %}
     {% image page.social_image fill-1200x630 as social_image %}
@@ -28,6 +28,7 @@
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ social_image.url }}">
   {% endif %}
   <meta name="twitter:card" content="summary_large_image">
+  {% if structured_data_json %}<script type="application/ld+json">{{ structured_data_json|safe }}</script>{% endif %}
   {% if settings.home.SiteSettings.search_console_verification %}
     <meta name="google-site-verification" content="{{ settings.home.SiteSettings.search_console_verification }}">
   {% endif %}
