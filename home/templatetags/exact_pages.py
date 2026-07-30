@@ -31,7 +31,10 @@ def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
     """Replace facts that administrators manage centrally.
 
     The snapshot remains byte-for-byte faithful for layout and content
-    structure. Only verified clinic facts are substituted.
+    structure. Only clinic facts represented by explicit Wagtail settings are
+    substituted. Medical credentials, experience statements and other clinical
+    claims are intentionally left untouched and must be edited through the
+    reviewed page content.
     """
 
     primary_digits = site_settings.primary_phone_digits[-10:]
@@ -66,15 +69,6 @@ def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
         ("₹500", fee),
         ("within 10 days", f"within {follow_up_days} days"),
         ("10-day period", f"{follow_up_days}-day period"),
-        ("20+ years", "25+ years"),
-        (
-            "More than 20 years in medicine",
-            "Over 25 years of clinical excellence",
-        ),
-        (
-            "more than 20 years in medicine",
-            "over 25 years of clinical excellence",
-        ),
     ]
     output = source
     for current, replacement in replacements:
