@@ -1,0 +1,147 @@
+name: Prelaunch parity QA
+
+on:
+  push:
+    branches:
+      - main
+      - agent/live-parity-and-form-fixes
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prelaunch-parity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-branch-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DJANGO_SETTINGS_MODULE: aastha_cms.settings.dev
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install application and audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install requests beautifulsoup4 lxml pillow playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run build-time and Django checks
+        run: |
+          python tools/verify_exact_page_snapshots.py
+          python manage.py makemigrations --check --dry-run
+          python manage.py check
+          python manage.py test
+
+      - name: Build local CMS database
+        run: |
+          rm -f db.sqlite3
+          python manage.py migrate --no-input
+          python manage.py initialize_cms
+
+      - name: Start local CMS
+        run: |
+          nohup python manage.py runserver 127.0.0.1:8000 --noreload > /tmp/aastha-local.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/healthz/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/aastha-local.log
+          exit 1
+
+      - name: Compare every legacy route with static reference
+        run: |
+          python tools/audit_deployed_sites.py \
+            --cms http://127.0.0.1:8000 \
+            --static https://aastha-skin-centre-staging.onrender.com \
+            --output audit-artifacts/local-structure
+
+      - name: Run desktop, mobile and interaction audit
+        run: |
+          python tools/audit_browser_parity.py \
+            --cms http://127.0.0.1:8000 \
+            --static https://aastha-skin-centre-staging.onrender.com \
+            --output audit-artifacts/local-browser
+
+      - name: Include local server log
+        if: always()
+        run: cp /tmp/aastha-local.log audit-artifacts/local-server.log || true
+
+      - name: Upload local parity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-parity-${{ github.sha }}
+          path: audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+
+  deployed-render-audit:
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    needs: local-branch-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 lxml pillow playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Wait for Render deployment to become available
+        run: |
+          sleep 120
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent https://aastha-skin-centre-cms.onrender.com/healthz/ > /dev/null; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Compare deployed sites across every legacy route
+        run: |
+          python tools/audit_deployed_sites.py \
+            --cms https://aastha-skin-centre-cms.onrender.com \
+            --static https://aastha-skin-centre-staging.onrender.com \
+            --output audit-artifacts/deployed-structure
+
+      - name: Run deployed desktop, mobile and interaction audit
+        run: |
+          python tools/audit_browser_parity.py \
+            --cms https://aastha-skin-centre-cms.onrender.com \
+            --static https://aastha-skin-centre-staging.onrender.com \
+            --output audit-artifacts/deployed-browser
+
+      - name: Upload deployed parity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-parity-${{ github.sha }}
+          path: audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
