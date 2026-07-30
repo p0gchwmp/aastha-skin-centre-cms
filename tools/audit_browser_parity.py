@@ -7,11 +7,12 @@ import argparse
 import json
 import math
 from dataclasses import asdict, dataclass, field
+from datetime import date, timedelta
 from pathlib import Path
 from urllib.parse import urljoin
 
 from PIL import Image, ImageChops
-from playwright.sync_api import Browser, Page, sync_playwright
+from playwright.sync_api import Browser, Locator, Page, sync_playwright
 
 
 DEFAULT_CMS = "https://aastha-skin-centre-cms.onrender.com"
@@ -107,37 +108,83 @@ def collect_page(browser: Browser, viewport: dict[str, int]) -> tuple[Page, list
     return page, console_errors, page_errors
 
 
+def fill_control(locator: Locator, preferred: str = "Website QA") -> None:
+    """Fill an input-like control or choose a safe non-empty select option."""
+    if not locator.count():
+        return
+    control = locator.first
+    tag = control.evaluate("element => element.tagName")
+    if tag == "SELECT":
+        choices = control.evaluate(
+            """
+            element => [...element.options].map(option => ({
+              value: option.value,
+              label: option.textContent.trim(),
+              disabled: option.disabled
+            }))
+            """
+        )
+        preferred_lower = preferred.lower()
+        choice = next(
+            (
+                item
+                for item in choices
+                if item["value"]
+                and not item["disabled"]
+                and preferred_lower in (item["value"] + " " + item["label"]).lower()
+            ),
+            None,
+        )
+        if choice is None:
+            choice = next(
+                (item for item in choices if item["value"] and not item["disabled"]),
+                None,
+            )
+        if choice:
+            control.select_option(value=choice["value"])
+        return
+
+    input_type = str(control.get_attribute("type") or "").lower()
+    if input_type in {"checkbox", "radio"}:
+        control.check()
+    elif input_type == "date":
+        control.fill((date.today() + timedelta(days=3)).isoformat())
+    elif input_type == "number":
+        control.fill("30")
+    elif input_type not in {"button", "submit", "reset", "hidden", "file"}:
+        control.fill(preferred)
+
+
 def test_interactions(browser: Browser, cms: str) -> list[str]:
     errors: list[str] = []
     context = browser.new_context(viewport=VIEWPORTS["mobile"], color_scheme="light")
     page = context.new_page()
-    opened: list[str] = []
-    page.on("popup", lambda popup: opened.append(popup.url))
+    try:
+        navigate(page, cms, "/")
+        nav_toggle = page.locator(".nav-toggle")
+        if nav_toggle.count() != 1:
+            errors.append("mobile navigation toggle is missing")
+        else:
+            nav_toggle.click()
+            if nav_toggle.get_attribute("aria-expanded") != "true":
+                errors.append("mobile navigation did not open")
 
-    navigate(page, cms, "/")
-    nav_toggle = page.locator(".nav-toggle")
-    if nav_toggle.count() != 1:
-        errors.append("mobile navigation toggle is missing")
-    else:
-        nav_toggle.click()
-        if nav_toggle.get_attribute("aria-expanded") != "true":
-            errors.append("mobile navigation did not open")
+        theme = page.locator(".theme-toggle")
+        if theme.count() != 1:
+            errors.append("theme toggle is missing")
+        else:
+            before = page.locator("html").get_attribute("data-theme")
+            theme.click()
+            after = page.locator("html").get_attribute("data-theme")
+            if before == after:
+                errors.append("theme toggle did not change the active theme")
 
-    theme = page.locator(".theme-toggle")
-    if theme.count() != 1:
-        errors.append("theme toggle is missing")
-    else:
-        before = page.locator("html").get_attribute("data-theme")
-        theme.click()
-        after = page.locator("html").get_attribute("data-theme")
-        if before == after:
-            errors.append("theme toggle did not change the active theme")
+        navigate(page, cms, "/book-appointment/")
+        form = page.locator("[data-appointment-form]")
+        if form.count() != 1:
+            errors.append(f"expected one appointment form; found {form.count()}")
+            return errors
 
-    navigate(page, cms, "/book-appointment/")
-    form = page.locator("[data-appointment-form]")
-    if form.count() != 1:
-        errors.append(f"expected one appointment form; found {form.count()}")
-    else:
         page.evaluate(
             """
             () => {
@@ -149,44 +196,50 @@ def test_interactions(browser: Browser, cms: str) -> list[str]:
             }
             """
         )
-        fields = {
+        for name, value in {
             "name": "Website QA",
             "mobile": "9876543210",
             "age": "30",
             "concern": "Skin concern",
-        }
-        for name, value in fields.items():
-            locator = form.locator(f'[name="{name}"]')
-            if locator.count():
-                locator.first.fill(value)
+        }.items():
+            fill_control(form.locator(f'[name="{name}"]'), value)
+
         for alternatives, value in [
             (("clinic", "branch"), "Karan Nagar"),
             (("patient_type",), "New patient"),
         ]:
             for name in alternatives:
                 locator = form.locator(f'[name="{name}"]')
-                if not locator.count():
-                    continue
-                tag = locator.first.evaluate("element => element.tagName")
-                if tag == "SELECT":
-                    options = locator.first.locator("option").all()
-                    option_values = [option.get_attribute("value") or option.inner_text() for option in options]
-                    selectable = next((item for item in option_values if item), None)
-                    if selectable:
-                        locator.first.select_option(selectable)
-                else:
-                    locator.first.fill(value)
-                break
+                if locator.count():
+                    fill_control(locator, value)
+                    break
+
+        # Fill any additional required controls introduced by a future form edit.
+        for control in form.locator("[required]").all():
+            current_value = control.evaluate(
+                "element => 'value' in element ? element.value : ''"
+            )
+            input_type = str(control.get_attribute("type") or "").lower()
+            if not current_value and input_type not in {"checkbox", "radio"}:
+                fill_control(control)
+            elif input_type in {"checkbox", "radio"} and not control.is_checked():
+                fill_control(control)
+
         form.evaluate("form => form.requestSubmit()")
         page.wait_for_timeout(400)
         open_count = page.evaluate("window.__appointmentOpens.length")
         if open_count != 1:
-            errors.append(f"appointment submission opened {open_count} WhatsApp windows; expected 1")
+            errors.append(
+                f"appointment submission opened {open_count} WhatsApp windows; expected 1"
+            )
         else:
             target = page.evaluate("window.__appointmentOpens[0][0]")
             if "wa.me" not in target or "9876543210" not in target:
                 errors.append("appointment WhatsApp payload is incomplete")
-    context.close()
+    except Exception as exc:
+        errors.append(f"interaction audit crashed: {exc}")
+    finally:
+        context.close()
     return errors
 
 

@@ -23,12 +23,22 @@ def site_collections(request):
     )
     site_settings = SiteSettings.for_request(request)
     host = request.get_host().split(":", 1)[0].lower()
+    is_render_host = host.endswith(".onrender.com")
+    configured_public_host_is_render = bool(
+        settings.PUBLIC_SITE_HOST
+        and settings.PUBLIC_SITE_HOST.endswith(".onrender.com")
+    )
     site_is_public = bool(
-        settings.PUBLIC_SITE_HOST and host == settings.PUBLIC_SITE_HOST
+        settings.PUBLIC_SITE_HOST
+        and host == settings.PUBLIC_SITE_HOST
+        and not is_render_host
     )
-    origin = settings.PUBLIC_SITE_URL or (
-        f"{request.scheme}://{request.get_host()}"
+    configured_origin = (
+        settings.PUBLIC_SITE_URL
+        if settings.PUBLIC_SITE_URL and not configured_public_host_is_render
+        else ""
     )
+    origin = configured_origin or f"{request.scheme}://{request.get_host()}"
     canonical_url = f"{origin}{request.path}"
 
     clinic_schema = {
@@ -80,7 +90,7 @@ def site_collections(request):
         "clinic_locations": clinics,
         "active_doctors": doctors,
         "site_is_public": site_is_public,
-        "public_site_url": settings.PUBLIC_SITE_URL,
+        "public_site_url": configured_origin,
         "canonical_url": canonical_url,
         # The homepage already carries its curated schema in CMS content.
         # Add the global graph everywhere else to avoid duplicate entities.
