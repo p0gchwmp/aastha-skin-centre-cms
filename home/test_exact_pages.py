@@ -25,7 +25,7 @@ class ExactPageFactTests(SimpleTestCase):
         )
         self.assertEqual(normalise_path("/"), "/")
 
-    def test_global_facts_update_without_changing_structure(self):
+    def test_global_facts_update_without_changing_structure_or_claims(self):
         site_settings = SimpleNamespace(
             primary_phone_digits="9123456789",
             secondary_phone_digits="9987654321",
@@ -55,8 +55,9 @@ class ExactPageFactTests(SimpleTestCase):
         self.assertIn(">9123456789</a>", rendered)
         self.assertIn('href="mailto:clinic@example.com"', rendered)
         self.assertIn("₹700 · one visit within 14 days", rendered)
-        self.assertIn("<strong>25+ years</strong>", rendered)
-        self.assertIn("Over 25 years of clinical excellence", rendered)
+        self.assertIn("<strong>20+ years</strong>", rendered)
+        self.assertIn("More than 20 years in medicine", rendered)
+        self.assertNotIn("25+ years", rendered)
         self.assertEqual(rendered.count("<main"), 1)
         self.assertEqual(rendered.count("<h1"), 1)
 
