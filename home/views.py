@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.db import connection
 from django.http import HttpResponse, JsonResponse
@@ -23,4 +25,20 @@ def healthz(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT 1")
         cursor.fetchone()
-    return JsonResponse({"status": "ok"})
+
+    release = (
+        os.environ.get("RENDER_GIT_COMMIT")
+        or os.environ.get("GIT_COMMIT")
+        or "unknown"
+    )
+    payload = {
+        "status": "ok",
+        "release": release,
+    }
+    service_name = os.environ.get("RENDER_SERVICE_NAME")
+    if service_name:
+        payload["service"] = service_name
+
+    response = JsonResponse(payload)
+    response["Cache-Control"] = "no-store"
+    return response
