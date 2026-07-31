@@ -1,7 +1,0 @@
-{% load wagtailcore_tags %}
-<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block article-section cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
-  {% if value.eyebrow %}<span class="quiet-label">{{ value.eyebrow }}</span>{% endif %}
-  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
-  {% if value.body %}{{ value.body }}{% endif %}
-  {% if value.buttons %}<div class="inline-actions">{% for button in value.buttons %}<a class="{% if button.style == 'text' %}plain-link{% else %}button{% if button.style == 'secondary' %} button-secondary{% endif %}{% endif %}" href="{{ button.link.url }}"{% if button.link.new_tab %} target="_blank" rel="noopener"{% endif %}>{{ button.link.label }}</a>{% endfor %}</div>{% endif %}
-</section>

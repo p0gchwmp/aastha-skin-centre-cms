@@ -1,5 +1,0 @@
-{% load wagtailcore_tags %}
-<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-accordion cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
-  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
-  {% for item in value.items %}<details class="deep-dive"{% if value.open_first and forloop.first %} open{% endif %}><summary>{{ item.heading }}</summary><div class="deep-dive-body">{{ item.body }}</div></details>{% endfor %}
-</section>
