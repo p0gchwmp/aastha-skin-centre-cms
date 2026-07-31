@@ -63,19 +63,25 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
              completely before pixel comparison. */
           document.querySelectorAll('[data-visual-injected="true"]').forEach(visual => {
             const card = visual.closest('.visual-cue-card');
+            const heading = visual.closest('.hub-category-heading--clay');
             visual.remove();
-            card?.classList.remove('visual-cue-card');
+            card?.classList.remove('visual-cue-card', 'visual-cue-card--managed');
+            heading?.classList.remove('hub-category-heading--clay');
           });
 
           /* Existing placeholders keep their original markup in data attributes.
              Restore it so parity compares the underlying legacy layout rather
              than the deliberately upgraded decorative scene. */
           document.querySelectorAll('.message-visual').forEach(icon => {
+            const card = icon.closest('.visual-cue-card--managed');
+            const heading = icon.closest('.hub-category-heading--clay');
             const originalHtml = icon.getAttribute('data-visual-original-html');
             if (originalHtml !== null) {
               icon.innerHTML = originalHtml;
             } else {
-              icon.querySelectorAll('.message-visual__svg').forEach(svg => svg.remove());
+              icon.querySelectorAll(
+                '.message-visual__svg, .message-visual__img'
+              ).forEach(visual => visual.remove());
             }
 
             [...icon.classList]
@@ -95,6 +101,20 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             restoreAttribute('role', 'data-visual-original-role');
             icon.removeAttribute('data-visual-original-html');
             icon.removeAttribute('data-clay-cue');
+            icon.removeAttribute('hidden');
+            card?.classList.remove('visual-cue-card', 'visual-cue-card--managed');
+            heading?.classList.remove('hub-category-heading--clay');
+          });
+
+          /* Remove any corrective marker left on cards whose injected artwork
+             was already removed above. The production layout remains tested by
+             mobile, dark-mode and performance audits; parity compares the
+             underlying legacy geometry after decorative enhancement is absent. */
+          document.querySelectorAll('.visual-cue-card--managed').forEach(card => {
+            card.classList.remove('visual-cue-card', 'visual-cue-card--managed');
+          });
+          document.querySelectorAll('.hub-category-heading--clay').forEach(heading => {
+            heading.classList.remove('hub-category-heading--clay');
           });
 
           /* Homepage artwork is intentionally larger than the old glyphs. Both
