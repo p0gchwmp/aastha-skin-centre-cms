@@ -1,0 +1,1 @@
+Ship-ready pastel clay icon assets. Transparent WebP files are standardised to a square canvas and are intended for 76–116 px website placements. Detailed clinical, doctor, treatment, condition, hero, gallery and blog imagery remains reserved for real photography.
