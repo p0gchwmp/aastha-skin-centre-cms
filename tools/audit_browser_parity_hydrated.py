@@ -117,12 +117,15 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             heading.classList.remove('hub-category-heading--clay');
           });
 
-          /* The inline correction sheet deliberately changes card geometry to
-             prevent overlaps and restore equal-height clinic panels. Remove it
-             only inside the desktop reference screenshot so parity continues to
-             compare the unchanged underlying site. Production layout remains
-             covered by the actual mobile, dark-mode and performance audits. */
-          document.getElementById('site-visual-layout-fixes')?.remove();
+          /* Clay styling and the corrective geometry now share one production
+             stylesheet to preserve the request budget. Remove that combined
+             sheet only inside the desktop reference screenshot after all clay
+             markup has been normalised. */
+          document.querySelectorAll('link[rel="stylesheet"]').forEach(stylesheet => {
+            if (stylesheet.href.includes('site-visual-cues.css')) {
+              stylesheet.remove();
+            }
+          });
           await new Promise(resolve => requestAnimationFrame(() => resolve()));
 
           /* Homepage artwork is intentionally larger than the old glyphs. Both
