@@ -1,30 +1,19 @@
 /* =====================================================================
-   Aastha premium pastel-clay visual system
+   Aastha production pastel-clay visual system
 
-   Semantic, message-led clay scenes enhance compact placeholders and helper
-   cards. Large treatment, condition, doctor, gallery and editorial imagery
-   remains reserved for real photography.
+   Ten independently cached transparent WebP icons replace the inline vector
+   sprite. JavaScript injects responsive srcset markup only into compact
+   placeholders and helper cards; treatment, condition, doctor, gallery and
+   editorial imagery remains reserved for real photography.
    ===================================================================== */
 
 :root {
-  --clay-plum: #6f1736;
-  --clay-plum-deep: #501027;
-  --clay-ivory: #fffaf7;
-  --clay-blush: #fff1f4;
   --clay-shadow:
-    drop-shadow(0 8px 7px rgba(73, 29, 47, .10))
-    drop-shadow(0 17px 18px rgba(73, 29, 47, .16));
+    drop-shadow(0 7px 8px rgba(73, 29, 47, .10))
+    drop-shadow(0 14px 18px rgba(73, 29, 47, .13));
   --clay-shadow-hover:
-    drop-shadow(0 10px 8px rgba(73, 29, 47, .12))
-    drop-shadow(0 22px 23px rgba(73, 29, 47, .22));
-}
-
-.pastel-clay-sprite {
-  position: absolute !important;
-  width: 0 !important;
-  height: 0 !important;
-  overflow: hidden !important;
-  pointer-events: none !important;
+    drop-shadow(0 9px 9px rgba(73, 29, 47, .12))
+    drop-shadow(0 19px 22px rgba(73, 29, 47, .18));
 }
 
 .message-visual,
@@ -58,14 +47,16 @@
   display: none !important;
 }
 
-.message-visual__svg {
+.message-visual__img {
   display: block;
   width: 100%;
   height: 100%;
   max-width: none;
-  overflow: visible;
-  shape-rendering: geometricPrecision;
-  text-rendering: geometricPrecision;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: auto;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Hide the old glyph immediately, before deferred JavaScript installs clay. */
@@ -176,21 +167,20 @@
 .trust-item:hover .message-visual,
 .visual-cue-card:hover > .message-visual,
 .visual-cue-card:hover > a > .message-visual {
-  transform: translateY(-4px) scale(1.035);
+  transform: translateY(-3px) scale(1.025);
   filter: var(--clay-shadow-hover) !important;
 }
 
-/* Pastels remain luminous on plum surfaces; dark mode no longer crushes the
-   detail or turns ivory clay into a muddy grey. */
+/* Keep the pastel material luminous on plum cards without recolouring it. */
 html[data-theme="dark"] .message-visual,
 html[data-theme="dark"] .release-v24 .concern-card .icon-bubble,
 html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
   filter:
-    brightness(.96)
-    saturate(.92)
-    contrast(1.035)
-    drop-shadow(0 9px 8px rgba(0, 0, 0, .24))
-    drop-shadow(0 20px 21px rgba(0, 0, 0, .38)) !important;
+    brightness(.90)
+    saturate(.90)
+    contrast(1.02)
+    drop-shadow(0 8px 10px rgba(0, 0, 0, .28))
+    drop-shadow(0 17px 20px rgba(0, 0, 0, .38)) !important;
 }
 
 /* Decorative placeholders have no readable glyph, but the computed colour
@@ -204,11 +194,11 @@ html[data-theme="dark"] .trust-item:hover .message-visual,
 html[data-theme="dark"] .visual-cue-card:hover > .message-visual,
 html[data-theme="dark"] .visual-cue-card:hover > a > .message-visual {
   filter:
-    brightness(1)
-    saturate(.96)
-    contrast(1.04)
-    drop-shadow(0 11px 9px rgba(0, 0, 0, .28))
-    drop-shadow(0 25px 26px rgba(0, 0, 0, .48)) !important;
+    brightness(.94)
+    saturate(.94)
+    contrast(1.025)
+    drop-shadow(0 10px 10px rgba(0, 0, 0, .32))
+    drop-shadow(0 22px 24px rgba(0, 0, 0, .46)) !important;
 }
 
 /* Never replace the larger real-image areas reserved for clinical content. */
@@ -260,5 +250,6 @@ html[data-theme="dark"] .visual-cue-card:hover > a > .message-visual {
 @media (prefers-reduced-motion: reduce) {
   .message-visual {
     transition: none;
+    transform: none;
   }
 }
