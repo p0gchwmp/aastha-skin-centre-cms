@@ -1,7 +1,20 @@
 (() => {
-  const SVG_NS = 'http://www.w3.org/2000/svg';
-  const XLINK_NS = 'http://www.w3.org/1999/xlink';
   const MISSING_ATTRIBUTE = '__clay_missing__';
+  const ASSET_MANIFEST_ID = 'visual-cue-assets';
+  const DISPLAY_SIZES = '(max-width: 700px) 112px, 116px';
+
+  const loadAssets = () => {
+    const manifest = document.getElementById(ASSET_MANIFEST_ID);
+    if (!manifest) return {};
+    try {
+      return JSON.parse(manifest.textContent || '{}');
+    } catch (error) {
+      console.warn('Aastha visual cue asset manifest is invalid.', error);
+      return {};
+    }
+  };
+
+  const ASSETS = loadAssets();
 
   /* Order is intentional: specific services win before broad clinical terms. */
   const CUES = [
@@ -97,6 +110,8 @@
     }
   ];
 
+  const CUE_NAMES = new Set(CUES.map(cue => cue.name));
+
   const PLACEHOLDER_SELECTOR = [
     '.icon-bubble',
     '.trust-icon',
@@ -178,22 +193,6 @@
     return owner || element.parentElement || element;
   };
 
-  const buildClayVisual = cue => {
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.classList.add('message-visual__svg');
-    svg.setAttribute('viewBox', '0 0 256 256');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('focusable', 'false');
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
-    const use = document.createElementNS(SVG_NS, 'use');
-    const target = `#clay-${cue}`;
-    use.setAttribute('href', target);
-    use.setAttributeNS(XLINK_NS, 'xlink:href', target);
-    svg.appendChild(use);
-    return svg;
-  };
-
   const rememberOriginal = element => {
     if (element.hasAttribute('data-visual-original-html')) return;
     element.dataset.visualOriginalHtml = element.innerHTML;
@@ -205,21 +204,53 @@
       : MISSING_ATTRIBUTE;
   };
 
+  const buildClayImage = (cue, priority = false) => {
+    const asset = ASSETS[cue];
+    if (!asset?.['128'] || !asset?.['256'] || !asset?.['512']) return null;
+
+    const image = document.createElement('img');
+    image.className = 'message-visual__img';
+    image.src = asset['128'];
+    image.srcset = [
+      `${asset['128']} 128w`,
+      `${asset['256']} 256w`,
+      `${asset['512']} 512w`
+    ].join(', ');
+    image.sizes = DISPLAY_SIZES;
+    image.width = 512;
+    image.height = 512;
+    image.alt = '';
+    image.loading = priority ? 'eager' : 'lazy';
+    image.decoding = 'async';
+    image.draggable = false;
+    image.setAttribute('aria-hidden', 'true');
+    return image;
+  };
+
   const setCue = (element, cue) => {
-    if (!element || !cue || isExcluded(element)) return false;
-    if (!document.getElementById(`clay-${cue}`)) return false;
+    if (!element || !CUE_NAMES.has(cue) || isExcluded(element)) return false;
+
+    const image = buildClayImage(
+      cue,
+      Boolean(element.closest('.concern-card, .trust-item'))
+    );
+    if (!image) return false;
 
     rememberOriginal(element);
+    [...element.classList]
+      .filter(name => name.startsWith('message-visual--'))
+      .forEach(name => element.classList.remove(name));
+
     element.classList.add('message-visual', `message-visual--${cue}`);
     element.dataset.clayCue = cue;
     element.setAttribute('aria-hidden', 'true');
     element.setAttribute('role', 'presentation');
-    element.replaceChildren(buildClayVisual(cue));
+    element.replaceChildren(image);
     return true;
   };
 
   const hasMeaningfulVisual = card => Boolean(card.querySelector([
-    'img', 'picture', 'svg:not(.message-visual__svg)', 'video',
+    'img', 'picture', 'svg', 'video',
     '.message-visual', '.location-art', '.doctor-visual', '.page-hero-art'
   ].join(',')));
 
@@ -240,7 +271,7 @@
       if (element.classList.contains('message-visual') || isExcluded(element)) return;
       const requested = normalise(element.dataset.visualCue || '');
       const context = nearestContext(element);
-      const cue = CUES.some(item => item.name === requested)
+      const cue = CUE_NAMES.has(requested)
         ? requested
         : cueForText(context.textContent);
       if (cue) setCue(element, cue);
@@ -253,7 +284,9 @@
       const marker = `${element.className || ''} ${element.parentElement?.className || ''}`;
       if (!/(icon|emoji|bubble|motif|symbol)/i.test(marker)) return;
       const raw = (element.textContent || '').trim();
-      const isShortSymbol = raw.length > 0 && raw.length <= 4 && /[^\p{L}\p{N}\s]/u.test(raw);
+      const isShortSymbol = raw.length > 0
+        && raw.length <= 4
+        && /[^\p{L}\p{N}\s]/u.test(raw);
       if (!isShortSymbol) return;
       const cue = cueForText(nearestContext(element).textContent);
       if (cue) setCue(element, cue);
