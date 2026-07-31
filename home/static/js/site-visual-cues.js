@@ -148,6 +148,7 @@
     element.classList.add('message-visual', `message-visual--${cue}`);
     element.setAttribute('aria-hidden', 'true');
     element.setAttribute('role', 'presentation');
+    element.textContent = '';
     return true;
   };
 
