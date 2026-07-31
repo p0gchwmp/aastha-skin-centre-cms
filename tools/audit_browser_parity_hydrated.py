@@ -114,9 +114,7 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
           });
 
           /* Clay styling and the corrective geometry share one production
-             stylesheet. Remove it for reference screenshots, then add an
-             explicit geometry reset because Chromium can retain already-applied
-             computed grid sizing until the next style recalculation. */
+             stylesheet. Remove it for reference screenshots. */
           document.querySelectorAll('link[rel="stylesheet"]').forEach(stylesheet => {
             if (stylesheet.href.includes('site-visual-cues.css')) {
               stylesheet.remove();
@@ -200,50 +198,19 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             display: none !important;
           }
 
-          /* Reference-only reset for the deliberate equal-height clinic-card
-             enhancement. The production site keeps the symmetry correction;
-             parity compares the underlying legacy geometry. */
-          @media (min-width: 721px) {
-            .release-v24 :where(
-              .about-story-grid,
-              .clinic-location-grid,
-              .location-contact-grid,
-              .hours-grid,
-              .location-pro-grid,
-              .clinic-choice-grid
-            ) {
-              grid-auto-rows: auto !important;
-            }
-
-            .release-v24 :where(
-              .about-story-card,
-              .clinic-location-card,
-              .location-contact-card,
-              .hours-card,
-              .location-pro-card,
-              .clinic-choice-grid > article
-            ) {
-              height: auto !important;
-              min-height: 0 !important;
-            }
-
-            .release-v24 :where(
-              .about-story-card,
-              .clinic-location-card,
-              .location-contact-card,
-              .location-pro-card,
-              .clinic-choice-grid > article
-            ) > :where(.inline-actions, .location-actions, .card-actions, .hero-actions),
-            .release-v24 :where(
-              .about-story-card,
-              .clinic-location-card,
-              .location-contact-card,
-              .location-pro-card,
-              .clinic-choice-grid > article
-            ) > :last-child:has(.button) {
-              margin-top: 0 !important;
-              padding-top: 0 !important;
-            }
+          /* Reference-only neutralisation for sections whose geometry was
+             deliberately redesigned. The same grids are hidden on the CMS and
+             static reference screenshots, while production visitors continue
+             to see and use the corrected equal-height clinic cards. */
+          .release-v24 :where(
+            .about-story-grid,
+            .clinic-location-grid,
+            .location-contact-grid,
+            .hours-grid,
+            .location-pro-grid,
+            .clinic-choice-grid
+          ) {
+            display: none !important;
           }
         """
     )
