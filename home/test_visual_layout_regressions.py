@@ -1,33 +1,39 @@
 from pathlib import Path
 
-from django.contrib.staticfiles import finders
 from django.test import SimpleTestCase
 
 
 class VisualLayoutRegressionTests(SimpleTestCase):
     def setUp(self):
-        css_path = finders.find("css/site-visual-layout-fixes.css")
-        js_path = finders.find("js/site-visual-layout-fixes.js")
-        self.assertIsNotNone(css_path)
-        self.assertIsNotNone(js_path)
-
-        self.stylesheet = Path(css_path).read_text(encoding="utf-8")
-        self.script = Path(js_path).read_text(encoding="utf-8")
         root = Path(__file__).resolve().parents[1]
+        partial_root = root / "home" / "templates" / "home" / "partials"
+        self.stylesheet = (
+            partial_root / "visual_layout_fixes_css.html"
+        ).read_text(encoding="utf-8")
+        self.script = (
+            partial_root / "visual_layout_fixes_js.html"
+        ).read_text(encoding="utf-8")
         self.base_template = (
             root / "aastha_cms" / "templates" / "base.html"
         ).read_text(encoding="utf-8")
+        self.parity_audit = (
+            root / "tools" / "audit_browser_parity_hydrated.py"
+        ).read_text(encoding="utf-8")
 
-    def test_corrective_assets_load_after_the_base_visual_system(self):
-        self.assertIn("css/site-visual-layout-fixes.css", self.base_template)
-        self.assertIn("js/site-visual-layout-fixes.js", self.base_template)
+    def test_corrective_partials_load_without_extra_network_requests(self):
+        self.assertIn("home/partials/visual_layout_fixes_css.html", self.base_template)
+        self.assertIn("home/partials/visual_layout_fixes_js.html", self.base_template)
+        self.assertNotIn("css/site-visual-layout-fixes.css", self.base_template)
+        self.assertNotIn("js/site-visual-layout-fixes.js", self.base_template)
+        self.assertIn('id="site-visual-layout-fixes"', self.stylesheet)
+        self.assertIn('id="site-visual-layout-fixes-script"', self.script)
         self.assertLess(
             self.base_template.index("css/site-visual-cues.css"),
-            self.base_template.index("css/site-visual-layout-fixes.css"),
+            self.base_template.index("home/partials/visual_layout_fixes_css.html"),
         )
         self.assertLess(
             self.base_template.index("js/site-visual-cues.js"),
-            self.base_template.index("js/site-visual-layout-fixes.js"),
+            self.base_template.index("home/partials/visual_layout_fixes_js.html"),
         )
 
     def test_repetitive_examples_receive_distinct_semantic_cues(self):
@@ -49,7 +55,7 @@ class VisualLayoutRegressionTests(SimpleTestCase):
             "const PROCESS_FALLBACKS = ['plan', 'diagnosis', 'complete', 'experience']",
             self.script,
         )
-        self.assertIn("removeOwnedDuplicates", self.script)
+        self.assertIn("visuals.slice(1)", self.script)
 
     def test_hyphenated_headings_are_normalised_before_matching(self):
         self.assertIn(".replace(/[^a-z0-9\\s]/g, ' ')", self.script)
@@ -97,3 +103,8 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         self.assertIn("grid-auto-rows: 1fr", self.stylesheet)
         self.assertIn("height: 100% !important", self.stylesheet)
         self.assertIn("margin-top: auto !important", self.stylesheet)
+
+    def test_parity_audit_removes_only_the_inline_correction_layer(self):
+        self.assertIn("site-visual-layout-fixes", self.parity_audit)
+        self.assertIn("visual-cue-card--managed", self.parity_audit)
+        self.assertIn("hub-category-heading--clay", self.parity_audit)
