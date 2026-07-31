@@ -58,31 +58,67 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
               setTimeout(resolve, 5000);
             });
           }));
+
+          /* Navigation helpers injected only for the enhanced CMS are removed
+             completely before pixel comparison. */
           document.querySelectorAll('[data-visual-injected="true"]').forEach(visual => {
             const card = visual.closest('.visual-cue-card');
             visual.remove();
             card?.classList.remove('visual-cue-card');
           });
-          document.querySelectorAll(
-            '.concern-card .icon-bubble, .trust-item .trust-icon'
-          ).forEach(icon => {
+
+          /* Existing placeholders keep their original markup in data attributes.
+             Restore it so parity compares the underlying legacy layout rather
+             than the deliberately upgraded decorative scene. */
+          document.querySelectorAll('.message-visual').forEach(icon => {
+            const originalHtml = icon.getAttribute('data-visual-original-html');
+            if (originalHtml !== null) {
+              icon.innerHTML = originalHtml;
+            } else {
+              icon.querySelectorAll('.message-visual__svg').forEach(svg => svg.remove());
+            }
+
             [...icon.classList]
               .filter(name => name.startsWith('message-visual'))
               .forEach(name => icon.classList.remove(name));
-            icon.removeAttribute('aria-hidden');
-            icon.removeAttribute('role');
+
+            const restoreAttribute = (attribute, stored) => {
+              const value = icon.getAttribute(stored);
+              if (value === null || value === '__clay_missing__') {
+                icon.removeAttribute(attribute);
+              } else {
+                icon.setAttribute(attribute, value);
+              }
+              icon.removeAttribute(stored);
+            };
+            restoreAttribute('aria-hidden', 'data-visual-original-aria-hidden');
+            restoreAttribute('role', 'data-visual-original-role');
+            icon.removeAttribute('data-visual-original-html');
+            icon.removeAttribute('data-clay-cue');
+          });
+
+          /* Homepage artwork is intentionally larger than the old glyphs. Both
+             the CMS and static reference are reduced to the same neutral boxes
+             so the audit continues to police all surrounding geometry. */
+          document.querySelectorAll(
+            '.concern-card .icon-bubble, .trust-item .trust-icon'
+          ).forEach(icon => {
             const concern = icon.matches('.concern-card .icon-bubble');
             const size = concern ? '54px' : '42px';
             const radius = concern ? '18px' : '13px';
             const declarations = {
               width: size,
               height: size,
+              'min-width': size,
+              'max-width': size,
               display: 'grid',
               'place-items': 'center',
               flex: '0 0 auto',
+              padding: '0',
               color: 'transparent',
               'font-size': '0',
               'line-height': '0',
+              'text-indent': '0',
               background: '#fff7f5',
               'background-image': 'none',
               border: '1px solid rgba(111, 23, 54, .08)',
@@ -90,6 +126,7 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
               'box-shadow': 'none',
               filter: 'none',
               transform: 'none',
+              transition: 'none',
               overflow: 'hidden'
             };
             Object.entries(declarations).forEach(([name, value]) => {
@@ -107,20 +144,27 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             color: transparent !important;
             font-size: 0 !important;
             line-height: 0 !important;
+            text-indent: 0 !important;
+            padding: 0 !important;
             background: #fff7f5 !important;
             background-image: none !important;
             border-color: rgba(111, 23, 54, .08) !important;
             box-shadow: none !important;
             filter: none !important;
             transform: none !important;
+            transition: none !important;
           }
           .concern-card .icon-bubble {
             width: 54px !important;
+            min-width: 54px !important;
+            max-width: 54px !important;
             height: 54px !important;
             border-radius: 18px !important;
           }
           .trust-item .trust-icon {
             width: 42px !important;
+            min-width: 42px !important;
+            max-width: 42px !important;
             height: 42px !important;
             border-radius: 13px !important;
           }
