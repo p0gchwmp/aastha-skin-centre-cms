@@ -11,10 +11,10 @@ Real visitors retain native lazy loading. Full-page QA screenshots deliberately
 scroll through each page first so the evidence captures the final rendered
 layout rather than unloaded placeholders far below the initial viewport.
 
-Decorative homepage icon artwork is normalised before pixel comparison. This
+Decorative message-led artwork is normalised before pixel comparison. This
 keeps parity focused on layout, typography, spacing and controls while allowing
-the CMS to replace legacy emoji placeholders with approved production artwork.
-The live icon treatment is still covered by mobile-layout, dark-mode and
+the CMS to replace legacy placeholders and enrich compact navigation cards.
+The live visual treatment remains covered by mobile-layout, dark-mode and
 performance audits.
 """
 
@@ -58,6 +58,44 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
               setTimeout(resolve, 5000);
             });
           }));
+          document.querySelectorAll('[data-visual-injected="true"]').forEach(visual => {
+            const card = visual.closest('.visual-cue-card');
+            visual.remove();
+            card?.classList.remove('visual-cue-card');
+          });
+          document.querySelectorAll(
+            '.concern-card .icon-bubble, .trust-item .trust-icon'
+          ).forEach(icon => {
+            [...icon.classList]
+              .filter(name => name.startsWith('message-visual'))
+              .forEach(name => icon.classList.remove(name));
+            icon.removeAttribute('aria-hidden');
+            icon.removeAttribute('role');
+            const concern = icon.matches('.concern-card .icon-bubble');
+            const size = concern ? '54px' : '42px';
+            const radius = concern ? '18px' : '13px';
+            const declarations = {
+              width: size,
+              height: size,
+              display: 'grid',
+              'place-items': 'center',
+              flex: '0 0 auto',
+              color: 'transparent',
+              'font-size': '0',
+              'line-height': '0',
+              background: '#fff7f5',
+              'background-image': 'none',
+              border: '1px solid rgba(111, 23, 54, .08)',
+              'border-radius': radius,
+              'box-shadow': 'none',
+              filter: 'none',
+              transform: 'none',
+              overflow: 'hidden'
+            };
+            Object.entries(declarations).forEach(([name, value]) => {
+              icon.style.setProperty(name, value, 'important');
+            });
+          });
           window.scrollTo(0, 0);
         }
         """

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Two clinic locations illustration">
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf9"/><stop offset="1" stop-color="#ead9df"/></linearGradient>
+    <linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7ddd0"/><stop offset=".42" stop-color="#c98a73"/><stop offset="1" stop-color="#7d2949"/></linearGradient>
+    <linearGradient id="plum" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9b4769"/><stop offset="1" stop-color="#501027"/></linearGradient>
+    <linearGradient id="window" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff4b8"/><stop offset="1" stop-color="#c9a64a"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#40101f" flood-opacity=".22"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <g transform="translate(18 83)">
+      <path d="M7 36 50 8l43 28" fill="#fffaf7" stroke="#8f415a" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="10" y="34" width="80" height="77" rx="5" fill="url(#stone)" stroke="#9d5369" stroke-width="2"/>
+      <rect x="38" y="68" width="24" height="43" rx="4" fill="url(#roseGold)"/>
+      <g fill="url(#window)" stroke="#a56a50" stroke-width="2"><rect x="19" y="52" width="15" height="19" rx="3"/><rect x="66" y="52" width="15" height="19" rx="3"/></g>
+      <circle cx="50" cy="43" r="11" fill="url(#plum)"/><path d="M50 36v14M43 43h14" stroke="#fffaf7" stroke-width="4" stroke-linecap="round"/>
+      <g fill="#6f8d61"><circle cx="17" cy="101" r="9"/><circle cx="82" cy="101" r="9"/></g>
+      <g fill="#c98a73"><rect x="9" y="102" width="17" height="9" rx="2"/><rect x="74" y="102" width="17" height="9" rx="2"/></g>
+    </g>
+    <g transform="translate(130 83)">
+      <path d="M7 36 50 8l43 28" fill="#fffaf7" stroke="#8f415a" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="10" y="34" width="80" height="77" rx="5" fill="url(#stone)" stroke="#9d5369" stroke-width="2"/>
+      <rect x="38" y="68" width="24" height="43" rx="4" fill="url(#roseGold)"/>
+      <g fill="url(#window)" stroke="#a56a50" stroke-width="2"><rect x="19" y="52" width="15" height="19" rx="3"/><rect x="66" y="52" width="15" height="19" rx="3"/></g>
+      <circle cx="50" cy="43" r="11" fill="url(#plum)"/><path d="M50 36v14M43 43h14" stroke="#fffaf7" stroke-width="4" stroke-linecap="round"/>
+      <g fill="#6f8d61"><circle cx="17" cy="101" r="9"/><circle cx="82" cy="101" r="9"/></g>
+      <g fill="#c98a73"><rect x="9" y="102" width="17" height="9" rx="2"/><rect x="74" y="102" width="17" height="9" rx="2"/></g>
+    </g>
+    <g transform="translate(49 18)">
+      <path d="M21 0c18 0 31 13 31 29 0 22-31 51-31 51S-10 51-10 29C-10 13 3 0 21 0Z" fill="url(#roseGold)" stroke="#fff2e7" stroke-width="3"/>
+      <circle cx="21" cy="28" r="13" fill="#fffaf7"/><path d="M21 19v18M12 28h18" stroke="#6f1736" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(160 18)">
+      <path d="M21 0c18 0 31 13 31 29 0 22-31 51-31 51S-10 51-10 29C-10 13 3 0 21 0Z" fill="url(#plum)" stroke="#fff2e7" stroke-width="3"/>
+      <circle cx="21" cy="28" r="13" fill="#fffaf7"/><path d="M21 19v18M12 28h18" stroke="#c98a73" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </g>
+  <path d="M91 57c19-8 38-8 58 0" fill="none" stroke="#c9a64a" stroke-width="3" stroke-dasharray="4 7" stroke-linecap="round"/>
+  <g fill="#f3d66f" filter="url(#glow)"><circle cx="120" cy="53" r="3"/><path d="m117 73 1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z"/></g>
+</svg>

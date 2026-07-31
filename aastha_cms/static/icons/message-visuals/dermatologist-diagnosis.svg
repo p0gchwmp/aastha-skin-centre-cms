@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dermatologist diagnosis illustration">
+  <defs>
+    <linearGradient id="ivory" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf9"/><stop offset="1" stop-color="#eedde3"/></linearGradient>
+    <linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8e1d6"/><stop offset=".45" stop-color="#c98a73"/><stop offset="1" stop-color="#7d2949"/></linearGradient>
+    <linearGradient id="plum" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9b4769"/><stop offset="1" stop-color="#501027"/></linearGradient>
+    <radialGradient id="lens"><stop stop-color="#fff7d4"/><stop offset=".55" stop-color="#f0c968"/><stop offset="1" stop-color="#b45e77"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#40101f" flood-opacity=".22"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <g transform="rotate(-6 121 131)">
+      <rect x="55" y="73" width="129" height="123" rx="13" fill="url(#ivory)" stroke="#a65770" stroke-width="2"/>
+      <path d="M91 69h57c5 0 9 4 9 9v10H82V78c0-5 4-9 9-9Z" fill="url(#roseGold)"/>
+      <rect x="100" y="62" width="39" height="13" rx="6" fill="#fffaf7" stroke="#9c5069" stroke-width="2"/>
+      <g stroke="#bd8c9d" stroke-width="3" stroke-linecap="round"><path d="M85 111h63"/><path d="M85 127h75"/><path d="M85 143h55"/><path d="M85 159h68"/></g>
+      <g fill="none" stroke="#6f1736" stroke-width="3"><rect x="70" y="105" width="9" height="9" rx="2"/><rect x="70" y="121" width="9" height="9" rx="2"/><rect x="70" y="137" width="9" height="9" rx="2"/></g>
+      <path d="m71 109 3 3 7-8M71 125l3 3 7-8M71 141l3 3 7-8" fill="none" stroke="#c9a64a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="rotate(-24 76 89)">
+      <rect x="42" y="35" width="37" height="115" rx="17" fill="url(#ivory)" stroke="#7d2949" stroke-width="2"/>
+      <rect x="39" y="58" width="43" height="15" rx="7" fill="url(#roseGold)"/>
+      <circle cx="60.5" cy="45" r="21" fill="url(#roseGold)"/>
+      <circle cx="60.5" cy="45" r="14" fill="url(#lens)" stroke="#fff6db" stroke-width="3"/>
+      <circle cx="56" cy="40" r="4" fill="#fff" opacity=".8"/>
+      <rect x="51" y="86" width="19" height="9" rx="4.5" fill="url(#plum)"/>
+    </g>
+    <path d="M157 104c35 4 44 28 36 48-7 18-23 20-34 9-8-8-8-20-1-27 6-7 16-7 23-2" fill="none" stroke="#2d1b22" stroke-width="7" stroke-linecap="round"/>
+    <path d="M157 104c35 4 44 28 36 48" fill="none" stroke="#c98a73" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="155" cy="162" r="19" fill="url(#roseGold)" stroke="#fff8ef" stroke-width="3"/>
+    <circle cx="155" cy="162" r="11" fill="#fffaf7" stroke="#7d2949" stroke-width="2"/>
+    <path d="M83 182 137 137" stroke="#fffaf7" stroke-width="10" stroke-linecap="round"/><path d="M83 182 137 137" stroke="#c98a73" stroke-width="2" stroke-linecap="round"/><path d="m80 185 10-2-7-7z" fill="#6f1736"/>
+  </g>
+  <g filter="url(#glow)" fill="#f2d36f"><path d="m79 31 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><circle cx="86" cy="52" r="2"/></g>
+</svg>
