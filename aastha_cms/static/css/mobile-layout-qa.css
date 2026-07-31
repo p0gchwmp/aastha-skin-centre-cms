@@ -1,0 +1,268 @@
+/* =====================================================================
+   Mobile layout quality-assurance layer
+
+   This file is deliberately loaded last. It protects repeated CMS and legacy
+   card layouts from min-content sizing, fixed desktop columns and Safari grid
+   shrinkage on narrow screens.
+   ===================================================================== */
+
+@media (max-width: 720px) {
+  .release-v24 main {
+    min-width: 0;
+    padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .release-v24 :where(
+    .container,
+    .narrow,
+    .content-layout,
+    .home-section,
+    .section,
+    .section-heading,
+    .article-stack,
+    .prose
+  ) {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* All shared card grids must occupy their containing block. */
+  .release-v24 :where(
+    .concern-grid,
+    .treatment-grid,
+    .treatment-directory,
+    .article-grid,
+    .care-path-grid,
+    .condition-grid,
+    .location-grid,
+    .feature-grid,
+    .featured-map__grid,
+    .journal-grid,
+    .clinic-choice-grid,
+    .contact-action-grid,
+    .value-grid,
+    .process-grid,
+    .hours-grid,
+    .why-grid,
+    .location-pro-grid,
+    .premium-summary-grid,
+    .about-story-grid,
+    .clinic-location-grid,
+    .guide-grid,
+    .cms-card-grid,
+    .hub-link-grid,
+    .directory-grid,
+    .card-grid,
+    .category-grid
+  ) {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-inline: 0;
+    justify-self: stretch;
+  }
+
+  /* Prevent a grid-bearing wrapper from remaining trapped in one desktop
+     column after the visible heading has already become full width. */
+  .release-v24 :where(section, div):has(> :where(
+    .concern-grid,
+    .treatment-grid,
+    .treatment-directory,
+    .article-grid,
+    .care-path-grid,
+    .condition-grid,
+    .location-grid,
+    .feature-grid,
+    .featured-map__grid,
+    .journal-grid,
+    .clinic-choice-grid,
+    .contact-action-grid,
+    .value-grid,
+    .process-grid,
+    .hours-grid,
+    .why-grid,
+    .location-pro-grid,
+    .about-story-grid,
+    .clinic-location-grid,
+    .guide-grid,
+    .cms-card-grid
+  )) {
+    box-sizing: border-box;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+  }
+
+  .release-v24 :where(
+    .concern-grid,
+    .treatment-grid,
+    .treatment-directory,
+    .article-grid,
+    .care-path-grid,
+    .condition-grid,
+    .location-grid,
+    .feature-grid,
+    .featured-map__grid,
+    .journal-grid,
+    .clinic-choice-grid,
+    .contact-action-grid,
+    .value-grid,
+    .process-grid,
+    .hours-grid,
+    .why-grid,
+    .location-pro-grid,
+    .premium-summary-grid,
+    .about-story-grid,
+    .clinic-location-grid,
+    .guide-grid,
+    .cms-card-grid,
+    .hub-link-grid,
+    .directory-grid,
+    .card-grid,
+    .category-grid
+  ) > * {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .release-v24 :where(
+    .concern-card,
+    .treatment-card,
+    .article-card,
+    .care-path-card,
+    .condition-card,
+    .location-card,
+    .feature-card,
+    .featured-map__card,
+    .journal-card,
+    .clinic-choice-grid > article,
+    .contact-action-card,
+    .value-card,
+    .process-step,
+    .hours-card,
+    .why-card,
+    .location-pro-card,
+    .premium-summary-item,
+    .about-story-card,
+    .clinic-location-card,
+    .patient-guide-card,
+    .cms-card,
+    .hub-link,
+    .directory-link,
+    .card
+  ) {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .release-v24 :where(
+    .concern-card,
+    .treatment-card,
+    .article-card,
+    .care-path-card,
+    .condition-card,
+    .location-card,
+    .feature-card,
+    .featured-map__card,
+    .journal-card,
+    .contact-action-card,
+    .value-card,
+    .process-step,
+    .hours-card,
+    .why-card,
+    .location-pro-card,
+    .about-story-card,
+    .clinic-location-card,
+    .patient-guide-card,
+    .cms-card,
+    .hub-link,
+    .directory-link,
+    .card
+  ) :where(h2, h3, h4, p, address, li, a, span, strong) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Phones: a readable full-width card per row. Explicit row placement also
+   neutralises old nth-child grid positions and column-flow declarations. */
+@media (max-width: 540px) {
+  .release-v24 :where(
+    .concern-grid,
+    .treatment-grid,
+    .treatment-directory,
+    .article-grid,
+    .care-path-grid,
+    .condition-grid,
+    .location-grid,
+    .feature-grid,
+    .featured-map__grid,
+    .journal-grid,
+    .clinic-choice-grid,
+    .contact-action-grid,
+    .value-grid,
+    .process-grid,
+    .hours-grid,
+    .why-grid,
+    .location-pro-grid,
+    .premium-summary-grid,
+    .about-story-grid,
+    .clinic-location-grid,
+    .guide-grid,
+    .cms-card-grid,
+    .hub-link-grid,
+    .directory-grid,
+    .card-grid,
+    .category-grid
+  ) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-auto-flow: row !important;
+    grid-auto-columns: minmax(0, 1fr) !important;
+  }
+
+  .release-v24 :where(
+    .concern-grid,
+    .treatment-grid,
+    .treatment-directory,
+    .article-grid,
+    .care-path-grid,
+    .condition-grid,
+    .location-grid,
+    .feature-grid,
+    .featured-map__grid,
+    .journal-grid,
+    .clinic-choice-grid,
+    .contact-action-grid,
+    .value-grid,
+    .process-grid,
+    .hours-grid,
+    .why-grid,
+    .location-pro-grid,
+    .premium-summary-grid,
+    .about-story-grid,
+    .clinic-location-grid,
+    .guide-grid,
+    .cms-card-grid,
+    .hub-link-grid,
+    .directory-grid,
+    .card-grid,
+    .category-grid
+  ) > * {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-self: stretch !important;
+  }
+
+  .release-v24 .concern-card,
+  .release-v24 .treatment-card,
+  .release-v24 .why-card {
+    min-height: 0;
+  }
+}
