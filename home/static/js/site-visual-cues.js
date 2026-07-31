@@ -183,6 +183,8 @@
   const upgradeEmojiPlaceholders = () => {
     document.querySelectorAll('main span, main i').forEach(element => {
       if (element.children.length || isExcluded(element)) return;
+      const marker = `${element.className || ''} ${element.parentElement?.className || ''}`;
+      if (!/(icon|emoji|bubble|motif|symbol)/i.test(marker)) return;
       const raw = (element.textContent || '').trim();
       const isShortSymbol = raw.length > 0 && raw.length <= 4 && /[^\p{L}\p{N}\s]/u.test(raw);
       if (!isShortSymbol) return;
