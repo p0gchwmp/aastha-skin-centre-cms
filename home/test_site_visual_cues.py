@@ -51,7 +51,7 @@ class SiteVisualCueTests(SimpleTestCase):
         for cue in self.CUES:
             with self.subTest(cue=cue):
                 self.assertIn(f'id="clay-{cue}"', self.sprite)
-                self.assertIn(f"'#clay-${{cue}}'", self.script)
+        self.assertIn("#clay-${cue}", self.script)
         self.assertEqual(self.sprite.count("<symbol id=\"clay-"), 10)
         self.assertNotIn("<text", self.sprite)
         self.assertIn("clay-texture", self.sprite)
