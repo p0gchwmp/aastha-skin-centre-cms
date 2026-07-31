@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Complete skin hair and aesthetic care illustration">
+  <defs>
+    <linearGradient id="skinTop" x1="50" y1="134" x2="190" y2="176"><stop stop-color="#fffaf7"/><stop offset="1" stop-color="#efbcc9"/></linearGradient>
+    <linearGradient id="skinSide" x1="54" y1="151" x2="184" y2="211"><stop stop-color="#f8e2e5"/><stop offset="1" stop-color="#d894aa"/></linearGradient>
+    <linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8e1d6"/><stop offset=".4" stop-color="#c98a73"/><stop offset="1" stop-color="#6f1736"/></linearGradient>
+    <linearGradient id="plum" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a04b6e"/><stop offset="1" stop-color="#501027"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff3a9"/><stop offset=".52" stop-color="#c9a64a"/><stop offset="1" stop-color="#a46d22"/></linearGradient>
+    <linearGradient id="hair" x1="95" y1="47" x2="175" y2="167"><stop stop-color="#3b1723"/><stop offset=".45" stop-color="#6f1736"/><stop offset="1" stop-color="#c98a73"/></linearGradient>
+    <pattern id="fat" width="22" height="18" patternUnits="userSpaceOnUse"><circle cx="6" cy="8" r="5" fill="#fff0cf"/><circle cx="17" cy="12" r="6" fill="#efcc85"/></pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#40101f" flood-opacity=".22"/></filter>
+    <filter id="glow" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M48 153 71 136h118l-18 17z" fill="url(#skinTop)" stroke="#bd6983" stroke-width="2"/>
+    <path d="M48 153h123v51H48z" fill="url(#skinSide)" stroke="#a64c69" stroke-width="2"/>
+    <path d="M171 153 189 136v51l-18 17z" fill="#d99aae" stroke="#a64c69" stroke-width="2"/>
+    <rect x="49" y="182" width="122" height="22" fill="url(#fat)" opacity=".9"/>
+
+    <g transform="translate(37 44)">
+      <rect x="0" y="28" width="76" height="34" rx="13" fill="url(#plum)"/>
+      <rect x="21" y="7" width="34" height="76" rx="13" fill="url(#plum)"/>
+      <path d="M38 18v54M11 45h54" stroke="#fffaf7" stroke-width="8" stroke-linecap="round" opacity=".92"/>
+    </g>
+
+    <path d="M130 47c17 24 29 42 29 61 0 22-15 37-34 37s-34-15-34-37c0-19 14-38 39-61Z" fill="url(#gold)" stroke="#fff3c2" stroke-width="3"/>
+    <path d="M119 70c-10 14-15 26-15 37 0 11 7 19 17 21" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".62"/>
+
+    <path d="M164 38c-9 40-29 69-52 91 32-14 53-39 65-76-2 33-13 62-34 87 31-18 50-45 58-82-1-18-12-27-37-20Z" fill="url(#hair)" stroke="#c98a73" stroke-width="2"/>
+    <path d="M170 47c-7 28-21 52-42 72" fill="none" stroke="#f1c5b3" stroke-width="3" stroke-linecap="round" opacity=".68"/>
+
+    <ellipse cx="122" cy="151" rx="39" ry="9" fill="#fffaf7" opacity=".5"/>
+    <path d="M122 142c7 9 8 16 0 23-8-7-7-14 0-23Z" fill="url(#gold)"/>
+  </g>
+  <g fill="#f3d66f" filter="url(#glow)"><path d="m83 50 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m184 116 1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z"/><circle cx="149" cy="94" r="2.5"/></g>
+</svg>
