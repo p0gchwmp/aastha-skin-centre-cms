@@ -199,6 +199,7 @@
       if (!cue) return;
 
       const visual = document.createElement('span');
+      visual.dataset.visualInjected = 'true';
       setCue(visual, cue);
       card.classList.add('visual-cue-card');
 
