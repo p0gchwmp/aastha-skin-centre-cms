@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags exact_pages %}
+{% load static wagtailcore_tags exact_pages %}
 {% block body_class %}cms-home-page{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/premium-icons.css' %}">{% endblock %}
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
