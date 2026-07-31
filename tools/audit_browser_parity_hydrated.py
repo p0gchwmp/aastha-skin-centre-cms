@@ -117,16 +117,12 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             heading.classList.remove('hub-category-heading--clay');
           });
 
-          /* The final correction sheet deliberately changes card geometry to
+          /* The inline correction sheet deliberately changes card geometry to
              prevent overlaps and restore equal-height clinic panels. Remove it
              only inside the desktop reference screenshot so parity continues to
              compare the unchanged underlying site. Production layout remains
              covered by the actual mobile, dark-mode and performance audits. */
-          document.querySelectorAll('link[rel="stylesheet"]').forEach(stylesheet => {
-            if (stylesheet.href.includes('site-visual-layout-fixes.css')) {
-              stylesheet.remove();
-            }
-          });
+          document.getElementById('site-visual-layout-fixes')?.remove();
           await new Promise(resolve => requestAnimationFrame(() => resolve()));
 
           /* Homepage artwork is intentionally larger than the old glyphs. Both
