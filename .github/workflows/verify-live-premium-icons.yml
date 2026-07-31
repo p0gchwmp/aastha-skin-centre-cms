@@ -1,0 +1,82 @@
+name: Verify live premium icons
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-premium-icons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install browser audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 lxml pillow playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Wait for merged release on Render
+        env:
+          EXPECTED_RELEASE: c996659168c457ba712d7c2da363ca3e1ff4e7d5
+        run: |
+          for attempt in $(seq 1 150); do
+            body="$(curl --fail --silent https://www.aasthaskincentre.in/healthz/ || true)"
+            if printf '%s' "$body" | grep -q "$EXPECTED_RELEASE"; then
+              printf '%s\n' "$body"
+              exit 0
+            fi
+            sleep 5
+          done
+          printf 'Expected release %s did not become live.\n' "$EXPECTED_RELEASE"
+          exit 1
+
+      - name: Confirm premium homepage assets are public
+        run: |
+          homepage="$(curl --fail --silent https://www.aasthaskincentre.in/)"
+          printf '%s' "$homepage" | grep -q 'premium-icons.css'
+          css="$(curl --fail --silent https://www.aasthaskincentre.in/static/css/premium-icons.css)"
+          printf '%s' "$css" | grep -q 'acne-care.svg'
+          printf '%s' "$css" | grep -q 'pigmentation-care.svg'
+          printf '%s' "$css" | grep -q 'hair-care.svg'
+          curl --fail --silent https://www.aasthaskincentre.in/static/icons/premium/acne-care.svg > /dev/null
+          curl --fail --silent https://www.aasthaskincentre.in/static/icons/premium/pigmentation-care.svg > /dev/null
+          curl --fail --silent https://www.aasthaskincentre.in/static/icons/premium/hair-care.svg > /dev/null
+
+      - name: Audit live phone layouts
+        run: |
+          python tools/audit_mobile_layout.py \
+            --site https://www.aasthaskincentre.in \
+            --output audit-artifacts/live-premium-icons-mobile
+
+      - name: Audit live dark-mode readability
+        run: |
+          python tools/audit_dark_mode_readability.py \
+            --cms https://www.aasthaskincentre.in \
+            --output audit-artifacts/live-premium-icons-dark
+
+      - name: Audit live performance budgets
+        run: |
+          python tools/audit_frontend_performance.py \
+            --cms https://www.aasthaskincentre.in \
+            --output audit-artifacts/live-premium-icons-performance
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-premium-icons-${{ github.sha }}
+          path: audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
