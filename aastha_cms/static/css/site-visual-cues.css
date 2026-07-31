@@ -189,6 +189,12 @@ html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
     drop-shadow(0 12px 17px rgba(0, 0, 0, .42)) !important;
 }
 
+/* No glyph remains after enhancement, but a readable computed colour keeps
+   automated contrast checks aligned with the decorative aria-hidden state. */
+html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
+  color: #fffaf7 !important;
+}
+
 html[data-theme="dark"] .concern-card:hover .message-visual,
 html[data-theme="dark"] .trust-item:hover .message-visual,
 html[data-theme="dark"] .visual-cue-card:hover > .message-visual,
