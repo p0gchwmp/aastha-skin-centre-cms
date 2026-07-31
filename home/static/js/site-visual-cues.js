@@ -204,7 +204,7 @@
       : MISSING_ATTRIBUTE;
   };
 
-  const buildClayImage = (cue, priority = false) => {
+  const buildClayImage = cue => {
     const asset = ASSETS[cue];
     if (!asset?.['128'] || !asset?.['256'] || !asset?.['512']) return null;
 
@@ -220,7 +220,8 @@
     image.width = 512;
     image.height = 512;
     image.alt = '';
-    image.loading = priority ? 'eager' : 'lazy';
+    image.loading = 'lazy';
+    image.fetchPriority = 'low';
     image.decoding = 'async';
     image.draggable = false;
     image.setAttribute('aria-hidden', 'true');
@@ -230,10 +231,7 @@
   const setCue = (element, cue) => {
     if (!element || !CUE_NAMES.has(cue) || isExcluded(element)) return false;
 
-    const image = buildClayImage(
-      cue,
-      Boolean(element.closest('.concern-card, .trust-item'))
-    );
+    const image = buildClayImage(cue);
     if (!image) return false;
 
     rememberOriginal(element);
