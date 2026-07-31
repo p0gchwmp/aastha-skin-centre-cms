@@ -24,6 +24,7 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         self.assertEqual(self.base_template.count("js/site-visual-cues.js"), 1)
         self.assertNotIn("visual_layout_fixes_css.html", self.base_template)
         self.assertNotIn("visual_layout_fixes_js.html", self.base_template)
+        self.assertNotIn("site-visual-layout-fixes", self.base_template)
         self.assertNotIn("css/site-visual-layout-fixes.css", self.base_template)
         self.assertNotIn("js/site-visual-layout-fixes.js", self.base_template)
         self.assertIn("Visual-cue layout corrections", self.stylesheet)
