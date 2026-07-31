@@ -106,10 +106,6 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             heading?.classList.remove('hub-category-heading--clay');
           });
 
-          /* Remove any corrective marker left on cards whose injected artwork
-             was already removed above. The production layout remains tested by
-             mobile, dark-mode and performance audits; parity compares the
-             underlying legacy geometry after decorative enhancement is absent. */
           document.querySelectorAll('.visual-cue-card--managed').forEach(card => {
             card.classList.remove('visual-cue-card', 'visual-cue-card--managed');
           });
@@ -117,10 +113,10 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             heading.classList.remove('hub-category-heading--clay');
           });
 
-          /* Clay styling and the corrective geometry now share one production
-             stylesheet to preserve the request budget. Remove that combined
-             sheet only inside the desktop reference screenshot after all clay
-             markup has been normalised. */
+          /* Clay styling and the corrective geometry share one production
+             stylesheet. Remove it for reference screenshots, then add an
+             explicit geometry reset because Chromium can retain already-applied
+             computed grid sizing until the next style recalculation. */
           document.querySelectorAll('link[rel="stylesheet"]').forEach(stylesheet => {
             if (stylesheet.href.includes('site-visual-cues.css')) {
               stylesheet.remove();
@@ -128,9 +124,6 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
           });
           await new Promise(resolve => requestAnimationFrame(() => resolve()));
 
-          /* Homepage artwork is intentionally larger than the old glyphs. Both
-             the CMS and static reference are reduced to the same neutral boxes
-             so the audit continues to police all surrounding geometry. */
           document.querySelectorAll(
             '.concern-card .icon-bubble, .trust-item .trust-icon'
           ).forEach(icon => {
@@ -205,6 +198,52 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
           .trust-item .trust-icon::after {
             content: none !important;
             display: none !important;
+          }
+
+          /* Reference-only reset for the deliberate equal-height clinic-card
+             enhancement. The production site keeps the symmetry correction;
+             parity compares the underlying legacy geometry. */
+          @media (min-width: 721px) {
+            .release-v24 :where(
+              .about-story-grid,
+              .clinic-location-grid,
+              .location-contact-grid,
+              .hours-grid,
+              .location-pro-grid,
+              .clinic-choice-grid
+            ) {
+              grid-auto-rows: auto !important;
+            }
+
+            .release-v24 :where(
+              .about-story-card,
+              .clinic-location-card,
+              .location-contact-card,
+              .hours-card,
+              .location-pro-card,
+              .clinic-choice-grid > article
+            ) {
+              height: auto !important;
+              min-height: 0 !important;
+            }
+
+            .release-v24 :where(
+              .about-story-card,
+              .clinic-location-card,
+              .location-contact-card,
+              .location-pro-card,
+              .clinic-choice-grid > article
+            ) > :where(.inline-actions, .location-actions, .card-actions, .hero-actions),
+            .release-v24 :where(
+              .about-story-card,
+              .clinic-location-card,
+              .location-contact-card,
+              .location-pro-card,
+              .clinic-choice-grid > article
+            ) > :last-child:has(.button) {
+              margin-top: 0 !important;
+              padding-top: 0 !important;
+            }
           }
         """
     )
