@@ -1,10 +1,14 @@
+import json
 from decimal import Decimal
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory, TestCase
 
 from home.models import ClinicLocation, Doctor
 from home.seo import _clinic_id, _doctor_id
+from home.templatetags.seo_tags import seo_schema
 from seo_support.models import ClinicSEOProfile, DoctorSEOProfile, validate_hours
 from seo_support.schema import enrich_structured_data
 
@@ -119,3 +123,45 @@ class SchemaEnrichmentTests(TestCase):
             doctor_entity["sameAs"],
             ["https://www.practo.com/jammu/doctor/example"],
         )
+
+
+class HomepageSchemaTagTests(TestCase):
+    def test_homepage_emits_json_ld_graph(self):
+        request = RequestFactory().get("/")
+        page = SimpleNamespace(title="Aastha Skin Centre")
+        payload = {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebSite",
+                    "@id": "https://www.aasthaskincentre.in/#website",
+                }
+            ],
+        }
+        context = {
+            "request": request,
+            "public_site_url": "https://www.aasthaskincentre.in",
+            "canonical_url": "https://www.aasthaskincentre.in/",
+            "clinic_locations": [],
+            "active_doctors": [],
+        }
+
+        with (
+            patch(
+                "home.templatetags.seo_tags.SiteSettings.for_request",
+                return_value=SimpleNamespace(),
+            ),
+            patch(
+                "home.templatetags.seo_tags.build_structured_data",
+                return_value=payload,
+            ) as build,
+            patch(
+                "home.templatetags.seo_tags.enrich_structured_data",
+                side_effect=lambda value, **kwargs: value,
+            ),
+        ):
+            result = seo_schema(context, page)
+
+        self.assertEqual(json.loads(result), payload)
+        build.assert_called_once()
+        self.assertEqual(build.call_args.kwargs["canonical_url"], context["canonical_url"])

@@ -15,14 +15,10 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def seo_schema(context, page=None) -> str:
-    """Return compact JSON-LD for the current public page.
-
-    The imported homepage already includes a curated clinic graph, so the tag
-    intentionally returns an empty string there to avoid duplicate entities.
-    """
+    """Return compact JSON-LD for every public page, including the homepage."""
 
     request = context.get("request")
-    if request is None or request.path == "/":
+    if request is None:
         return ""
 
     specific_page = getattr(page, "specific", page) if page else None

@@ -261,9 +261,18 @@ class SEOFoundationTests(WagtailPageTestCase):
         self.assertIn(PUBLIC_URL, serialized)
         self.assertNotIn(f"https://{RENDER_HOST}", serialized)
 
-    def test_homepage_does_not_duplicate_the_new_global_graph(self):
+    def test_homepage_emits_one_canonical_global_graph(self):
         response = self.get_public("/")
-        self.assertNotContains(response, f"{PUBLIC_URL}/#organization")
+        payloads = json_ld_payloads(response)
+        self.assertEqual(len(payloads), 1)
+        graph = schema_graph(response)
+        self.assertEqual(len(entities_of_type(graph, "Organization")), 1)
+        self.assertEqual(len(entities_of_type(graph, "WebSite")), 1)
+        self.assertEqual(len(entities_of_type(graph, "WebPage")), 1)
+        self.assertEqual(
+            entities_of_type(graph, "WebPage")[0]["url"],
+            f"{PUBLIC_URL}/",
+        )
 
     def test_internal_search_is_noindex_follow_on_public_domain(self):
         response = self.get_public("/search/?query=acne")
