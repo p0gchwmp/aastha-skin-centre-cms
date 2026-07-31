@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Medical experience and trust illustration">
+  <defs>
+    <linearGradient id="shield" x1="60" y1="42" x2="177" y2="198"><stop stop-color="#fffaf7"/><stop offset=".46" stop-color="#f1dfe5"/><stop offset="1" stop-color="#d49aae"/></linearGradient>
+    <linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8e1d6"/><stop offset=".38" stop-color="#c98a73"/><stop offset=".72" stop-color="#9d5369"/><stop offset="1" stop-color="#6f1736"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1a8"/><stop offset=".5" stop-color="#c9a64a"/><stop offset="1" stop-color="#9a6e28"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#40101f" flood-opacity=".24"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M120 23c28 18 57 23 81 25v60c0 52-31 91-81 113-50-22-81-61-81-113V48c24-2 53-7 81-25Z" fill="url(#roseGold)"/>
+    <path d="M120 35c24 14 46 18 67 21v51c0 43-24 77-67 98-43-21-67-55-67-98V56c21-3 43-7 67-21Z" fill="url(#shield)" stroke="#fff5ea" stroke-width="3"/>
+    <path d="M120 52c19 11 36 14 51 17v38c0 32-17 58-51 76-34-18-51-44-51-76V69c15-3 32-6 51-17Z" fill="#fffaf7" fill-opacity=".34" stroke="#c98a73" stroke-width="2"/>
+    <path d="M120 68v76" stroke="url(#gold)" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="120" cy="65" r="7" fill="url(#gold)"/>
+    <path d="M121 82c-18-12-28 3-16 13 8 7 23 5 28 15 6 12-4 24-18 24" fill="none" stroke="url(#roseGold)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M119 102c16-12 28 1 20 12-6 8-19 9-23 18" fill="none" stroke="#9b4769" stroke-width="4" stroke-linecap="round"/>
+    <g fill="none" stroke="url(#gold)" stroke-width="4" stroke-linecap="round">
+      <path d="M105 163c-18-5-30-16-36-31"/><path d="M135 163c18-5 30-16 36-31"/>
+      <path d="M79 145c-7-1-12-5-16-10M86 154c-8 0-14-3-19-8M94 160c-8 1-15 0-20-5"/>
+      <path d="M161 145c7-1 12-5 16-10M154 154c8 0 14-3 19-8M146 160c8 1 15 0 20-5"/>
+    </g>
+  </g>
+  <g fill="#f3d66f" filter="url(#glow)"><path d="m83 62 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m163 74 1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z"/></g>
+</svg>
