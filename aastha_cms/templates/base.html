@@ -53,7 +53,7 @@
   <link rel="stylesheet" href="{% static 'css/layout-balance.css' %}">
   <link rel="stylesheet" href="{% static 'css/mobile-layout-qa.css' %}">
   <link rel="stylesheet" href="{% static 'css/site-visual-cues.css' %}">
-  <link rel="stylesheet" href="{% static 'css/site-visual-layout-fixes.css' %}">
+  {% include "home/partials/visual_layout_fixes_css.html" %}
   {% block extra_head %}{% endblock %}
 </head>
 <body
@@ -93,7 +93,7 @@
   <script src="{% static 'js/professional.js' %}" defer></script>
   <script src="{% static 'js/release-v24.js' %}" defer></script>
   <script src="{% static 'js/site-visual-cues.js' %}" defer></script>
-  <script src="{% static 'js/site-visual-layout-fixes.js' %}" defer></script>
+  {% include "home/partials/visual_layout_fixes_js.html" %}
   <script src="{% static 'js/aastha_cms.js' %}" defer></script>
   <script src="{% static 'js/analytics-events.js' %}" defer></script>
   <script src="{% static 'js/appointment-form-controller.js' %}" defer></script>
