@@ -1,0 +1,160 @@
+<svg class="pastel-clay-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <linearGradient id="clay-ivory" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf8"/><stop offset=".55" stop-color="#f8efe8"/><stop offset="1" stop-color="#e9dcd4"/></linearGradient>
+    <linearGradient id="clay-blush" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd9df"/><stop offset=".5" stop-color="#f4aebd"/><stop offset="1" stop-color="#d987a2"/></linearGradient>
+    <linearGradient id="clay-peach" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe3c9"/><stop offset=".5" stop-color="#f7c2a1"/><stop offset="1" stop-color="#dc9b80"/></linearGradient>
+    <linearGradient id="clay-lilac" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ebe3ff"/><stop offset=".52" stop-color="#c9b8ee"/><stop offset="1" stop-color="#9e8ac9"/></linearGradient>
+    <linearGradient id="clay-sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5f6ff"/><stop offset=".52" stop-color="#b9ddf0"/><stop offset="1" stop-color="#87b7d1"/></linearGradient>
+    <linearGradient id="clay-mint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e4f8ee"/><stop offset=".52" stop-color="#b9dfca"/><stop offset="1" stop-color="#83b39a"/></linearGradient>
+    <linearGradient id="clay-sage" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef5df"/><stop offset=".52" stop-color="#c6d6ad"/><stop offset="1" stop-color="#95aa78"/></linearGradient>
+    <linearGradient id="clay-butter" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff6c9"/><stop offset=".52" stop-color="#efdaa0"/><stop offset="1" stop-color="#c5a866"/></linearGradient>
+    <linearGradient id="clay-teal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcf7f4"/><stop offset=".52" stop-color="#a9dad5"/><stop offset="1" stop-color="#6aa9a4"/></linearGradient>
+    <linearGradient id="clay-rose-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe6da"/><stop offset=".32" stop-color="#d9a18e"/><stop offset=".67" stop-color="#b97768"/><stop offset="1" stop-color="#84536a"/></linearGradient>
+    <linearGradient id="clay-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff7bf"/><stop offset=".45" stop-color="#e2c26e"/><stop offset="1" stop-color="#aa8140"/></linearGradient>
+    <linearGradient id="clay-skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1e8"/><stop offset=".5" stop-color="#f4cbbf"/><stop offset="1" stop-color="#d99f98"/></linearGradient>
+    <linearGradient id="clay-skin-side" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5d5cc"/><stop offset="1" stop-color="#c98c91"/></linearGradient>
+    <radialGradient id="clay-lesion"><stop stop-color="#fff7f5"/><stop offset=".28" stop-color="#ef8fa3"/><stop offset=".72" stop-color="#c35f7b"/><stop offset="1" stop-color="#8f4964"/></radialGradient>
+    <radialGradient id="clay-lens"><stop stop-color="#fffdf6"/><stop offset=".42" stop-color="#e8f4f7"/><stop offset=".72" stop-color="#a9cbd7"/><stop offset="1" stop-color="#6e8597"/></radialGradient>
+    <filter id="clay-shadow" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="7" stdDeviation="6" flood-color="#5b4050" flood-opacity=".24"/></filter>
+    <filter id="clay-small-shadow" x="-50%" y="-50%" width="200%" height="210%"><feDropShadow dx="0" dy="3" stdDeviation="2.4" flood-color="#5b4050" flood-opacity=".22"/></filter>
+    <filter id="clay-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="clay-texture" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".82" numOctaves="2" seed="19" result="n"/><feColorMatrix in="n" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 .055 0" result="grain"/><feBlend in="SourceGraphic" in2="grain" mode="soft-light"/></filter>
+    <style>
+      .clay-o{stroke:#775d6c;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .clay-hi{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;opacity:.58}
+      .clay-line{fill:none;stroke:#8b6b7a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .clay-spark{fill:#f4d980;filter:url(#clay-glow)}
+      .clay-scene{filter:url(#clay-shadow)}
+      .clay-piece{filter:url(#clay-texture)}
+    </style>
+  </defs>
+
+  <symbol id="clay-acne" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M46 116 72 94h126l-20 22Z" fill="url(#clay-skin)" class="clay-o"/>
+      <path d="M46 116h132v78H46Z" fill="url(#clay-skin-side)" class="clay-o"/>
+      <path d="m178 116 20-22v79l-20 21Z" fill="#c69aa7" class="clay-o"/>
+      <path d="M47 168h131v26H47Z" fill="url(#clay-butter)" opacity=".92"/>
+      <g fill="#fff0c8" opacity=".82"><circle cx="62" cy="181" r="7"/><circle cx="80" cy="176" r="8"/><circle cx="99" cy="183" r="7"/><circle cx="119" cy="177" r="8"/><circle cx="139" cy="183" r="7"/><circle cx="160" cy="177" r="8"/></g>
+      <path d="M98 116c0 8-6 15-6 24 0 15 10 24 23 24s24-10 24-24c0-10-7-17-7-24" fill="#d9788e" opacity=".68"/>
+      <ellipse cx="115" cy="112" rx="20" ry="13" fill="url(#clay-lesion)" class="clay-o"/>
+      <ellipse cx="77" cy="111" rx="12" ry="9" fill="url(#clay-lesion)"/>
+      <ellipse cx="151" cy="108" rx="13" ry="10" fill="url(#clay-lesion)"/>
+      <circle cx="115" cy="109" r="4.5" fill="#fff" opacity=".82"/><circle cx="77" cy="108" r="3" fill="#fff" opacity=".8"/><circle cx="151" cy="105" r="3" fill="#fff" opacity=".8"/>
+      <g transform="translate(18 137)"><rect width="36" height="58" rx="11" fill="url(#clay-ivory)" class="clay-o"/><rect x="3" y="19" width="30" height="36" rx="8" fill="url(#clay-butter)" opacity=".45"/><rect x="-2" y="-7" width="40" height="16" rx="6" fill="url(#clay-rose-gold)"/><path d="M9-7v-16c0-8 5-13 9-13 5 0 10 5 10 13v16" fill="url(#clay-ivory)" class="clay-o"/></g>
+      <g transform="rotate(35 178 70)"><path d="M164 18h25c8 0 13 6 13 13v21h-51V31c0-7 5-13 13-13Z" fill="url(#clay-ivory)" class="clay-o"/><rect x="149" y="45" width="55" height="15" rx="6" fill="url(#clay-rose-gold)"/><rect x="169" y="59" width="15" height="66" rx="7" fill="#fff" fill-opacity=".58" class="clay-o"/><path d="M176.5 124c8 11 9 19 0 26-9-7-8-15 0-26Z" fill="url(#clay-gold)"/></g>
+      <path d="M57 124c30-9 71-10 108-4" class="clay-hi" opacity=".34"/>
+    </g>
+    <g class="clay-spark"><path d="m143 93 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><circle cx="136" cy="121" r="3"/></g>
+  </symbol>
+
+  <symbol id="clay-pigmentation" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M43 116 70 93h130l-21 23Z" fill="url(#clay-skin)" class="clay-o"/>
+      <path d="M43 116h136v79H43Z" fill="url(#clay-skin-side)" class="clay-o"/>
+      <path d="m179 116 21-23v80l-21 22Z" fill="#cda6aa" class="clay-o"/>
+      <rect x="44" y="169" width="135" height="26" fill="url(#clay-butter)" opacity=".82"/>
+      <path d="M48 118c12-15 29-22 49-22 27 0 45 10 57 22-11 4-22 13-30 25-10 15-25 25-48 22-17-2-29-9-37-18Z" fill="#a97888" opacity=".72"/>
+      <path d="M52 117c16-10 35-15 54-14 18 1 33 6 45 14-18 7-25 24-39 34-17 12-39 8-56-4Z" fill="url(#clay-lilac)" opacity=".42"/>
+      <g fill="#79566c" opacity=".56"><circle cx="69" cy="118" r="4"/><circle cx="83" cy="108" r="3.5"/><circle cx="97" cy="120" r="5"/><circle cx="111" cy="110" r="3"/><circle cx="120" cy="127" r="4"/><circle cx="78" cy="137" r="3.5"/><circle cx="101" cy="143" r="4"/></g>
+      <path d="M145 121c15-8 29-9 42-4" class="clay-hi" opacity=".72"/>
+      <g transform="translate(19 139)"><rect width="35" height="56" rx="11" fill="url(#clay-ivory)" class="clay-o"/><rect x="3" y="18" width="29" height="35" rx="7" fill="url(#clay-butter)" opacity=".44"/><rect x="-2" y="-7" width="39" height="16" rx="6" fill="url(#clay-rose-gold)"/><path d="M9-7v-17c0-8 4-13 9-13s9 5 9 13v17" fill="url(#clay-ivory)" class="clay-o"/></g>
+      <g transform="rotate(35 178 70)"><path d="M164 18h24c8 0 13 6 13 13v21h-50V31c0-7 5-13 13-13Z" fill="url(#clay-ivory)" class="clay-o"/><rect x="149" y="45" width="54" height="15" rx="6" fill="url(#clay-rose-gold)"/><rect x="168" y="59" width="15" height="66" rx="7" fill="#fff" fill-opacity=".58" class="clay-o"/><path d="M175.5 124c8 11 9 19 0 26-9-7-8-15 0-26Z" fill="url(#clay-gold)"/></g>
+    </g>
+    <g class="clay-spark"><path d="m151 93 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><path d="m171 126 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/></g>
+  </symbol>
+
+  <symbol id="clay-hair" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M43 120 69 98h132l-21 22Z" fill="url(#clay-skin)" class="clay-o"/>
+      <path d="M43 120h137v78H43Z" fill="url(#clay-mint)" class="clay-o" opacity=".86"/>
+      <path d="m180 120 21-22v78l-21 22Z" fill="#89b8a5" class="clay-o"/>
+      <path d="M44 172h136v26H44Z" fill="url(#clay-lilac)" opacity=".84"/>
+      <path d="M101 120c-1 20-10 35-10 51 0 21 10 33 23 33s23-13 23-33c0-17-10-32-11-51" fill="#f2c5cf" class="clay-o"/>
+      <path d="M114 197c-9-30-9-49-5-72 4-22 5-43 4-68-1-18 3-31 10-40 5 18 4 33 2 50-2 20-1 39 3 58 6 27 6 51-3 72-3 8-8 11-11 0Z" fill="#5b4f75" class="clay-o"/>
+      <path d="M119 28c-2 23-1 48 1 72" class="clay-hi" opacity=".46"/>
+      <path d="M138 145c16-14 31-9 34 5-7 8-16 12-29 11" fill="url(#clay-lilac)" class="clay-o"/>
+      <circle cx="157" cy="151" r="5.5" fill="#fff3c7" opacity=".78"/>
+      <g transform="translate(18 146)"><rect width="34" height="52" rx="10" fill="url(#clay-ivory)" class="clay-o"/><rect x="3" y="17" width="28" height="32" rx="7" fill="url(#clay-sky)" opacity=".56"/><rect x="-2" y="-7" width="38" height="15" rx="6" fill="url(#clay-rose-gold)"/><path d="M9-7v-15c0-8 4-12 8-12 5 0 9 4 9 12v15" fill="url(#clay-ivory)" class="clay-o"/></g>
+      <g transform="rotate(23 183 66)"><rect x="158" y="20" width="54" height="36" rx="16" fill="url(#clay-lilac)" class="clay-o"/><rect x="158" y="47" width="54" height="13" rx="6" fill="url(#clay-rose-gold)"/><path d="M174 60h20l-6 20h-9Z" fill="url(#clay-ivory)" class="clay-o"/></g>
+      <path d="m184 82-52 80" stroke="#f4d572" stroke-width="10" stroke-linecap="round" opacity=".32"/><path d="m184 82-52 80" stroke="#fff4a4" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+    <g class="clay-spark"><circle cx="132" cy="162" r="6"/><path d="m148 143 2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5Z"/></g>
+  </symbol>
+
+  <symbol id="clay-diagnosis" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <g transform="rotate(-5 134 132)"><rect x="61" y="55" width="139" height="150" rx="16" fill="url(#clay-lilac)" class="clay-o"/><rect x="69" y="65" width="123" height="131" rx="11" fill="url(#clay-ivory)"/><path d="M103 47h59c7 0 12 5 12 12v13H91V59c0-7 5-12 12-12Z" fill="url(#clay-rose-gold)"/><rect x="114" y="39" width="37" height="15" rx="7" fill="url(#clay-ivory)" class="clay-o"/><g class="clay-line"><path d="M105 103h57"/><path d="M105 126h66"/><path d="M105 149h48"/><path d="M105 172h61"/></g><g fill="none" stroke="#8f789f" stroke-width="3"><rect x="83" y="95" width="13" height="13" rx="3"/><rect x="83" y="118" width="13" height="13" rx="3"/><rect x="83" y="141" width="13" height="13" rx="3"/></g><g fill="none" stroke="#8bb89b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m85 101 4 4 10-13"/><path d="m85 124 4 4 10-13"/><path d="m85 147 4 4 10-13"/></g><path d="M132 83c16 0 27 9 27 21 0 7-4 13-10 17-4 3-7 8-7 13" fill="none" stroke="#c39aa9" stroke-width="3"/><g fill="#e78ea4"><circle cx="126" cy="101" r="3"/><circle cx="137" cy="95" r="2.5"/><circle cx="146" cy="104" r="3"/></g></g>
+      <g transform="rotate(-26 70 90)"><rect x="45" y="42" width="40" height="118" rx="18" fill="url(#clay-sky)" class="clay-o"/><rect x="42" y="67" width="46" height="16" rx="7" fill="url(#clay-rose-gold)"/><circle cx="65" cy="51" r="23" fill="url(#clay-rose-gold)"/><circle cx="65" cy="51" r="15" fill="url(#clay-lens)" stroke="#fff" stroke-width="3"/><circle cx="60" cy="46" r="4" fill="#fff" opacity=".8"/><rect x="55" y="98" width="20" height="10" rx="5" fill="#6f6787"/></g>
+      <path d="M167 111c38 4 48 30 39 52-8 20-25 22-37 10-9-9-9-22-1-30 7-8 18-8 26-2" fill="none" stroke="#6a6686" stroke-width="8" stroke-linecap="round"/><path d="M167 111c38 4 48 30 39 52" fill="none" stroke="#d9a18e" stroke-width="2.5" stroke-linecap="round"/><circle cx="165" cy="174" r="21" fill="url(#clay-rose-gold)"/><circle cx="165" cy="174" r="12" fill="url(#clay-ivory)" class="clay-o"/>
+    </g>
+    <g class="clay-spark"><path d="m82 37 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><circle cx="91" cy="63" r="3"/></g>
+  </symbol>
+
+  <symbol id="clay-experience" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M128 22c31 19 63 25 90 28v66c0 57-34 99-90 124-56-25-90-67-90-124V50c27-3 59-9 90-28Z" fill="url(#clay-sage)" class="clay-o"/>
+      <path d="M128 36c26 15 50 20 73 23v56c0 47-27 84-73 107-46-23-73-60-73-107V59c23-3 47-8 73-23Z" fill="url(#clay-ivory)" stroke="#a4b489" stroke-width="3"/>
+      <path d="M128 54c20 12 39 16 56 19v41c0 35-19 63-56 83-37-20-56-48-56-83V73c17-3 36-7 56-19Z" fill="url(#clay-butter)" opacity=".38" stroke="#c6b37d" stroke-width="2"/>
+      <path d="M128 71v83" stroke="url(#clay-gold)" stroke-width="9" stroke-linecap="round"/><circle cx="128" cy="67" r="8" fill="url(#clay-gold)"/>
+      <path d="M129 86c-20-13-31 3-18 14 9 8 25 6 31 17 7 13-4 26-20 26" fill="none" stroke="url(#clay-rose-gold)" stroke-width="8" stroke-linecap="round"/><path d="M127 108c18-13 31 1 22 13-7 9-21 10-25 20" fill="none" stroke="#9b7e8e" stroke-width="4.5" stroke-linecap="round"/>
+      <g fill="none" stroke="#b59b5b" stroke-width="4" stroke-linecap="round"><path d="M111 177c-20-5-34-17-41-34"/><path d="M145 177c20-5 34-17 41-34"/><path d="M82 158c-8-1-14-5-18-11M91 168c-9 0-16-3-21-9M101 175c-9 1-16 0-22-6"/><path d="M174 158c8-1 14-5 18-11M165 168c9 0 16-3 21-9M155 175c9 1 16 0 22-6"/></g>
+      <g filter="url(#clay-small-shadow)"><circle cx="83" cy="211" r="10" fill="url(#clay-lilac)"/><circle cx="106" cy="220" r="10" fill="url(#clay-sky)"/><circle cx="150" cy="220" r="10" fill="url(#clay-mint)"/><circle cx="173" cy="211" r="10" fill="url(#clay-peach)"/></g>
+    </g>
+    <g class="clay-spark"><path d="m88 66 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><path d="m174 80 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/></g>
+  </symbol>
+
+  <symbol id="clay-locations" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <g transform="translate(11 91)"><path d="m8 37 47-31 47 31" fill="url(#clay-ivory)" class="clay-o"/><rect x="12" y="35" width="86" height="83" rx="6" fill="url(#clay-mint)" class="clay-o"/><rect x="42" y="72" width="27" height="46" rx="4" fill="url(#clay-rose-gold)"/><g fill="url(#clay-butter)" class="clay-o"><rect x="21" y="53" width="17" height="22" rx="3"/><rect x="73" y="53" width="17" height="22" rx="3"/></g><circle cx="55" cy="45" r="12" fill="url(#clay-sky)"/><path d="M55 37v16M47 45h16" stroke="#fff" stroke-width="4" stroke-linecap="round"/><g fill="#8eb69c"><circle cx="20" cy="107" r="10"/><circle cx="91" cy="107" r="10"/></g><g fill="#c99c87"><rect x="11" y="108" width="19" height="10" rx="2"/><rect x="81" y="108" width="19" height="10" rx="2"/></g></g>
+      <g transform="translate(134 91)"><path d="m8 37 47-31 47 31" fill="url(#clay-ivory)" class="clay-o"/><rect x="12" y="35" width="86" height="83" rx="6" fill="url(#clay-sky)" class="clay-o"/><rect x="42" y="72" width="27" height="46" rx="4" fill="url(#clay-rose-gold)"/><g fill="url(#clay-butter)" class="clay-o"><rect x="21" y="53" width="17" height="22" rx="3"/><rect x="73" y="53" width="17" height="22" rx="3"/></g><circle cx="55" cy="45" r="12" fill="url(#clay-lilac)"/><path d="M55 37v16M47 45h16" stroke="#fff" stroke-width="4" stroke-linecap="round"/><g fill="#93bba6"><circle cx="20" cy="107" r="10"/><circle cx="91" cy="107" r="10"/></g><g fill="#c99c87"><rect x="11" y="108" width="19" height="10" rx="2"/><rect x="81" y="108" width="19" height="10" rx="2"/></g></g>
+      <g transform="translate(52 21)"><path d="M24 0c20 0 35 14 35 32 0 24-35 57-35 57S-11 56-11 32C-11 14 4 0 24 0Z" fill="url(#clay-peach)" class="clay-o"/><circle cx="24" cy="31" r="15" fill="url(#clay-ivory)"/><path d="M24 21v20M14 31h20" stroke="#d78493" stroke-width="5" stroke-linecap="round"/></g>
+      <g transform="translate(174 21)"><path d="M24 0c20 0 35 14 35 32 0 24-35 57-35 57S-11 56-11 32C-11 14 4 0 24 0Z" fill="url(#clay-lilac)" class="clay-o"/><circle cx="24" cy="31" r="15" fill="url(#clay-ivory)"/><path d="M24 21v20M14 31h20" stroke="#8da7c7" stroke-width="5" stroke-linecap="round"/></g>
+      <path d="M101 62c20-9 41-9 62 0" fill="none" stroke="#cdb26b" stroke-width="3" stroke-dasharray="5 8" stroke-linecap="round"/>
+    </g>
+    <g class="clay-spark"><circle cx="132" cy="58" r="3.5"/><path d="m128 79 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/></g>
+  </symbol>
+
+  <symbol id="clay-complete" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M45 164 70 144h128l-20 20Z" fill="url(#clay-skin)" class="clay-o"/><path d="M45 164h133v57H45Z" fill="url(#clay-teal)" class="clay-o" opacity=".82"/><path d="m178 164 20-20v57l-20 20Z" fill="#79aca8" class="clay-o"/><rect x="46" y="195" width="132" height="26" fill="url(#clay-lilac)" opacity=".82"/>
+      <g transform="translate(37 48)"><rect x="0" y="31" width="82" height="37" rx="14" fill="url(#clay-sky)" class="clay-o"/><rect x="23" y="8" width="37" height="84" rx="14" fill="url(#clay-sky)" class="clay-o"/><path d="M41 21v59M12 50h58" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".93"/></g>
+      <path d="M139 48c19 27 32 47 32 68 0 24-17 41-38 41s-38-17-38-41c0-21 16-42 44-68Z" fill="url(#clay-peach)" class="clay-o"/><path d="M127 74c-11 16-17 29-17 41 0 12 8 21 19 23" class="clay-hi" opacity=".64"/>
+      <path d="M178 38c-10 44-32 76-58 100 36-15 59-43 73-84-2 36-15 68-38 96 34-20 55-50 64-91-1-20-13-30-41-21Z" fill="url(#clay-lilac)" class="clay-o"/><path d="M185 48c-8 31-23 57-47 79" class="clay-hi" opacity=".52"/>
+      <ellipse cx="132" cy="162" rx="42" ry="10" fill="#fff" opacity=".35"/><path d="M132 151c8 10 9 18 0 26-9-8-8-16 0-26Z" fill="url(#clay-gold)"/>
+    </g>
+    <g class="clay-spark"><path d="m84 54 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><path d="m198 126 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/><circle cx="158" cy="101" r="3"/></g>
+  </symbol>
+
+  <symbol id="clay-plan" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <g transform="rotate(-4 120 127)"><rect x="48" y="35" width="139" height="174" rx="17" fill="url(#clay-peach)" class="clay-o"/><rect x="56" y="46" width="123" height="154" rx="11" fill="url(#clay-ivory)"/><path d="M90 28h58c7 0 12 5 12 12v14H78V40c0-7 5-12 12-12Z" fill="url(#clay-rose-gold)"/><rect x="100" y="21" width="39" height="15" rx="7" fill="url(#clay-ivory)" class="clay-o"/><g fill="none" stroke="#a38ba2" stroke-width="3"><rect x="73" y="80" width="15" height="15" rx="3"/><rect x="73" y="110" width="15" height="15" rx="3"/><rect x="73" y="140" width="15" height="15" rx="3"/><rect x="73" y="170" width="15" height="15" rx="3"/></g><g fill="none" stroke="#8eb47e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m75 87 5 5 11-15"/><path d="m75 117 5 5 11-15"/><path d="m75 147 5 5 11-15"/><path d="m75 177 5 5 11-15"/></g><g class="clay-line"><path d="M102 87h55"/><path d="M102 117h45"/><path d="M102 147h58"/><path d="M102 177h50"/></g></g>
+      <g transform="translate(175 133)"><rect width="47" height="64" rx="13" fill="url(#clay-ivory)" class="clay-o"/><rect x="4" y="19" width="39" height="41" rx="9" fill="url(#clay-sky)" opacity=".55"/><rect x="-2" y="-7" width="51" height="17" rx="6" fill="url(#clay-rose-gold)"/><path d="M10-7v-19c0-9 6-15 13-15s14 6 14 15v19" fill="url(#clay-ivory)" class="clay-o"/><path d="M23 4v44" stroke="#c99a86" stroke-width="3" opacity=".58"/><path d="M23 47c8 11 9 18 0 26-9-8-8-15 0-26Z" fill="url(#clay-gold)"/></g>
+      <g transform="rotate(-31 99 206)"><rect x="44" y="198" width="120" height="15" rx="7" fill="url(#clay-ivory)" class="clay-o"/><rect x="79" y="198" width="48" height="15" fill="url(#clay-lilac)"/><path d="m44 205-16 8 16-1Z" fill="#74657e"/><rect x="150" y="200" width="18" height="11" rx="5" fill="url(#clay-rose-gold)"/></g>
+    </g>
+    <g class="clay-spark"><path d="m194 119 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><circle cx="181" cy="151" r="3"/></g>
+  </symbol>
+
+  <symbol id="clay-laser" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M42 129 69 106h132l-21 23Z" fill="url(#clay-skin)" class="clay-o"/><path d="M42 129h138v73H42Z" fill="url(#clay-sky)" class="clay-o" opacity=".74"/><path d="m180 129 21-23v74l-21 22Z" fill="#86b3cc" class="clay-o"/><rect x="43" y="177" width="137" height="25" fill="url(#clay-lilac)" opacity=".82"/>
+      <path d="M91 128c-1 18-8 31-8 45 0 19 9 30 20 30s20-12 20-30c0-14-8-27-9-45" fill="#f0c6cf" class="clay-o"/><path d="M102 198c-7-27-7-44-4-64 4-18 4-35 3-55-1-14 3-25 8-32 4 14 3 26 1 39-1 16 0 31 3 47 4 23 4 43-3 65-3 7-6 9-8 0Z" fill="#62577e" class="clay-o"/>
+      <g transform="rotate(23 187 73)"><rect x="158" y="25" width="59" height="39" rx="18" fill="url(#clay-lilac)" class="clay-o"/><rect x="157" y="54" width="61" height="14" rx="6" fill="url(#clay-rose-gold)"/><path d="M176 68h22l-6 23h-10Z" fill="url(#clay-ivory)" class="clay-o"/><circle cx="202" cy="42" r="5" fill="url(#clay-mint)"/></g>
+      <path d="m189 91-63 86" stroke="#f6d87b" stroke-width="15" stroke-linecap="round" opacity=".26"/><path d="m189 91-63 86" stroke="#fff4ae" stroke-width="4" stroke-linecap="round"/>
+      <g transform="translate(19 151)"><rect width="35" height="51" rx="10" fill="url(#clay-ivory)" class="clay-o"/><rect x="3" y="16" width="29" height="32" rx="7" fill="url(#clay-mint)" opacity=".48"/><rect x="-2" y="-7" width="39" height="15" rx="6" fill="url(#clay-rose-gold)"/></g>
+      <path d="M54 137c31-9 72-10 108-4" class="clay-hi" opacity=".34"/>
+    </g>
+    <g class="clay-spark"><circle cx="126" cy="177" r="7"/><path d="m144 156 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><path d="m166 133 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/></g>
+  </symbol>
+
+  <symbol id="clay-clinical" viewBox="0 0 256 256">
+    <g class="clay-scene clay-piece">
+      <path d="M47 126 73 104h125l-20 22Z" fill="url(#clay-skin)" class="clay-o"/><path d="M47 126h131v75H47Z" fill="url(#clay-teal)" class="clay-o" opacity=".68"/><path d="m178 126 20-22v75l-20 22Z" fill="#72a6a2" class="clay-o"/><rect x="48" y="176" width="130" height="25" fill="url(#clay-butter)" opacity=".75"/>
+      <path d="M55 126c11-12 26-18 42-18 22 0 38 8 48 18-8 4-15 11-21 20-9 13-21 21-39 19-14-2-24-7-31-16Z" fill="#d88fa0" opacity=".78"/><g fill="#a45d75" opacity=".74"><circle cx="72" cy="128" r="5"/><circle cx="87" cy="119" r="4"/><circle cx="101" cy="132" r="6"/><circle cx="116" cy="121" r="4"/><circle cx="126" cy="139" r="5"/><circle cx="80" cy="146" r="4"/></g>
+      <g transform="rotate(-28 86 82)"><circle cx="74" cy="70" r="31" fill="url(#clay-rose-gold)"/><circle cx="74" cy="70" r="22" fill="url(#clay-lens)" stroke="#fff" stroke-width="4"/><circle cx="67" cy="63" r="6" fill="#fff" opacity=".78"/><rect x="64" y="92" width="20" height="72" rx="10" fill="url(#clay-lilac)" class="clay-o"/><rect x="61" y="106" width="26" height="14" rx="6" fill="url(#clay-rose-gold)"/></g>
+      <g transform="translate(169 145)"><path d="M4 0h37l-4 54H8Z" fill="url(#clay-sky)" class="clay-o"/><rect x="0" y="-8" width="45" height="13" rx="6" fill="url(#clay-rose-gold)"/><path d="m13 15 8 8 12-14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g fill="url(#clay-lilac)" class="clay-o"><circle cx="148" cy="91" r="7"/><circle cx="164" cy="103" r="5"/><circle cx="153" cy="112" r="4"/></g><g stroke="#806d95" stroke-width="2"><path d="m148 84 3-5M142 89l-5-2M154 93l5 3M164 98l2-5M160 106l-4 4"/></g>
+    </g>
+    <g class="clay-spark"><path d="m137 78 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/><circle cx="160" cy="124" r="3"/></g>
+  </symbol>
+</svg>
