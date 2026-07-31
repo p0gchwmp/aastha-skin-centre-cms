@@ -75,6 +75,7 @@
   data-analytics-enabled="{% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}true{% else %}false{% endif %}"
 >
   {% wagtailuserbar %}
+  {% include "home/partials/pastel_clay_sprite.html" %}
   {% with site_settings=settings.home.SiteSettings %}
     {% if site_settings.show_global_banner and site_settings.global_banner_text %}
       <aside class="cms-site-banner">
