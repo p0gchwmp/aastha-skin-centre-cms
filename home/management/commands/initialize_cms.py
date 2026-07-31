@@ -8,6 +8,10 @@ from home.models import BlogPage, HomePage, SiteSettings, TreatmentPage
 
 
 APPROVED_FACEBOOK_URL = "https://www.facebook.com/aasthaskincentre/"
+APPROVED_ANALYTICS_ID = "G-G5DQPDJ53P"
+APPROVED_SEARCH_CONSOLE_VERIFICATION = (
+    "LejmOPRWDnzDg6WWoVLxvPwjRBWkflLm_P81L0EbEkE"
+)
 LEGACY_FACEBOOK_URLS = {
     "",
     "https://facebook.com",
@@ -18,18 +22,32 @@ LEGACY_FACEBOOK_URLS = {
 
 
 def sync_approved_site_settings(site):
-    """Upgrade blank/placeholder social settings without overwriting later edits."""
+    """Fill approved blank/placeholder settings without overwriting later edits."""
     if site is None:
-        return False
+        return []
 
     site_settings, _ = SiteSettings.objects.get_or_create(site=site)
-    current_facebook_url = (site_settings.facebook_url or "").strip()
-    if current_facebook_url not in LEGACY_FACEBOOK_URLS:
-        return False
+    updates = {}
 
-    site_settings.facebook_url = APPROVED_FACEBOOK_URL
-    site_settings.save(update_fields=["facebook_url"])
-    return True
+    current_facebook_url = (site_settings.facebook_url or "").strip()
+    if current_facebook_url in LEGACY_FACEBOOK_URLS:
+        updates["facebook_url"] = APPROVED_FACEBOOK_URL
+
+    if not (site_settings.analytics_id or "").strip():
+        updates["analytics_id"] = APPROVED_ANALYTICS_ID
+
+    if not (site_settings.search_console_verification or "").strip():
+        updates[
+            "search_console_verification"
+        ] = APPROVED_SEARCH_CONSOLE_VERIFICATION
+
+    if not updates:
+        return []
+
+    for field_name, value in updates.items():
+        setattr(site_settings, field_name, value)
+    site_settings.save(update_fields=list(updates))
+    return list(updates)
 
 
 class Command(BaseCommand):
@@ -49,8 +67,13 @@ class Command(BaseCommand):
                 f"Default site hostname updated to {configured_host}."
             )
 
-        if sync_approved_site_settings(site):
-            self.stdout.write("Approved Facebook page applied to site settings.")
+        updated_fields = sync_approved_site_settings(site)
+        if updated_fields:
+            self.stdout.write(
+                "Approved site settings applied: "
+                + ", ".join(updated_fields)
+                + "."
+            )
 
         home = HomePage.objects.first()
         has_content = (

@@ -85,8 +85,20 @@ class AppointmentFrontendContractTests(SimpleTestCase):
         ):
             self.assertIn(allowed_name, event_source)
 
-    def test_tracking_is_disabled_until_an_analytics_id_exists(self):
-        self.assertIn('data-analytics-enabled="{% if settings.home.SiteSettings.analytics_id', self.base_template)
+    def test_tracking_is_limited_to_the_public_canonical_site(self):
+        condition = (
+            "{% if site_is_public and "
+            "settings.home.SiteSettings.analytics_id and not "
+            "request.in_preview_panel %}"
+        )
+        self.assertIn(
+            f'data-analytics-enabled="{condition}true',
+            self.base_template,
+        )
+        self.assertIn(
+            condition + "\n    <script async",
+            self.base_template,
+        )
         self.assertIn('body.dataset.analyticsEnabled !== "true"', self.analytics)
 
     def test_conversion_events_cover_core_patient_actions(self):
