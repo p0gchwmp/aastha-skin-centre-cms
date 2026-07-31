@@ -11,10 +11,10 @@ Real visitors retain native lazy loading. Full-page QA screenshots deliberately
 scroll through each page first so the evidence captures the final rendered
 layout rather than unloaded placeholders far below the initial viewport.
 
-Decorative homepage icon artwork is normalised before pixel comparison. This
+Decorative message-led artwork is normalised before pixel comparison. This
 keeps parity focused on layout, typography, spacing and controls while allowing
-the CMS to replace legacy emoji placeholders with approved production artwork.
-The live icon treatment is still covered by mobile-layout, dark-mode and
+the CMS to replace legacy placeholders and enrich compact navigation cards.
+The live visual treatment remains covered by mobile-layout, dark-mode and
 performance audits.
 """
 
@@ -58,6 +58,11 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
               setTimeout(resolve, 5000);
             });
           }));
+          document.querySelectorAll('[data-visual-injected="true"]').forEach(visual => {
+            const card = visual.closest('.visual-cue-card');
+            visual.remove();
+            card?.classList.remove('visual-cue-card');
+          });
           window.scrollTo(0, 0);
         }
         """
