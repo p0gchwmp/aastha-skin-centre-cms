@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Run the browser parity audit after hydrating viewport-triggered images.
+"""Run desktop visual parity plus hydrated mobile interaction checks.
+
+The original static site remains the desktop visual reference. Mobile layouts
+are now assessed by ``audit_mobile_layout.py`` against objective usability
+requirements instead of pixel-matching known responsive defects in the legacy
+site. Mobile navigation, theme and appointment-form interactions remain part
+of this audit.
 
 Real visitors retain native lazy loading. Full-page QA screenshots deliberately
 scroll through each page first so the evidence captures the final rendered
@@ -15,6 +21,8 @@ from playwright.sync_api import Page
 
 
 _original_screenshot = audit.screenshot
+_original_test_interactions = audit.test_interactions
+_original_viewports = dict(audit.VIEWPORTS)
 
 
 def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
@@ -52,7 +60,19 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
     return _original_screenshot(page, path)
 
 
+def mobile_interactions(browser, cms: str) -> list[str]:
+    """Temporarily restore the mobile viewport for interaction testing."""
+    current = audit.VIEWPORTS
+    audit.VIEWPORTS = _original_viewports
+    try:
+        return _original_test_interactions(browser, cms)
+    finally:
+        audit.VIEWPORTS = current
+
+
 audit.screenshot = hydrated_screenshot
+audit.test_interactions = mobile_interactions
+audit.VIEWPORTS = {"desktop": _original_viewports["desktop"]}
 
 
 if __name__ == "__main__":

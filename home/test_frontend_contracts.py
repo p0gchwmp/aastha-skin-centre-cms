@@ -121,3 +121,40 @@ class AppointmentFrontendContractTests(SimpleTestCase):
             '[name="opd"]',
         ):
             self.assertNotIn(selector, self.analytics)
+
+
+class MobileLayoutContractTests(SimpleTestCase):
+    def setUp(self):
+        base_dir = Path(settings.BASE_DIR)
+        self.base_template = (
+            base_dir / "aastha_cms" / "templates" / "base.html"
+        ).read_text(encoding="utf-8")
+        self.mobile_css = (
+            base_dir / "aastha_cms" / "static" / "css" / "mobile-layout-qa.css"
+        ).read_text(encoding="utf-8")
+
+    def test_mobile_qa_stylesheet_is_the_final_css_layer(self):
+        self.assertGreater(
+            self.base_template.index("mobile-layout-qa.css"),
+            self.base_template.index("layout-balance.css"),
+        )
+
+    def test_phone_card_grids_are_forced_to_one_full_width_column(self):
+        self.assertIn(".concern-grid", self.mobile_css)
+        self.assertIn(
+            "grid-template-columns: minmax(0, 1fr) !important",
+            self.mobile_css,
+        )
+        self.assertIn("grid-auto-flow: row !important", self.mobile_css)
+        self.assertIn("grid-column: 1 / -1 !important", self.mobile_css)
+        self.assertIn("width: 100% !important", self.mobile_css)
+        self.assertIn("min-width: 0 !important", self.mobile_css)
+
+    def test_sticky_mobile_actions_have_safe_content_clearance(self):
+        self.assertIn(
+            "padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px))",
+            self.mobile_css,
+        )
+
+    def test_layout_defects_are_fixed_not_hidden(self):
+        self.assertNotIn("overflow-x: hidden", self.mobile_css)
