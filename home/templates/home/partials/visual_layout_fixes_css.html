@@ -1,0 +1,239 @@
+<style id="site-visual-layout-fixes">
+/* =====================================================================
+   Visual-cue layout corrections
+
+   Inline by design: preserves the existing CSS/JS request budget while
+   preventing illustration overlap and restoring desktop clinic symmetry.
+   ===================================================================== */
+
+.release-v24 .message-visual--failed,
+.release-v24 .message-visual[hidden] {
+  display: none !important;
+}
+
+.release-v24 .visual-cue-card--managed {
+  min-width: 0;
+  isolation: isolate;
+}
+
+.release-v24 :where(
+  .process-step,
+  .value-card,
+  .about-story-card,
+  .clinic-location-card,
+  .location-contact-card,
+  .hours-card,
+  .category-card,
+  .feature-card,
+  .benefit-card,
+  .why-card,
+  .service-card,
+  .guide-card,
+  .support-card,
+  .appointment-card,
+  .clinic-card,
+  .cms-card,
+  .contact-action-card,
+  .care-path-card,
+  .step-card,
+  .process-card,
+  .info-card
+).visual-cue-card--managed {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+}
+
+.release-v24 :where(
+  .process-step,
+  .value-card,
+  .about-story-card,
+  .clinic-location-card,
+  .location-contact-card,
+  .hours-card,
+  .category-card,
+  .feature-card,
+  .benefit-card,
+  .why-card,
+  .service-card,
+  .guide-card,
+  .support-card,
+  .appointment-card,
+  .clinic-card,
+  .cms-card,
+  .contact-action-card,
+  .care-path-card,
+  .step-card,
+  .process-card,
+  .info-card
+).visual-cue-card--managed > .message-visual:first-child {
+  position: relative !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  float: none !important;
+  clear: both !important;
+  align-self: flex-start !important;
+  flex: 0 0 auto !important;
+  width: 92px !important;
+  height: 92px !important;
+  min-width: 92px !important;
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  z-index: 1 !important;
+}
+
+.release-v24 .process-step.visual-cue-card--managed > .message-visual:first-child {
+  width: 84px !important;
+  height: 84px !important;
+  min-width: 84px !important;
+  margin-bottom: 12px !important;
+}
+
+.release-v24 .visual-cue-card--managed > :not(.message-visual) {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  z-index: 2;
+}
+
+.release-v24 .hub-category-heading--clay {
+  grid-template-columns: 96px minmax(0, 1fr) !important;
+  gap: 18px !important;
+  align-items: start !important;
+}
+
+.release-v24 .hub-category-heading--clay > .message-visual:first-child {
+  position: relative !important;
+  inset: auto !important;
+  float: none !important;
+  width: 96px !important;
+  height: 96px !important;
+  min-width: 96px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.release-v24 .hub-category-heading--clay > :not(.message-visual) {
+  min-width: 0;
+}
+
+@media (min-width: 721px) {
+  .release-v24 :where(
+    .about-story-grid,
+    .clinic-location-grid,
+    .location-contact-grid,
+    .hours-grid,
+    .location-pro-grid,
+    .clinic-choice-grid
+  ) {
+    align-items: stretch !important;
+    grid-auto-rows: 1fr;
+  }
+
+  .release-v24 :where(
+    .about-story-card,
+    .clinic-location-card,
+    .location-contact-card,
+    .hours-card,
+    .location-pro-card,
+    .clinic-choice-grid > article
+  ) {
+    box-sizing: border-box;
+    height: 100% !important;
+    min-height: 100%;
+  }
+
+  .release-v24 :where(
+    .about-story-card,
+    .clinic-location-card,
+    .location-contact-card,
+    .location-pro-card,
+    .clinic-choice-grid > article
+  ) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .release-v24 :where(
+    .about-story-card,
+    .clinic-location-card,
+    .location-contact-card,
+    .location-pro-card,
+    .clinic-choice-grid > article
+  ) > :where(.inline-actions, .location-actions, .card-actions, .hero-actions),
+  .release-v24 :where(
+    .about-story-card,
+    .clinic-location-card,
+    .location-contact-card,
+    .location-pro-card,
+    .clinic-choice-grid > article
+  ) > :last-child:has(.button) {
+    margin-top: auto !important;
+    padding-top: 18px;
+  }
+}
+
+@media (max-width: 720px) {
+  .release-v24 .hub-category-heading--clay {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .release-v24 .hub-category-heading--clay > .message-visual:first-child {
+    width: 88px !important;
+    height: 88px !important;
+    min-width: 88px !important;
+  }
+
+  .release-v24 :where(
+    .process-step,
+    .value-card,
+    .about-story-card,
+    .clinic-location-card,
+    .location-contact-card,
+    .hours-card,
+    .category-card,
+    .feature-card,
+    .benefit-card,
+    .why-card,
+    .service-card,
+    .guide-card,
+    .support-card,
+    .appointment-card,
+    .clinic-card,
+    .cms-card,
+    .contact-action-card,
+    .care-path-card,
+    .step-card,
+    .process-card,
+    .info-card
+  ).visual-cue-card--managed > .message-visual:first-child {
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .release-v24 :where(
+    .about-story-card,
+    .clinic-location-card,
+    .location-contact-card,
+    .hours-card,
+    .location-pro-card,
+    .clinic-choice-grid > article
+  ) {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+}
+</style>
