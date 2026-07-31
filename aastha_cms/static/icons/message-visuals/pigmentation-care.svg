@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Pigmentation treatment illustration">
+  <defs>
+    <linearGradient id="skinTop" x1="48" y1="92" x2="194" y2="142"><stop stop-color="#fffaf7"/><stop offset=".55" stop-color="#f7d8de"/><stop offset="1" stop-color="#e7b0bf"/></linearGradient>
+    <linearGradient id="skinSide" x1="50" y1="115" x2="187" y2="201"><stop stop-color="#f8e2e4"/><stop offset="1" stop-color="#df9daf"/></linearGradient>
+    <linearGradient id="pigment" x1="66" y1="90" x2="132" y2="150"><stop stop-color="#6f1736"/><stop offset=".42" stop-color="#8b3658"/><stop offset="1" stop-color="#c58a73" stop-opacity=".15"/></linearGradient>
+    <linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7ded1"/><stop offset=".45" stop-color="#c98a73"/><stop offset="1" stop-color="#7d2949"/></linearGradient>
+    <linearGradient id="serum" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff4b3"/><stop offset="1" stop-color="#c9a64a"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#4a142d" flood-opacity=".2"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="fat" width="22" height="18" patternUnits="userSpaceOnUse"><circle cx="6" cy="8" r="5" fill="#fff0cf"/><circle cx="17" cy="12" r="6" fill="#f0d08c"/></pattern>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M50 105 75 87h113l-18 18z" fill="url(#skinTop)" stroke="#bd6983" stroke-width="2"/>
+    <path d="M50 105h120v87H50z" fill="url(#skinSide)" stroke="#a64c69" stroke-width="2"/>
+    <path d="M170 105 188 87v87l-18 18z" fill="#d99aae" stroke="#a64c69" stroke-width="2"/>
+    <rect x="51" y="165" width="119" height="27" fill="url(#fat)" opacity=".9"/>
+    <path d="M55 107c10-11 22-16 37-16 19 0 35 7 43 17-8 2-16 8-23 18-8 12-18 20-35 18-13-1-21-6-27-12Z" fill="url(#pigment)" opacity=".9"/>
+    <g fill="#5f1735" opacity=".55"><circle cx="72" cy="108" r="4"/><circle cx="84" cy="101" r="3"/><circle cx="95" cy="111" r="5"/><circle cx="106" cy="102" r="3"/><circle cx="114" cy="116" r="4"/><circle cx="79" cy="124" r="3"/><circle cx="97" cy="130" r="3.5"/></g>
+    <path d="M130 108c14-8 27-9 39-5" fill="none" stroke="#fffaf7" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+    <g>
+      <rect x="21" y="139" width="34" height="53" rx="10" fill="#fffaf7" stroke="#9a5367" stroke-width="2"/>
+      <rect x="24" y="155" width="28" height="34" rx="7" fill="url(#serum)" opacity=".55"/>
+      <rect x="19" y="133" width="38" height="14" rx="5" fill="url(#roseGold)"/>
+      <path d="M28 133v-17c0-8 5-13 10-13s10 5 10 13v17" fill="#fffaf7" stroke="#9a5367" stroke-width="2"/>
+    </g>
+    <g transform="rotate(37 164 67)">
+      <path d="M153 18h22c7 0 12 5 12 12v19h-46V30c0-7 5-12 12-12Z" fill="#fffaf7" stroke="#9a5367" stroke-width="2"/>
+      <rect x="139" y="42" width="50" height="13" rx="5" fill="url(#roseGold)"/>
+      <rect x="157" y="54" width="14" height="62" rx="7" fill="#fff" fill-opacity=".55" stroke="#b26a7f" stroke-width="2"/>
+      <path d="M164 116c8 10 9 17 0 24-8-7-7-14 0-24Z" fill="url(#serum)"/>
+    </g>
+  </g>
+  <g fill="#c9a64a" filter="url(#glow)"><path d="m138 91 2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z"/><path d="m157 116 1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z"/></g>
+</svg>
