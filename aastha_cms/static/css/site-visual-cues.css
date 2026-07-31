@@ -1,46 +1,53 @@
 /* =====================================================================
-   Aastha message-led visual system
+   Aastha premium pastel-clay visual system
 
-   Small placeholders and navigational cards use one coherent illustration
-   family. Large treatment, condition and doctor imagery remains untouched.
+   Semantic, message-led clay scenes enhance compact placeholders and helper
+   cards. Large treatment, condition, doctor, gallery and editorial imagery
+   remains reserved for real photography.
    ===================================================================== */
 
 :root {
-  --visual-plum: #6f1736;
-  --visual-plum-deep: #501027;
-  --visual-rose: #d95d83;
-  --visual-blush: #fff2f5;
-  --visual-ivory: #fffaf7;
-  --visual-rose-gold: #c98a73;
-  --visual-gold: #c9a64a;
-  --visual-shadow: drop-shadow(0 10px 13px rgba(73, 29, 47, .16));
+  --clay-plum: #6f1736;
+  --clay-plum-deep: #501027;
+  --clay-ivory: #fffaf7;
+  --clay-blush: #fff1f4;
+  --clay-shadow:
+    drop-shadow(0 8px 7px rgba(73, 29, 47, .10))
+    drop-shadow(0 17px 18px rgba(73, 29, 47, .16));
+  --clay-shadow-hover:
+    drop-shadow(0 10px 8px rgba(73, 29, 47, .12))
+    drop-shadow(0 22px 23px rgba(73, 29, 47, .22));
+}
+
+.pastel-clay-sprite {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
 }
 
 .message-visual,
 .release-v24 .message-visual {
-  --visual-image: none;
   position: relative;
   display: block;
   flex: 0 0 auto;
-  width: 76px;
-  height: 76px;
+  width: 90px;
+  height: 90px;
   min-width: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
-  background-color: transparent;
-  background-image: var(--visual-image);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background: transparent;
   box-shadow: none;
   color: transparent !important;
   font-size: 0 !important;
   line-height: 0 !important;
-  filter: var(--visual-shadow);
+  filter: var(--clay-shadow);
   isolation: isolate;
   overflow: visible;
-  transition: transform .22s ease, filter .22s ease, opacity .22s ease;
+  transform: translateZ(0);
+  transition: transform .24s ease, filter .24s ease, opacity .24s ease;
 }
 
 .message-visual::before,
@@ -51,78 +58,61 @@
   display: none !important;
 }
 
-.message-visual--acne { --visual-image: url("../icons/message-visuals/acne-care.svg"); }
-.message-visual--pigmentation { --visual-image: url("../icons/message-visuals/pigmentation-care.svg"); }
-.message-visual--hair { --visual-image: url("../icons/message-visuals/hair-scalp-care.svg"); }
-.message-visual--diagnosis { --visual-image: url("../icons/message-visuals/dermatologist-diagnosis.svg"); }
-.message-visual--experience { --visual-image: url("../icons/message-visuals/medical-experience.svg"); }
-.message-visual--locations { --visual-image: url("../icons/message-visuals/two-clinic-locations.svg"); }
-.message-visual--complete { --visual-image: url("../icons/message-visuals/complete-care.svg"); }
-.message-visual--plan { --visual-image: url("../icons/message-visuals/personalised-plan.svg"); }
+.message-visual__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
 
-/* Homepage concern cards: richer visuals replace the old abstract artwork. */
+/* Hide the old glyph immediately, before deferred JavaScript installs clay. */
+.release-v24 .concern-card:nth-child(-n + 3) .icon-bubble,
+.release-v24 .trust-item .trust-icon {
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-indent: -9999px;
+}
+
+/* Homepage concern cards use a larger scene so the treatment message reads
+   clearly instead of behaving like a tiny decorative icon. */
 .release-v24 .concern-card .icon-bubble.message-visual,
 .release-v24 .concern-card:nth-child(1) .icon-bubble,
 .release-v24 .concern-card:nth-child(2) .icon-bubble,
 .release-v24 .concern-card:nth-child(3) .icon-bubble {
-  width: 96px !important;
-  height: 96px !important;
+  width: 116px !important;
+  height: 116px !important;
+  min-width: 116px !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background-color: transparent !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: contain !important;
+  background: transparent !important;
   box-shadow: none !important;
-  color: transparent !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
-  filter: var(--visual-shadow) !important;
+  filter: var(--clay-shadow) !important;
   overflow: visible !important;
+  text-indent: 0;
 }
 
-.release-v24 .concern-card:nth-child(1) .icon-bubble { background-image: url("../icons/message-visuals/acne-care.svg") !important; }
-.release-v24 .concern-card:nth-child(2) .icon-bubble { background-image: url("../icons/message-visuals/pigmentation-care.svg") !important; }
-.release-v24 .concern-card:nth-child(3) .icon-bubble { background-image: url("../icons/message-visuals/hair-scalp-care.svg") !important; }
-
-.release-v24 .concern-card .icon-bubble::before,
-.release-v24 .concern-card .icon-bubble::after {
-  content: none !important;
-  display: none !important;
-}
-
-/* Homepage credibility row: every claim gets an immediately readable scene. */
+/* The five credibility claims retain their own distinct scenes, including a
+   text-free medical shield for experience so no malformed number can appear. */
 .release-v24 .trust-item .trust-icon.message-visual,
 .release-v24 .trust-item .trust-icon {
-  width: 78px !important;
-  height: 78px !important;
+  width: 94px !important;
+  height: 94px !important;
+  min-width: 94px !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background-color: transparent !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: contain !important;
+  background: transparent !important;
   box-shadow: none !important;
-  color: transparent !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
-  filter: var(--visual-shadow) !important;
+  filter: var(--clay-shadow) !important;
   overflow: visible !important;
+  text-indent: 0;
 }
 
-.release-v24 .trust-item:nth-child(1) .trust-icon { background-image: url("../icons/message-visuals/dermatologist-diagnosis.svg") !important; }
-.release-v24 .trust-item:nth-child(2) .trust-icon { background-image: url("../icons/message-visuals/medical-experience.svg") !important; }
-.release-v24 .trust-item:nth-child(3) .trust-icon { background-image: url("../icons/message-visuals/two-clinic-locations.svg") !important; }
-.release-v24 .trust-item:nth-child(4) .trust-icon { background-image: url("../icons/message-visuals/complete-care.svg") !important; }
-.release-v24 .trust-item:nth-child(5) .trust-icon { background-image: url("../icons/message-visuals/personalised-plan.svg") !important; }
-
-.release-v24 .trust-item .trust-icon::before,
-.release-v24 .trust-item .trust-icon::after {
-  content: none !important;
-  display: none !important;
-}
-
-/* Message cues injected into compact cards and navigation helpers. */
+/* Compact navigation and helper cards receive cues only when they do not
+   already contain a meaningful photo, illustration or video. */
 .visual-cue-card {
   position: relative;
 }
@@ -140,7 +130,13 @@
 .step-card.visual-cue-card,
 .why-card.visual-cue-card,
 .contact-card.visual-cue-card,
-.info-card.visual-cue-card {
+.info-card.visual-cue-card,
+.cms-card.visual-cue-card,
+.service-card.visual-cue-card,
+.guide-card.visual-cue-card,
+.support-card.visual-cue-card,
+.appointment-card.visual-cue-card,
+.clinic-card.visual-cue-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -154,9 +150,15 @@
 .step-card.visual-cue-card .message-visual,
 .why-card.visual-cue-card .message-visual,
 .contact-card.visual-cue-card .message-visual,
-.info-card.visual-cue-card .message-visual {
-  width: 82px;
-  height: 82px;
+.info-card.visual-cue-card .message-visual,
+.cms-card.visual-cue-card .message-visual,
+.service-card.visual-cue-card .message-visual,
+.guide-card.visual-cue-card .message-visual,
+.support-card.visual-cue-card .message-visual,
+.appointment-card.visual-cue-card .message-visual,
+.clinic-card.visual-cue-card .message-visual {
+  width: 96px;
+  height: 96px;
 }
 
 .visual-cue-inline {
@@ -166,31 +168,33 @@
 }
 
 .visual-cue-inline > .message-visual {
-  width: 68px;
-  height: 68px;
+  width: 76px;
+  height: 76px;
 }
 
 .concern-card:hover .message-visual,
 .trust-item:hover .message-visual,
 .visual-cue-card:hover > .message-visual,
 .visual-cue-card:hover > a > .message-visual {
-  transform: translateY(-3px) scale(1.025);
-  filter: drop-shadow(0 14px 17px rgba(73, 29, 47, .22));
+  transform: translateY(-4px) scale(1.035);
+  filter: var(--clay-shadow-hover) !important;
 }
 
-/* The visual remains the same brand in dark mode, with controlled luminance. */
+/* Pastels remain luminous on plum surfaces; dark mode no longer crushes the
+   detail or turns ivory clay into a muddy grey. */
 html[data-theme="dark"] .message-visual,
 html[data-theme="dark"] .release-v24 .concern-card .icon-bubble,
 html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
   filter:
-    brightness(.82)
-    saturate(.9)
-    contrast(1.06)
-    drop-shadow(0 12px 17px rgba(0, 0, 0, .42)) !important;
+    brightness(.96)
+    saturate(.92)
+    contrast(1.035)
+    drop-shadow(0 9px 8px rgba(0, 0, 0, .24))
+    drop-shadow(0 20px 21px rgba(0, 0, 0, .38)) !important;
 }
 
-/* No glyph remains after enhancement, but a readable computed colour keeps
-   automated contrast checks aligned with the decorative aria-hidden state. */
+/* Decorative placeholders have no readable glyph, but the computed colour
+   remains contrast-safe for the existing automated dark-mode audit. */
 html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
   color: #fffaf7 !important;
 }
@@ -200,43 +204,51 @@ html[data-theme="dark"] .trust-item:hover .message-visual,
 html[data-theme="dark"] .visual-cue-card:hover > .message-visual,
 html[data-theme="dark"] .visual-cue-card:hover > a > .message-visual {
   filter:
-    brightness(.9)
-    saturate(.94)
-    contrast(1.06)
-    drop-shadow(0 15px 20px rgba(0, 0, 0, .5)) !important;
+    brightness(1)
+    saturate(.96)
+    contrast(1.04)
+    drop-shadow(0 11px 9px rgba(0, 0, 0, .28))
+    drop-shadow(0 25px 26px rgba(0, 0, 0, .48)) !important;
 }
 
-/* Never replace the large real-image areas reserved for clinical content. */
+/* Never replace the larger real-image areas reserved for clinical content. */
 .treatment-card .message-visual,
 .condition-card .message-visual,
 .doctor-card .message-visual,
 .doctor-profile .message-visual,
+.doctor-feature .message-visual,
 .doctor-visual .message-visual,
 .page-hero-art .message-visual,
 .gallery .message-visual,
+.image-gallery .message-visual,
 .blog-card .message-visual,
-.blog-teaser .message-visual {
+.blog-teaser .message-visual,
+[class*="treatment-image"] .message-visual,
+[class*="condition-image"] .message-visual,
+[class*="doctor-image"] .message-visual {
   display: none !important;
 }
 
 @media (max-width: 960px) {
   .release-v24 .trust-item .trust-icon {
-    width: 72px !important;
-    height: 72px !important;
+    width: 88px !important;
+    height: 88px !important;
+    min-width: 88px !important;
   }
 }
 
 @media (max-width: 700px) {
   .message-visual,
-  .release-v24 .trust-item .trust-icon,
-  .release-v24 .concern-card .icon-bubble {
-    width: 88px !important;
-    height: 88px !important;
+  .release-v24 .trust-item .trust-icon {
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
   }
 
   .release-v24 .concern-card .icon-bubble {
-    width: 104px !important;
-    height: 104px !important;
+    width: 112px !important;
+    height: 112px !important;
+    min-width: 112px !important;
   }
 
   .visual-cue-card > .message-visual:first-child,

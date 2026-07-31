@@ -1,24 +1,55 @@
 (() => {
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const XLINK_NS = 'http://www.w3.org/1999/xlink';
+  const MISSING_ATTRIBUTE = '__clay_missing__';
+
+  /* Order is intentional: specific services win before broad clinical terms. */
   const CUES = [
     {
       name: 'acne',
       terms: [
         'acne', 'pimple', 'breakout', 'blackhead', 'whitehead',
-        'acne mark', 'acne scar'
+        'acne mark', 'acne scar', 'comedone'
       ]
     },
     {
       name: 'pigmentation',
       terms: [
         'pigmentation', 'melasma', 'dark spot', 'dark patch', 'uneven tone',
-        'freckle', 'sun damage', 'dark lip', 'under eye', 'hyperpigmentation'
+        'freckle', 'sun damage', 'dark lip', 'under eye', 'hyperpigmentation',
+        'post inflammatory pigmentation', 'black neck'
+      ]
+    },
+    {
+      name: 'laser',
+      terms: [
+        'laser hair reduction', 'laser treatment', 'laser therapy', 'laser care',
+        'q switched', 'q-switched', 'fractional co2', 'co2 laser', 'diode laser',
+        'ipl', 'photofacial', 'carbon peel', 'tattoo removal', 'scar revision',
+        'mnrf', 'micro needling radiofrequency', 'radiofrequency', 'rf treatment',
+        'hifu', 'skin tightening', 'skin rejuvenation', 'advanced technology'
       ]
     },
     {
       name: 'hair',
       terms: [
-        'hair', 'scalp', 'hair fall', 'dandruff', 'follicle', 'alopecia',
-        'trichology'
+        'hair fall', 'hair loss', 'scalp', 'dandruff', 'follicle', 'alopecia',
+        'trichology', 'hair growth', 'prp hair', 'gfc hair', 'hair transplant',
+        'white hair'
+      ]
+    },
+    {
+      name: 'clinical',
+      terms: [
+        'skin infection', 'fungal infection', 'ringworm', 'tinea', 'candidiasis',
+        'bacterial infection', 'viral infection', 'erythrasma', 'impetigo',
+        'folliculitis', 'boil', 'cellulitis', 'scabies', 'molluscum',
+        'eczema', 'dermatitis', 'skin allergy', 'rash', 'sensitive skin',
+        'psoriasis', 'vitiligo', 'urticaria', 'hives', 'rosacea', 'lichen planus',
+        'seborrheic', 'wart', 'mole', 'skin tag', 'corn', 'cyst', 'xanthelasma',
+        'nail surgery', 'ingrown nail', 'nail fungus', 'std', 'pediatric dermatology',
+        'paediatric dermatology', 'skin cancer screening', 'medical dermatology',
+        'minor procedure', 'dermato surgery', 'dermatosurgery'
       ]
     },
     {
@@ -26,21 +57,23 @@
       terms: [
         'diagnosis', 'consultation', 'dermatologist-led', 'doctor-led',
         'medical assessment', 'examination', 'dermatoscope', 'skin check',
-        'clinical evaluation'
+        'clinical evaluation', 'expert assessment', 'qualified dermatologist'
       ]
     },
     {
       name: 'experience',
       terms: [
-        'experience', 'years in medicine', 'clinical excellence', 'expertise',
-        'trusted care', 'medical experience', 'qualified', 'credentials'
+        'experience', 'years in medicine', 'years of experience', '20 years',
+        '25 years', 'clinical excellence', 'expertise', 'trusted care',
+        'medical experience', 'credentials', 'established care'
       ]
     },
     {
       name: 'locations',
       terms: [
         'two clinic', 'clinic location', 'locations', 'branches', 'branch',
-        'karan nagar', 'paloura', 'find a clinic', 'visit us', 'directions'
+        'karan nagar', 'paloura', 'find a clinic', 'visit us', 'directions',
+        'contact us', 'call us', 'jammu clinics'
       ]
     },
     {
@@ -48,7 +81,9 @@
       terms: [
         'complete care', 'comprehensive care', 'skin hair and aesthetic',
         'skin, hair and aesthetic', 'all-in-one care', 'full spectrum',
-        'medical and aesthetic', 'complete dermatology'
+        'medical and aesthetic', 'complete dermatology', 'aesthetic care',
+        'anti ageing', 'anti-aging', 'botox', 'filler', 'skin booster',
+        'chemical peel', 'hydrafacial', 'medifacial'
       ]
     },
     {
@@ -56,7 +91,8 @@
       terms: [
         'personalised', 'personalized', 'treatment plan', 'care plan',
         'customised', 'customized', 'tailored', 'your journey',
-        'how care is planned', 'next steps', 'care pathway'
+        'how care is planned', 'next steps', 'care pathway', 'appointment',
+        'book consultation', 'book your consultation', 'aftercare', 'follow up'
       ]
     }
   ];
@@ -87,7 +123,13 @@
     '.step-card',
     '.why-card',
     '.contact-card',
-    '.info-card'
+    '.info-card',
+    '.cms-card',
+    '.service-card',
+    '.guide-card',
+    '.support-card',
+    '.appointment-card',
+    '.clinic-card'
   ].join(',');
 
   const EXCLUDED_SELECTOR = [
@@ -110,7 +152,7 @@
   const normalise = value => (value || '')
     .toLowerCase()
     .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9\s,-]/g, ' ')
+    .replace(/[^a-z0-9\s,+-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -121,39 +163,63 @@
     return match?.name || '';
   };
 
-  const isExcluded = element => {
-    if (!element || element.closest(EXCLUDED_SELECTOR)) return true;
-
-    const main = element.closest('main');
-    const path = window.location.pathname.toLowerCase();
-    const clinicalDetailPage =
-      path === '/treatments/' || path.startsWith('/treatments/') ||
-      path === '/conditions/' || path.startsWith('/conditions/') ||
-      path === '/dr-cheena-langer/';
-
-    return Boolean(clinicalDetailPage && main?.contains(element));
-  };
+  const isExcluded = element => Boolean(
+    !element || element.closest(EXCLUDED_SELECTOR)
+  );
 
   const nearestContext = element => {
     const owner = element.closest([
       '.concern-card', '.trust-item', '.directory-link', '.category-card',
       '.feature-card', '.benefit-card', '.process-card', '.step-card',
-      '.why-card', '.contact-card', '.info-card', 'li', 'article', 'section'
+      '.why-card', '.contact-card', '.info-card', '.cms-card',
+      '.service-card', '.guide-card', '.support-card', '.appointment-card',
+      '.clinic-card', 'li', 'article', 'section'
     ].join(','));
     return owner || element.parentElement || element;
   };
 
+  const buildClayVisual = cue => {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.classList.add('message-visual__svg');
+    svg.setAttribute('viewBox', '0 0 256 256');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    const use = document.createElementNS(SVG_NS, 'use');
+    const target = `#clay-${cue}`;
+    use.setAttribute('href', target);
+    use.setAttributeNS(XLINK_NS, 'xlink:href', target);
+    svg.appendChild(use);
+    return svg;
+  };
+
+  const rememberOriginal = element => {
+    if (element.hasAttribute('data-visual-original-html')) return;
+    element.dataset.visualOriginalHtml = element.innerHTML;
+    element.dataset.visualOriginalAriaHidden = element.hasAttribute('aria-hidden')
+      ? element.getAttribute('aria-hidden')
+      : MISSING_ATTRIBUTE;
+    element.dataset.visualOriginalRole = element.hasAttribute('role')
+      ? element.getAttribute('role')
+      : MISSING_ATTRIBUTE;
+  };
+
   const setCue = (element, cue) => {
     if (!element || !cue || isExcluded(element)) return false;
+    if (!document.getElementById(`clay-${cue}`)) return false;
+
+    rememberOriginal(element);
     element.classList.add('message-visual', `message-visual--${cue}`);
+    element.dataset.clayCue = cue;
     element.setAttribute('aria-hidden', 'true');
     element.setAttribute('role', 'presentation');
-    element.textContent = '';
+    element.replaceChildren(buildClayVisual(cue));
     return true;
   };
 
   const hasMeaningfulVisual = card => Boolean(card.querySelector([
-    'img', 'picture', 'svg:not(.icon)', 'video',
+    'img', 'picture', 'svg:not(.message-visual__svg)', 'video',
     '.message-visual', '.location-art', '.doctor-visual', '.page-hero-art'
   ].join(',')));
 
@@ -169,8 +235,8 @@
     });
   };
 
-  const upgradeExistingPlaceholders = () => {
-    document.querySelectorAll(PLACEHOLDER_SELECTOR).forEach(element => {
+  const upgradeExistingPlaceholders = root => {
+    root.querySelectorAll(PLACEHOLDER_SELECTOR).forEach(element => {
       if (element.classList.contains('message-visual') || isExcluded(element)) return;
       const requested = normalise(element.dataset.visualCue || '');
       const context = nearestContext(element);
@@ -181,29 +247,28 @@
     });
   };
 
-  const upgradeEmojiPlaceholders = () => {
-    document.querySelectorAll('main span, main i').forEach(element => {
+  const upgradeEmojiPlaceholders = root => {
+    root.querySelectorAll('main span, main i').forEach(element => {
       if (element.children.length || isExcluded(element)) return;
       const marker = `${element.className || ''} ${element.parentElement?.className || ''}`;
       if (!/(icon|emoji|bubble|motif|symbol)/i.test(marker)) return;
       const raw = (element.textContent || '').trim();
       const isShortSymbol = raw.length > 0 && raw.length <= 4 && /[^\p{L}\p{N}\s]/u.test(raw);
       if (!isShortSymbol) return;
-      const context = nearestContext(element);
-      const cue = cueForText(context.textContent);
+      const cue = cueForText(nearestContext(element).textContent);
       if (cue) setCue(element, cue);
     });
   };
 
-  const addCardNavigationCues = () => {
-    document.querySelectorAll(CARD_SELECTOR).forEach(card => {
+  const addCardNavigationCues = root => {
+    root.querySelectorAll(CARD_SELECTOR).forEach(card => {
       if (isExcluded(card) || hasMeaningfulVisual(card)) return;
       const cue = cueForText(card.textContent);
       if (!cue) return;
 
       const visual = document.createElement('span');
       visual.dataset.visualInjected = 'true';
-      setCue(visual, cue);
+      if (!setCue(visual, cue)) return;
       card.classList.add('visual-cue-card');
 
       const directLink = card.matches('a') ? card : card.querySelector(':scope > a');
@@ -212,15 +277,15 @@
     });
   };
 
-  const install = () => {
-    installHomepageCues();
-    upgradeExistingPlaceholders();
-    upgradeEmojiPlaceholders();
-    addCardNavigationCues();
+  const install = (root = document) => {
+    if (root === document) installHomepageCues();
+    upgradeExistingPlaceholders(root);
+    upgradeEmojiPlaceholders(root);
+    addCardNavigationCues(root);
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', install, { once: true });
+    document.addEventListener('DOMContentLoaded', () => install(), { once: true });
   } else {
     install();
   }
