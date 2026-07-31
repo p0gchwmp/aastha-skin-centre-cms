@@ -127,8 +127,8 @@
     const main = element.closest('main');
     const path = window.location.pathname.toLowerCase();
     const clinicalDetailPage =
-      /^\/treatments\/[^/]+\/$/.test(path) ||
-      /^\/conditions\/[^/]+\/$/.test(path) ||
+      path === '/treatments/' || path.startsWith('/treatments/') ||
+      path === '/conditions/' || path.startsWith('/conditions/') ||
       path === '/dr-cheena-langer/';
 
     return Boolean(clinicalDetailPage && main?.contains(element));
