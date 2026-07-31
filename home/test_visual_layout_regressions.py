@@ -51,6 +51,10 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         )
         self.assertIn("removeOwnedDuplicates", self.script)
 
+    def test_hyphenated_headings_are_normalised_before_matching(self):
+        self.assertIn(".replace(/[^a-z0-9\\s]/g, ' ')", self.script)
+        self.assertIn("'doctor led care'", self.script)
+
     def test_hub_icons_reserve_space_and_stack_on_mobile(self):
         self.assertIn(".hub-category-heading--clay", self.stylesheet)
         self.assertIn(
