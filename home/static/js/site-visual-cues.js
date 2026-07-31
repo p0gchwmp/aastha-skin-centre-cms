@@ -1,6 +1,7 @@
 (() => {
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const XLINK_NS = 'http://www.w3.org/1999/xlink';
+  const MISSING_ATTRIBUTE = '__clay_missing__';
 
   /* Order is intentional: specific services win before broad clinical terms. */
   const CUES = [
@@ -193,10 +194,22 @@
     return svg;
   };
 
+  const rememberOriginal = element => {
+    if (element.hasAttribute('data-visual-original-html')) return;
+    element.dataset.visualOriginalHtml = element.innerHTML;
+    element.dataset.visualOriginalAriaHidden = element.hasAttribute('aria-hidden')
+      ? element.getAttribute('aria-hidden')
+      : MISSING_ATTRIBUTE;
+    element.dataset.visualOriginalRole = element.hasAttribute('role')
+      ? element.getAttribute('role')
+      : MISSING_ATTRIBUTE;
+  };
+
   const setCue = (element, cue) => {
     if (!element || !cue || isExcluded(element)) return false;
     if (!document.getElementById(`clay-${cue}`)) return false;
 
+    rememberOriginal(element);
     element.classList.add('message-visual', `message-visual--${cue}`);
     element.dataset.clayCue = cue;
     element.setAttribute('aria-hidden', 'true');
