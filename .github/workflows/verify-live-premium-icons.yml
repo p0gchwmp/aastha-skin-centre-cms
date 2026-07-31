@@ -44,15 +44,47 @@ jobs:
 
       - name: Confirm premium homepage assets are public
         run: |
-          homepage="$(curl --fail --silent https://www.aasthaskincentre.in/)"
-          printf '%s' "$homepage" | grep -q 'premium-icons.css'
-          css="$(curl --fail --silent https://www.aasthaskincentre.in/static/css/premium-icons.css)"
-          printf '%s' "$css" | grep -q 'acne-care.svg'
-          printf '%s' "$css" | grep -q 'pigmentation-care.svg'
-          printf '%s' "$css" | grep -q 'hair-care.svg'
-          curl --fail --silent https://www.aasthaskincentre.in/static/icons/premium/acne-care.svg > /dev/null
-          curl --fail --silent https://www.aasthaskincentre.in/static/icons/premium/pigmentation-care.svg > /dev/null
-          curl --fail --silent https://www.aasthaskincentre.in/static/icons/premium/hair-care.svg > /dev/null
+          python - <<'PY'
+          import re
+          from urllib.parse import urljoin
+
+          import requests
+          from bs4 import BeautifulSoup
+
+          homepage_url = "https://www.aasthaskincentre.in/"
+          response = requests.get(homepage_url, timeout=30)
+          response.raise_for_status()
+          soup = BeautifulSoup(response.text, "lxml")
+          stylesheet = next(
+              (
+                  link.get("href")
+                  for link in soup.select('link[rel="stylesheet"][href]')
+                  if "premium-icons" in link.get("href", "")
+              ),
+              None,
+          )
+          if not stylesheet:
+              raise SystemExit("Premium icon stylesheet link was not found.")
+
+          css_url = urljoin(homepage_url, stylesheet)
+          css_response = requests.get(css_url, timeout=30)
+          css_response.raise_for_status()
+          css = css_response.text
+
+          for asset in ("acne-care", "pigmentation-care", "hair-care"):
+              match = re.search(
+                  rf'url\(["\']?([^"\')]*{asset}[^"\')]*\.svg)["\']?\)',
+                  css,
+              )
+              if not match:
+                  raise SystemExit(f"{asset} asset reference was not found in {css_url}")
+              asset_url = urljoin(css_url, match.group(1))
+              asset_response = requests.get(asset_url, timeout=30)
+              asset_response.raise_for_status()
+              if "<svg" not in asset_response.text[:500]:
+                  raise SystemExit(f"{asset_url} did not return SVG markup")
+              print(asset_url)
+          PY
 
       - name: Audit live phone layouts
         run: |
