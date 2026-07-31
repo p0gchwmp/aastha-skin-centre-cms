@@ -67,6 +67,31 @@ jobs:
           echo "Canonical domain did not reach $GITHUB_SHA in time"
           exit 1
 
+      - name: Wait for merged homepage-schema release
+        if: github.event_name == 'pull_request' && github.head_ref == 'agent/verify-live-homepage-jsonld'
+        run: |
+          expected_release="a234451dd07a729308ad0c87615211111f623b4e"
+          for attempt in $(seq 1 120); do
+            release="$(python - <<'PY'
+          import requests
+          try:
+              payload = requests.get(
+                  "https://www.aasthaskincentre.in/healthz/", timeout=30
+              ).json()
+              print(payload.get("release", ""))
+          except Exception:
+              print("")
+          PY
+          )"
+            echo "Canonical release: ${release:-not-ready}"
+            if [ "$release" = "$expected_release" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Canonical domain did not reach $expected_release in time"
+          exit 1
+
       - name: Verify canonical and Render release parity
         run: |
           canonical_release="$(python - <<'PY'
@@ -103,7 +128,7 @@ jobs:
             --output audit-artifacts/live-domain
 
       - name: Crawl the canonical SEO foundation
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' || github.head_ref == 'agent/verify-live-homepage-jsonld'
         run: |
           python tools/audit_seo_foundation.py \
             --base https://www.aasthaskincentre.in \
