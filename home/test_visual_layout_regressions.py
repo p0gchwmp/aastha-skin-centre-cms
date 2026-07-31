@@ -98,7 +98,11 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         self.assertIn("height: 100% !important", self.stylesheet)
         self.assertIn("margin-top: auto !important", self.stylesheet)
 
-    def test_parity_audit_removes_combined_clay_stylesheet(self):
+    def test_parity_audit_neutralises_only_deliberate_enhancements(self):
         self.assertIn("site-visual-cues.css", self.parity_audit)
         self.assertIn("visual-cue-card--managed", self.parity_audit)
         self.assertIn("hub-category-heading--clay", self.parity_audit)
+        self.assertIn("Reference-only reset", self.parity_audit)
+        self.assertIn("grid-auto-rows: auto !important", self.parity_audit)
+        self.assertIn("height: auto !important", self.parity_audit)
+        self.assertIn("margin-top: 0 !important", self.parity_audit)
