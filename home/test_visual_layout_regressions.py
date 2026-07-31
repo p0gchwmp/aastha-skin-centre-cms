@@ -6,12 +6,11 @@ from django.test import SimpleTestCase
 class VisualLayoutRegressionTests(SimpleTestCase):
     def setUp(self):
         root = Path(__file__).resolve().parents[1]
-        partial_root = root / "home" / "templates" / "home" / "partials"
         self.stylesheet = (
-            partial_root / "visual_layout_fixes_css.html"
+            root / "aastha_cms" / "static" / "css" / "site-visual-cues.css"
         ).read_text(encoding="utf-8")
         self.script = (
-            partial_root / "visual_layout_fixes_js.html"
+            root / "home" / "static" / "js" / "site-visual-cues.js"
         ).read_text(encoding="utf-8")
         self.base_template = (
             root / "aastha_cms" / "templates" / "base.html"
@@ -20,21 +19,15 @@ class VisualLayoutRegressionTests(SimpleTestCase):
             root / "tools" / "audit_browser_parity_hydrated.py"
         ).read_text(encoding="utf-8")
 
-    def test_corrective_partials_load_without_extra_network_requests(self):
-        self.assertIn("home/partials/visual_layout_fixes_css.html", self.base_template)
-        self.assertIn("home/partials/visual_layout_fixes_js.html", self.base_template)
+    def test_corrections_use_existing_asset_requests(self):
+        self.assertEqual(self.base_template.count("css/site-visual-cues.css"), 1)
+        self.assertEqual(self.base_template.count("js/site-visual-cues.js"), 1)
+        self.assertNotIn("visual_layout_fixes_css.html", self.base_template)
+        self.assertNotIn("visual_layout_fixes_js.html", self.base_template)
         self.assertNotIn("css/site-visual-layout-fixes.css", self.base_template)
         self.assertNotIn("js/site-visual-layout-fixes.js", self.base_template)
-        self.assertIn('id="site-visual-layout-fixes"', self.stylesheet)
-        self.assertIn('id="site-visual-layout-fixes-script"', self.script)
-        self.assertLess(
-            self.base_template.index("css/site-visual-cues.css"),
-            self.base_template.index("home/partials/visual_layout_fixes_css.html"),
-        )
-        self.assertLess(
-            self.base_template.index("js/site-visual-cues.js"),
-            self.base_template.index("home/partials/visual_layout_fixes_js.html"),
-        )
+        self.assertIn("Visual-cue layout corrections", self.stylesheet)
+        self.assertIn("Semantic correction pass", self.script)
 
     def test_repetitive_examples_receive_distinct_semantic_cues(self):
         expected_pairs = {
@@ -104,7 +97,7 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         self.assertIn("height: 100% !important", self.stylesheet)
         self.assertIn("margin-top: auto !important", self.stylesheet)
 
-    def test_parity_audit_removes_only_the_inline_correction_layer(self):
-        self.assertIn("site-visual-layout-fixes", self.parity_audit)
+    def test_parity_audit_removes_combined_clay_stylesheet(self):
+        self.assertIn("site-visual-cues.css", self.parity_audit)
         self.assertIn("visual-cue-card--managed", self.parity_audit)
         self.assertIn("hub-category-heading--clay", self.parity_audit)
