@@ -70,7 +70,7 @@
   data-instagram-url="{{ settings.home.SiteSettings.instagram_url }}"
   data-youtube-url="{{ settings.home.SiteSettings.youtube_url }}"
   data-facebook-url="{{ settings.home.SiteSettings.facebook_url }}"
-  data-analytics-enabled="{% if settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}true{% else %}false{% endif %}"
+  data-analytics-enabled="{% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}true{% else %}false{% endif %}"
 >
   {% wagtailuserbar %}
   {% with site_settings=settings.home.SiteSettings %}
@@ -92,7 +92,7 @@
   <script src="{% static 'js/analytics-events.js' %}" defer></script>
   <script src="{% static 'js/appointment-form-controller.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
-  {% if settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
+  {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.home.SiteSettings.analytics_id }}"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","{{ settings.home.SiteSettings.analytics_id }}",{send_page_view:true});</script>
   {% endif %}
