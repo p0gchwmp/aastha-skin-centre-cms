@@ -63,6 +63,39 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             visual.remove();
             card?.classList.remove('visual-cue-card');
           });
+          document.querySelectorAll(
+            '.concern-card .icon-bubble, .trust-item .trust-icon'
+          ).forEach(icon => {
+            [...icon.classList]
+              .filter(name => name.startsWith('message-visual'))
+              .forEach(name => icon.classList.remove(name));
+            icon.removeAttribute('aria-hidden');
+            icon.removeAttribute('role');
+            const concern = icon.matches('.concern-card .icon-bubble');
+            const size = concern ? '54px' : '42px';
+            const radius = concern ? '18px' : '13px';
+            const declarations = {
+              width: size,
+              height: size,
+              display: 'grid',
+              'place-items': 'center',
+              flex: '0 0 auto',
+              color: 'transparent',
+              'font-size': '0',
+              'line-height': '0',
+              background: '#fff7f5',
+              'background-image': 'none',
+              border: '1px solid rgba(111, 23, 54, .08)',
+              'border-radius': radius,
+              'box-shadow': 'none',
+              filter: 'none',
+              transform: 'none',
+              overflow: 'hidden'
+            };
+            Object.entries(declarations).forEach(([name, value]) => {
+              icon.style.setProperty(name, value, 'important');
+            });
+          });
           window.scrollTo(0, 0);
         }
         """
