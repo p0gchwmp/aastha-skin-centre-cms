@@ -17,13 +17,14 @@ concurrency:
 jobs:
   representative-page-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
-      DJANGO_SETTINGS_MODULE: aastha_cms.settings.dev
+      DJANGO_SETTINGS_MODULE: aastha_cms.settings.quality
       PYTHONUNBUFFERED: "1"
       PUBLIC_SITE_URL: http://127.0.0.1:8000
       WAGTAILADMIN_BASE_URL: http://127.0.0.1:8000
       LHCI_BASE_URL: http://127.0.0.1:8000
+      SECRET_KEY: quality-gate-only-not-for-production
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -56,15 +57,22 @@ jobs:
           node --check lighthouserc.cjs
           python manage.py check
 
-      - name: Build local CMS database
+      - name: Build production-like local CMS
         run: |
           rm -f db.sqlite3
+          rm -rf staticfiles
           python manage.py migrate --no-input
           python manage.py initialize_cms
+          python manage.py collectstatic --no-input
 
-      - name: Start local CMS
+      - name: Start compressed local CMS
         run: |
-          nohup python manage.py runserver 127.0.0.1:8000 --noreload > /tmp/aastha-quality.log 2>&1 &
+          nohup gunicorn aastha_cms.wsgi:application \
+            --bind 127.0.0.1:8000 \
+            --workers 2 \
+            --access-logfile - \
+            --error-logfile - \
+            > /tmp/aastha-quality.log 2>&1 &
           for attempt in $(seq 1 60); do
             if curl --fail --silent http://127.0.0.1:8000/healthz/ > /dev/null; then
               exit 0
@@ -87,6 +95,7 @@ jobs:
         run: npx lhci autorun --config=lighthouserc.cjs
 
       - name: Run desktop Lighthouse gate
+        if: always()
         env:
           LHCI_FORM_FACTOR: desktop
         run: npx lhci autorun --config=lighthouserc.cjs
