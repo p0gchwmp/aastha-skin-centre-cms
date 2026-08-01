@@ -44,6 +44,16 @@
     });
   };
 
+  const appendFixedPlacements = (container, placements) => {
+    const strong = document.createElement("strong");
+    strong.textContent = "Fixed locations: ";
+    container.appendChild(strong);
+    placements.forEach((item, index) => {
+      if (index) container.appendChild(document.createTextNode(" · "));
+      container.appendChild(document.createTextNode(item.label));
+    });
+  };
+
   const helperPanel = (data) => {
     const section = document.createElement("section");
     section.className = "aastha-placement-map";
@@ -63,9 +73,7 @@
     if (data.has_exact_layout) {
       const fixed = document.createElement("div");
       fixed.className = "aastha-placement-fixed";
-      fixed.innerHTML = "<strong>Fixed locations:</strong> " + data.fixed_placements
-        .map((item) => item.label)
-        .join(" · ");
+      appendFixedPlacements(fixed, data.fixed_placements || []);
       section.appendChild(fixed);
 
       const heading = document.createElement("h4");
@@ -80,7 +88,13 @@
           button.type = "button";
           button.className = "button button-small button-secondary";
           button.dataset.anchorId = anchor.id;
-          button.innerHTML = `<span>${anchor.label}</span><code>${anchor.id}</code>`;
+
+          const label = document.createElement("span");
+          label.textContent = anchor.label;
+          const code = document.createElement("code");
+          code.textContent = anchor.id;
+          button.append(label, code);
+
           button.addEventListener("click", () => {
             const inputs = targetInputs();
             const active = inputs.find((input) => input === document.activeElement)
@@ -128,10 +142,11 @@
       });
       if (!response.ok) return;
       const data = await response.json();
-      attachDatalist(data.anchors || []);
-      insertPanel(helperPanel(data));
+      const anchors = Array.isArray(data.anchors) ? data.anchors : [];
+      attachDatalist(anchors);
+      insertPanel(helperPanel({ ...data, anchors }));
 
-      const observer = new MutationObserver(() => attachDatalist(data.anchors || []));
+      const observer = new MutationObserver(() => attachDatalist(anchors));
       observer.observe(document.body, { childList: true, subtree: true });
     } catch (error) {
       console.warn("Aastha placement map could not load", error);
