@@ -1,7 +1,8 @@
-"""Render the verified static layout while retaining CMS-managed facts."""
+"""Render verified layouts while retaining CMS-managed facts and sections."""
 
 from __future__ import annotations
 
+from collections import defaultdict
 from html import escape, unescape
 import re
 from urllib.parse import urlsplit
@@ -28,6 +29,16 @@ LIST_THEN_PARAGRAPH = re.compile(
 NEXT_CLEAN_LIST = re.compile(
     r'(?P<gap>\s*)(?P<open><(?:ul|ol)\b[^>]*\bclass=(?:["\'])'
     r'[^"\']*\bclean-list\b[^"\']*(?:["\'])[^>]*>)',
+    re.IGNORECASE,
+)
+HERO_SECTION = re.compile(
+    r'(?P<hero><section\b(?=[^>]*\bclass=(?P<quote>["\'])'
+    r'[^"\']*\bpage-hero\b[^"\']*(?P=quote))[^>]*>.*?</section>)',
+    re.IGNORECASE | re.DOTALL,
+)
+ARTICLE_WITH_SIDEBAR_CLOSE = re.compile(
+    r'(?P<close></article>)(?P<gap>\s*)(?=<aside\b(?=[^>]*\bclass='
+    r'(?P<quote>["\'])[^"\']*\bcare-sidebar\b[^"\']*(?P=quote)))',
     re.IGNORECASE,
 )
 DANGLING_LIST_LEAD = '<p class="list-lead">A dermatologist may consider:</p>'
@@ -59,14 +70,7 @@ def _looks_like_list_item(value: str) -> bool:
 
 
 def repair_orphaned_list_items(source: str) -> str:
-    """Repair high-confidence list items left as adjacent paragraphs.
-
-    The original snapshots contained a small set of short, punctuation-free
-    phrases immediately after ``.clean-list`` elements. They are visually and
-    semantically list items, but the persistent production database may still
-    contain the older paragraph markup. This narrow, idempotent rewrite keeps
-    ordinary prose untouched while repairing both fresh and existing installs.
-    """
+    """Repair high-confidence list items left as adjacent paragraphs."""
 
     output = source
     while True:
@@ -111,12 +115,7 @@ def repair_orphaned_list_items(source: str) -> str:
 
 
 def optimise_image_delivery(source: str) -> str:
-    """Keep the first content image eager and defer the remaining page images.
-
-    The exact layout is stored as verified HTML. A narrow tag-level rewrite adds
-    browser delivery hints while preserving element order, content, URLs and
-    visual styling. Header/footer branding is rendered outside this snapshot.
-    """
+    """Keep the first content image eager and defer remaining page images."""
 
     image_index = 0
 
@@ -134,23 +133,13 @@ def optimise_image_delivery(source: str) -> str:
                 tag,
                 ' loading="eager" decoding="async" fetchpriority="high"',
             )
-        return _append_img_attributes(
-            tag,
-            ' loading="lazy" decoding="async"',
-        )
+        return _append_img_attributes(tag, ' loading="lazy" decoding="async"')
 
     return IMG_TAG.sub(replace, source)
 
 
 def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
-    """Replace facts that administrators manage centrally.
-
-    The snapshot remains faithful for layout and content structure. Only clinic
-    facts represented by explicit Wagtail settings and non-visual image-delivery
-    hints are substituted. Medical credentials, experience statements and other
-    clinical claims are intentionally left untouched and must be edited through
-    the reviewed page content.
-    """
+    """Replace centrally managed facts without changing the verified layout."""
 
     primary_digits = site_settings.primary_phone_digits[-10:]
     secondary_digits = site_settings.secondary_phone_digits[-10:]
@@ -191,10 +180,146 @@ def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
     return optimise_image_delivery(output)
 
 
+def _layout_value(bound_block):
+    value = getattr(bound_block, "value", None)
+    if not hasattr(value, "get"):
+        return {}
+    layout = value.get("layout")
+    return layout if hasattr(layout, "get") else {}
+
+
+def render_editor_additions(context) -> dict[tuple[str, str], list[str]]:
+    """Render hybrid additions and group them by selected placement."""
+
+    page = context.get("page")
+    additions = getattr(page, "layout_additions", None)
+    if (
+        page is None
+        or getattr(page, "layout_mode", "hybrid") != "hybrid"
+        or not additions
+    ):
+        return {}
+
+    render_context = context.flatten() if hasattr(context, "flatten") else dict(context)
+    grouped: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for bound_block in additions:
+        layout = _layout_value(bound_block)
+        placement = layout.get("placement") or "flow"
+        target = layout.get("target_anchor") or ""
+        rendered = bound_block.render(context=render_context)
+        grouped[(placement, target)].append(str(rendered))
+    return grouped
+
+
+def _insert_after_hero(source: str, addition: str) -> tuple[str, bool]:
+    match = HERO_SECTION.search(source)
+    if not match:
+        return source, False
+    return source[:match.end()] + addition + source[match.end():], True
+
+
+def _section_pattern_for_anchor(anchor: str) -> re.Pattern[str]:
+    target = re.escape(anchor)
+    return re.compile(
+        r'(?P<section><section\b(?=[^>]*\bclass=(?P<class_quote>["\'])'
+        r'[^"\']*\barticle-section\b[^"\']*(?P=class_quote))[^>]*>'
+        r'.*?\bid=(?P<id_quote>["\'])'
+        + target
+        + r'(?P=id_quote).*?</section>)',
+        re.IGNORECASE | re.DOTALL,
+    )
+
+
+def _insert_at_anchor(
+    source: str,
+    anchor: str,
+    addition: str,
+    *,
+    after: bool,
+) -> tuple[str, bool]:
+    match = _section_pattern_for_anchor(anchor).search(source)
+    if not match:
+        return source, False
+    position = match.end() if after else match.start()
+    return source[:position] + addition + source[position:], True
+
+
+def _insert_before_article_end(source: str, addition: str) -> tuple[str, bool]:
+    match = ARTICLE_WITH_SIDEBAR_CLOSE.search(source)
+    if match:
+        return source[:match.start()] + addition + source[match.start():], True
+
+    main_close = source.lower().rfind("</main>")
+    search_end = main_close if main_close >= 0 else len(source)
+    article_close = source.lower().rfind("</article>", 0, search_end)
+    if article_close >= 0:
+        return source[:article_close] + addition + source[article_close:], True
+    return source, False
+
+
+def _insert_page_end(source: str, addition: str) -> tuple[str, bool]:
+    position = source.lower().rfind("</main>")
+    if position < 0:
+        return source + addition, True
+    return source[:position] + addition + source[position:], True
+
+
+def inject_editor_additions(source: str, grouped) -> str:
+    """Insert rendered sections into stable exact-layout landmarks.
+
+    Missing anchors never hide editor content. The section falls back to the
+    article end with a non-visible diagnostic comment, making preview failures
+    obvious in source while keeping the page usable.
+    """
+
+    output = source
+    fallbacks: list[str] = []
+
+    for (placement, target), fragments in grouped.items():
+        addition = "".join(fragments)
+        inserted = False
+        if placement == "after_hero":
+            output, inserted = _insert_after_hero(output, addition)
+        elif placement == "before_anchor":
+            output, inserted = _insert_at_anchor(
+                output,
+                target,
+                addition,
+                after=False,
+            )
+        elif placement == "after_anchor":
+            output, inserted = _insert_at_anchor(
+                output,
+                target,
+                addition,
+                after=True,
+            )
+        elif placement in {"flow", "before_sidebar"}:
+            output, inserted = _insert_before_article_end(output, addition)
+        elif placement == "page_end":
+            output, inserted = _insert_page_end(output, addition)
+
+        if not inserted:
+            label = f"{placement}:{target}" if target else placement
+            fallbacks.append(
+                f"<!-- CMS placement fallback: {escape(label)} -->" + addition
+            )
+
+    if fallbacks:
+        fallback_html = "".join(fallbacks)
+        output, inserted = _insert_before_article_end(output, fallback_html)
+        if not inserted:
+            output, _ = _insert_page_end(output, fallback_html)
+    return output
+
+
 @register.simple_tag(takes_context=True)
 def exact_page_main(context):
     request = context.get("request")
     page = context.get("page")
+    if getattr(page, "layout_mode", "hybrid") == "builder":
+        return ""
+
     public_path = getattr(page, "url", "") or getattr(
         request,
         "path_info",
@@ -209,3 +334,13 @@ def exact_page_main(context):
 
     site_settings = SiteSettings.for_request(request)
     return mark_safe(apply_global_facts(layout.html, site_settings))
+
+
+@register.simple_tag(takes_context=True)
+def exact_page_with_editor_sections(context, exact_main):
+    if not exact_main:
+        return ""
+    grouped = render_editor_additions(context)
+    if not grouped:
+        return exact_main
+    return mark_safe(inject_editor_additions(str(exact_main), grouped))
