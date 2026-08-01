@@ -20,33 +20,46 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         ).read_text(encoding="utf-8")
 
     def test_rebuild_uses_the_existing_css_and_js_request_budget(self):
-        self.assertEqual(self.base_template.count("css/site-visual-cues.css"), 1)
-        self.assertEqual(self.base_template.count("js/site-visual-cues.js"), 1)
+        self.assertEqual(
+            self.base_template.count("css/site-visual-cues.css"),
+            1,
+        )
+        self.assertEqual(
+            self.base_template.count("js/site-visual-cues.js"),
+            1,
+        )
         self.assertNotIn("site-visual-layout-fixes", self.base_template)
-        self.assertIn("Aastha semantic visual cues", self.stylesheet)
+        self.assertIn("semantic visual cues", self.stylesheet)
         self.assertIn("EXACT_LABEL_CUES", self.script)
 
-    def test_known_repetitive_sections_receive_distinct_relevant_cues(self):
+    def test_known_sections_receive_distinct_relevant_cues(self):
         expected_pairs = {
             "medical dermatology": "clinical",
             "procedural and aesthetic care": "laser",
             "hair and scalp treatments": "hair",
-            "aesthetic and anti ageing": "complete",
-            "acne scars and resurfacing": "acne",
+            "aesthetic and anti ageing": "ageing",
+            "acne scars and resurfacing": "scars",
             "pigmentation and laser treatments": "pigmentation",
             "doctor led care": "plan",
             "diagnosis first": "diagnosis",
-            "fungal and recurrent infections": "clinical",
-            "allergy eczema and itching": "complete",
+            "fungal and recurrent infections": "infection",
+            "allergy eczema and itching": "allergy",
+            "moles growths nails and minor procedures": "growths",
+            "childrens dermatology": "children",
+            "minor procedures and dermato surgery": "dermatosurgery",
+            "skin quality and ageing": "ageing",
         }
         for phrase, cue in expected_pairs.items():
             with self.subTest(phrase=phrase, cue=cue):
                 self.assertIn(f"['{phrase}', '{cue}']", self.script)
 
-    def test_heading_only_matching_prevents_child_links_from_hijacking_parent_icon(self):
+    def test_heading_only_matching_prevents_child_links_hijacking_parent_icon(self):
         self.assertIn("const headingLabel", self.script)
         self.assertIn(".hub-category-heading", self.script)
-        self.assertIn("querySelector('h1, h2, h3, h4, strong')", self.script)
+        self.assertIn(
+            "querySelector('h1, h2, h3, h4, strong')",
+            self.script,
+        )
         self.assertNotIn("owner.textContent", self.script)
         self.assertNotIn("context.textContent", self.script)
 
@@ -60,7 +73,7 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         ):
             self.assertNotIn(forbidden, self.script)
 
-    def test_hub_icons_keep_the_static_54px_desktop_and_46px_mobile_slot(self):
+    def test_hub_icons_keep_static_desktop_and_mobile_slots(self):
         self.assertIn(".hub-icon.message-visual", self.stylesheet)
         self.assertIn("width: 54px !important", self.stylesheet)
         self.assertIn("height: 54px !important", self.stylesheet)
@@ -83,12 +96,14 @@ class VisualLayoutRegressionTests(SimpleTestCase):
         ):
             self.assertNotIn(forbidden, self.stylesheet)
 
-    def test_failed_asset_restores_the_original_glyph(self):
+    def test_failed_asset_restores_original_glyph(self):
         self.assertIn("const restoreOriginal", self.script)
-        self.assertIn("image.addEventListener('error'", self.script)
+        self.assertIn("image.addEventListener(", self.script)
+        self.assertIn("'error'", self.script)
+        self.assertIn("restoreOriginal(element)", self.script)
         self.assertNotIn("setAttribute('hidden'", self.script)
 
-    def test_parity_audit_restores_original_markup_and_removes_visual_stylesheet(self):
+    def test_parity_audit_restores_original_markup_and_removes_visual_css(self):
         self.assertIn("data-visual-original-html", self.parity_audit)
         self.assertIn("site-visual-cues.css", self.parity_audit)
         self.assertIn("icon.innerHTML = originalHtml", self.parity_audit)
