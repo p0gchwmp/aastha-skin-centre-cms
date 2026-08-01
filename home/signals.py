@@ -63,6 +63,21 @@ def _record_image(instance):
     return instance.hero_image
 
 
+def _persist_synced_page(page, *, publish_live=False):
+    """Keep Explorer/revisions correct without bypassing live publishing."""
+
+    if page.live:
+        revision = page.save_revision()
+        if publish_live:
+            revision.publish()
+        return revision
+
+    # Draft pages need their concrete row updated as well as a revision;
+    # otherwise Explorer continues to display the pre-sync values.
+    page.save()
+    return page.save_revision()
+
+
 def _sync_linked_pages(instance) -> bool:
     """Synchronise pages that explicitly remain connected to their record.
 
@@ -90,14 +105,7 @@ def _sync_linked_pages(instance) -> bool:
                 instance.slug or instance.name,
                 exclude_page=page,
             )
-
-        # save_revision() serialises the in-memory page but does not update the
-        # current page row for an unpublished draft. Persist first so the editor,
-        # API and subsequent signals all see the newly synchronised values.
-        page.save()
-        revision = page.save_revision()
-        if page.live:
-            revision.publish()
+        _persist_synced_page(page, publish_live=page.live)
     return True
 
 
@@ -125,10 +133,12 @@ def _create_profile_page(*, instance, page_model, relation_name, index_kind):
         image = _record_image(instance)
         if image is not None:
             matching.hero_image = image
-        matching.save()
-        revision = matching.save_revision()
-        if instance.publish_public_page_automatically:
-            revision.publish()
+        _persist_synced_page(
+            matching,
+            publish_live=(
+                matching.live or instance.publish_public_page_automatically
+            ),
+        )
         return
 
     page = page_model(
