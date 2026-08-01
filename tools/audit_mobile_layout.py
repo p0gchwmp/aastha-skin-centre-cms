@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit every public page for narrow-grid and viewport-overflow defects."""
+"""Audit every public page for narrow-grid and iOS mobile defects."""
 
 from __future__ import annotations
 
@@ -17,6 +17,11 @@ from playwright.sync_api import sync_playwright
 BASE_DIR = Path(__file__).resolve().parents[1]
 SNAPSHOT_BUNDLE = BASE_DIR / "seed_data" / "exact-pages.json.gz.b64"
 VIEWPORT = {"width": 390, "height": 844}
+IOS_USER_AGENT = (
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 "
+    "Mobile/15E148 Safari/604.1"
+)
 GRID_SELECTORS = [
     ".concern-grid",
     ".treatment-grid",
@@ -40,10 +45,23 @@ GRID_SELECTORS = [
     ".clinic-location-grid",
     ".guide-grid",
     ".cms-card-grid",
+    ".hub-category-grid",
     ".hub-link-grid",
     ".directory-grid",
     ".card-grid",
     ".category-grid",
+]
+TEXT_CHECKS = [
+    {"selector": ".trust-item strong", "max_px": 24},
+    {"selector": ".trust-item span:not(.trust-icon)", "max_px": 22},
+    {"selector": ".concern-card h3", "max_px": 34},
+    {"selector": ".concern-card p", "max_px": 23},
+    {"selector": ".concern-card .card-link", "max_px": 24},
+    {"selector": ".hub-intro", "max_px": 23},
+    {"selector": ".hub-category-heading h2", "max_px": 36},
+    {"selector": ".hub-category-heading p", "max_px": 23},
+    {"selector": ".hub-link strong", "max_px": 25},
+    {"selector": ".hub-link span", "max_px": 22},
 ]
 
 
@@ -66,6 +84,16 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--site", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--engine",
+        choices=("chromium", "webkit"),
+        default="chromium",
+    )
+    parser.add_argument(
+        "--color-scheme",
+        choices=("light", "dark"),
+        default="light",
+    )
     args = parser.parse_args()
 
     args.output.mkdir(parents=True, exist_ok=True)
@@ -73,8 +101,19 @@ def main() -> int:
     total_errors = 0
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch()
-        page = browser.new_page(viewport=VIEWPORT, device_scale_factor=1)
+        browser_type = getattr(playwright, args.engine)
+        browser = browser_type.launch()
+        page_options = {
+            "viewport": VIEWPORT,
+            "screen": VIEWPORT,
+            "device_scale_factor": 3 if args.engine == "webkit" else 1,
+            "has_touch": args.engine == "webkit",
+            "is_mobile": args.engine == "webkit",
+            "color_scheme": args.color_scheme,
+        }
+        if args.engine == "webkit":
+            page_options["user_agent"] = IOS_USER_AGENT
+        page = browser.new_page(**page_options)
         page.set_default_timeout(12_000)
 
         for path in public_paths():
@@ -92,9 +131,9 @@ def main() -> int:
                             "transition:none!important;scroll-behavior:auto!important}"
                         )
                     )
-                    page.wait_for_timeout(250)
+                    page.wait_for_timeout(300)
                     findings = page.evaluate(
-                        """selectors => {
+                        """config => {
                           const visible = element => {
                             const style = getComputedStyle(element);
                             const rect = element.getBoundingClientRect();
@@ -109,7 +148,7 @@ def main() -> int:
                             errors.push(`document overflows viewport by ${Math.round(overflow)}px`);
                           }
 
-                          for (const selector of selectors) {
+                          for (const selector of config.gridSelectors) {
                             document.querySelectorAll(selector).forEach((grid, index) => {
                               if (!visible(grid)) return;
                               const rect = grid.getBoundingClientRect();
@@ -151,13 +190,53 @@ def main() -> int:
                               });
                             });
                           }
+
+                          for (const check of config.textChecks) {
+                            document.querySelectorAll(check.selector).forEach((element, index) => {
+                              if (!visible(element)) return;
+                              const rect = element.getBoundingClientRect();
+                              const style = getComputedStyle(element);
+                              const fontSize = Number.parseFloat(style.fontSize);
+                              const range = document.createRange();
+                              range.selectNodeContents(element);
+                              const textRect = range.getBoundingClientRect();
+                              if (fontSize > check.max_px + .5) {
+                                errors.push(`${check.selector}[${index}] inflated to ${fontSize.toFixed(1)}px`);
+                              }
+                              if (rect.left < -2 || rect.right > viewport + 2) {
+                                errors.push(`${check.selector}[${index}] box crosses viewport`);
+                              }
+                              if (textRect.left < -2 || textRect.right > viewport + 2) {
+                                errors.push(`${check.selector}[${index}] text crosses viewport`);
+                              }
+                              if (element.scrollWidth > element.clientWidth + 2) {
+                                errors.push(`${check.selector}[${index}] clips ${element.scrollWidth - element.clientWidth}px of text`);
+                              }
+                            });
+                          }
+
+                          document.querySelectorAll('.message-visual').forEach((element, index) => {
+                            if (!visible(element)) return;
+                            const style = getComputedStyle(element);
+                            if (style.filter !== 'none') {
+                              errors.push(`.message-visual[${index}] has container filter ${style.filter}`);
+                            }
+                            const image = element.querySelector('img.message-visual__img');
+                            if (image && (!image.complete || image.naturalWidth < 1)) {
+                              errors.push(`.message-visual[${index}] image did not load`);
+                            }
+                          });
+
                           return {
                             viewport,
                             documentWidth: document.documentElement.scrollWidth,
                             errors: [...new Set(errors)]
                           };
                         }""",
-                        GRID_SELECTORS,
+                        {
+                            "gridSelectors": GRID_SELECTORS,
+                            "textChecks": TEXT_CHECKS,
+                        },
                     )
                     page_result.update(
                         {
@@ -172,7 +251,10 @@ def main() -> int:
             if page_result["errors"]:
                 total_errors += len(page_result["errors"])
                 page.screenshot(
-                    path=args.output / f"{safe_name(path)}--mobile-failure.png",
+                    path=(
+                        args.output
+                        / f"{safe_name(path)}--{args.engine}-{args.color_scheme}-failure.png"
+                    ),
                     full_page=True,
                 )
             results.append(page_result)
@@ -181,6 +263,8 @@ def main() -> int:
 
     report = {
         "site": args.site,
+        "engine": args.engine,
+        "color_scheme": args.color_scheme,
         "viewport": VIEWPORT,
         "pages_checked": len(results),
         "pages_failed": sum(bool(result["errors"]) for result in results),
@@ -194,8 +278,9 @@ def main() -> int:
 
     if total_errors:
         print(
-            f"Mobile layout audit failed: {report['pages_failed']}/"
-            f"{report['pages_checked']} pages; {total_errors} defects."
+            f"Mobile layout audit failed ({args.engine}/{args.color_scheme}): "
+            f"{report['pages_failed']}/{report['pages_checked']} pages; "
+            f"{total_errors} defects."
         )
         for result in results:
             for error in result["errors"]:
@@ -204,7 +289,8 @@ def main() -> int:
 
     print(
         f"Mobile layout audit passed: {report['pages_checked']} pages at "
-        f"{VIEWPORT['width']}px; no narrow grids or viewport overflow."
+        f"{VIEWPORT['width']}px in {args.engine}/{args.color_scheme}; "
+        "no narrow grids, clipped text, icon filtering or viewport overflow."
     )
     return 0
 
