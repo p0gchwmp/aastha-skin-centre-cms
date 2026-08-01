@@ -45,9 +45,13 @@ jobs:
           bash -n tools/create_media_backup.sh
           python -m py_compile tools/audit_domain_cutover.py
           python -m py_compile tools/audit_seo_foundation.py
+          python -m py_compile tools/audit_clinical_result_images.py
+          python -m py_compile tools/audit_clinical_result_galleries_browser.py
+          python -m py_compile tools/audit_deployed_sites_with_extensions.py
           python manage.py makemigrations --check --dry-run
           python manage.py check
           python manage.py test
+          python tools/audit_clinical_result_images.py
 
       - name: Build local CMS database
         run: |
@@ -72,7 +76,7 @@ jobs:
 
       - name: Compare every legacy route with static reference
         run: |
-          python tools/audit_deployed_sites.py \
+          python tools/audit_deployed_sites_with_extensions.py \
             --cms http://127.0.0.1:8000 \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/local-structure
@@ -83,6 +87,12 @@ jobs:
             --cms http://127.0.0.1:8000 \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/local-browser
+
+      - name: Exercise every clinical gallery and carousel
+        run: |
+          python tools/audit_clinical_result_galleries_browser.py \
+            --cms http://127.0.0.1:8000 \
+            --output audit-artifacts/local-clinical-gallery-browser
 
       - name: Audit dark-mode readability
         run: |
@@ -142,7 +152,7 @@ jobs:
 
       - name: Compare deployed sites across every legacy route
         run: |
-          python tools/audit_deployed_sites.py \
+          python tools/audit_deployed_sites_with_extensions.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/deployed-structure
@@ -153,6 +163,13 @@ jobs:
             --cms https://aastha-skin-centre-cms.onrender.com \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/deployed-browser
+
+      - name: Exercise deployed clinical galleries and carousels
+        if: github.event_name != 'pull_request'
+        run: |
+          python tools/audit_clinical_result_galleries_browser.py \
+            --cms https://aastha-skin-centre-cms.onrender.com \
+            --output audit-artifacts/deployed-clinical-gallery-browser
 
       - name: Audit deployed dark-mode readability
         if: github.event_name != 'pull_request'
