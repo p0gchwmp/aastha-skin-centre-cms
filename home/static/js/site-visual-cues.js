@@ -271,7 +271,7 @@
     image.width = 512;
     image.height = 512;
     image.alt = '';
-    image.loading = element.closest('.home-hero, .trust-ribbon') ? 'eager' : 'lazy';
+    image.loading = 'lazy';
     image.fetchPriority = 'low';
     image.decoding = 'async';
     image.draggable = false;
