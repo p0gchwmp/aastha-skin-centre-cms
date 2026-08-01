@@ -15,6 +15,24 @@ HERO_ART = re.compile(
     r'(?P<body>.*?)(?P<close></div>)',
     re.IGNORECASE | re.DOTALL,
 )
+HERO_GALLERY_VISIBILITY_STYLE = """
+<style>
+.page-hero-art:has(> .clinical-results--hero) {
+  display: flex !important;
+  flex-direction: column;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+@media (max-width: 760px) {
+  .page-hero-art:has(> .clinical-results--hero) {
+    display: flex !important;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 1.25rem;
+  }
+}
+</style>
+"""
 
 
 def _request_path(context) -> str:
@@ -41,6 +59,7 @@ def exact_page_with_clinical_results(context, exact_main):
     hero_gallery = hero_gallery_markup(path)
     if not hero_gallery:
         return exact_main
+    hero_gallery = HERO_GALLERY_VISIBILITY_STYLE + hero_gallery
 
     source = str(exact_main)
 
