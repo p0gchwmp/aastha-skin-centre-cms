@@ -54,6 +54,9 @@ HERO_GALLERY_STYLE = r"""
 .clinical-results--hero .clinical-results__controls {
   margin-top: .75rem;
 }
+.clinical-results__replaced-placeholder {
+  display: none !important;
+}
 .clinical-results__load-error[hidden],
 .clinical-results__load-error[data-suppressed="true"] {
   display: none !important;
@@ -75,9 +78,10 @@ HERO_GALLERY_SCRIPT = r"""
     const visual = [...hero.querySelectorAll('div, figure')].find(node =>
       !node.contains(heading) && node.querySelector('img, svg, picture')
     );
-    if (!visual) return;
+    if (!visual || !visual.parentNode) return;
 
-    visual.replaceChildren(root);
+    visual.classList.add('clinical-results__replaced-placeholder');
+    visual.parentNode.insertBefore(root, visual);
     root.classList.add('clinical-results--hero');
     root.dataset.heroPlaced = 'true';
   };
