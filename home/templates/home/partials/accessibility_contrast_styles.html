@@ -1,0 +1,28 @@
+<style id="accessibility-contrast-styles">
+  /* Keep the premium gold accent while meeting WCAG contrast on white cards. */
+  .release-v24 .why-number,
+  .release-v24 .value-card > span {
+    color: #856600 !important;
+  }
+
+  /* Dark mode needs luminous accent tokens rather than the light-mode plum. */
+  html[data-theme="dark"] .release-v24 .section-kicker,
+  html[data-theme="dark"] .release-v24 .quiet-label,
+  html[data-theme="dark"] .release-v24 .contact-number,
+  html[data-theme="dark"] .release-v24 .location-contact-card > span,
+  html[data-theme="dark"] .release-v24 main a[href^="/blog/"] > div > span,
+  html[data-theme="dark"] .release-v24 .clinical-results__hero-label {
+    color: #e8c978 !important;
+  }
+
+  html[data-theme="dark"] .release-v24 .treatment-card .text-link,
+  html[data-theme="dark"] .release-v24 .mobile-actions a:not([href$="book-appointment/"]) {
+    color: #f2a8c0 !important;
+  }
+
+  html[data-theme="dark"] .release-v24 .mobile-actions a[href$="book-appointment/"] {
+    color: #ffffff !important;
+    background: #9a1f49 !important;
+    border-color: #9a1f49 !important;
+  }
+</style>
