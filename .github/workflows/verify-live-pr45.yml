@@ -1,0 +1,227 @@
+name: Verify PR45 live fixes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/verify-live-pr45.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-browser-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out verification branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Chromium verification dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Wait for current main release on canonical domain
+        env:
+          EXPECTED_RELEASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import requests
+
+          expected = os.environ["EXPECTED_RELEASE"]
+          url = "https://www.aasthaskincentre.in/healthz/"
+          for attempt in range(120):
+              try:
+                  payload = requests.get(url, timeout=30).json()
+                  release = payload.get("release", "")
+                  print(f"Attempt {attempt + 1}: canonical release {release or 'not-ready'}")
+                  if payload.get("status") == "ok" and release == expected:
+                      raise SystemExit(0)
+              except Exception as error:
+                  print(f"Attempt {attempt + 1}: {error}")
+              time.sleep(5)
+          raise SystemExit(f"Canonical domain did not reach {expected}")
+          PY
+
+      - name: Verify bullets, hero galleries and false-error fix live
+        run: |
+          mkdir -p audit-artifacts/live-pr45
+          python - <<'PY'
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+
+          base = "https://www.aasthaskincentre.in"
+          routes = [
+              "/treatments/acne-scar-treatment/",
+              "/treatments/acne-treatment/",
+              "/treatments/alopecia-areata-treatment/",
+              "/treatments/botulinum-toxin-dermal-fillers/",
+              "/treatments/chemical-peels/",
+              "/treatments/contact-dermatitis-treatment/",
+              "/treatments/dark-circles-under-eye-treatment/",
+              "/treatments/fungal-infection-treatment/",
+              "/treatments/hair-fall-treatment/",
+              "/treatments/hair-transplant/",
+              "/treatments/laser-hair-reduction/",
+              "/treatments/laser-tattoo-removal/",
+              "/treatments/mnrf-treatment/",
+              "/treatments/psoriasis-treatment/",
+              "/treatments/q-switched-laser-toning/",
+              "/treatments/wart-mole-skin-tag-removal/",
+          ]
+          output = Path("audit-artifacts/live-pr45")
+          failures = []
+
+          def check(condition, message):
+              if not condition:
+                  failures.append(message)
+
+          with sync_playwright() as playwright:
+              browser = playwright.chromium.launch(headless=True)
+              desktop = browser.new_context(
+                  viewport={"width": 1440, "height": 1000},
+                  color_scheme="dark",
+              )
+              page = desktop.new_page()
+              page.set_default_timeout(45000)
+
+              for route in routes:
+                  page.goto(base + route, wait_until="domcontentloaded", timeout=60000)
+                  gallery = page.locator(
+                      ".page-hero-art .clinical-results--hero[data-clinical-ready='true']"
+                  )
+                  gallery.wait_for(state="visible")
+                  gallery.scroll_into_view_if_needed()
+
+                  check(gallery.is_visible(), f"{route}: hero gallery is not visible")
+                  placeholder = page.locator(
+                      ".page-hero-art:has(> .clinical-results--hero) > img"
+                  )
+                  check(
+                      placeholder.count() == 0 or not placeholder.first.is_visible(),
+                      f"{route}: legacy hero placeholder remains visible",
+                  )
+
+                  active_image = gallery.locator(
+                      "[data-clinical-slide]:not([hidden]) img"
+                  )
+                  active_image.wait_for(state="visible")
+                  loaded = active_image.evaluate(
+                      "img => img.complete && img.naturalWidth > 0"
+                  )
+                  check(loaded, f"{route}: active clinical image did not load")
+                  error = gallery.locator("[data-clinical-error]")
+                  check(not error.is_visible(), f"{route}: false load error is visible")
+
+                  next_button = gallery.locator("[data-clinical-next]")
+                  if next_button.count():
+                      next_button.click()
+                      gallery.locator("[data-clinical-current]").filter(
+                          has_text="2"
+                      ).wait_for()
+                      second = gallery.locator(
+                          "[data-clinical-slide]:not([hidden]) img"
+                      )
+                      second.wait_for(state="visible")
+                      check(
+                          second.evaluate("img => img.complete && img.naturalWidth > 0"),
+                          f"{route}: second clinical image did not load",
+                      )
+                      check(
+                          not error.is_visible(),
+                          f"{route}: error appeared after next-slide action",
+                      )
+
+              page.goto(
+                  base + "/treatments/acne-scar-treatment/",
+                  wait_until="domcontentloaded",
+                  timeout=60000,
+              )
+              for text in (
+                  "The patient has a history of keloids",
+                  "Active acne is still recurring",
+              ):
+                  item = page.locator("li", has_text=text)
+                  check(item.count() == 1, f"Acne-scar bullet missing: {text}")
+                  check(
+                      page.locator("p", has_text=text).count() == 0,
+                      f"Acne-scar item still renders as paragraph: {text}",
+                  )
+
+              page.screenshot(
+                  path=str(output / "acne-scar-desktop.png"),
+                  full_page=True,
+              )
+              desktop.close()
+
+              mobile = browser.new_context(
+                  viewport={"width": 390, "height": 844},
+                  device_scale_factor=2,
+                  is_mobile=True,
+                  has_touch=True,
+                  color_scheme="dark",
+              )
+              mobile_page = mobile.new_page()
+              mobile_page.set_default_timeout(45000)
+              for route in (
+                  "/treatments/acne-scar-treatment/",
+                  "/treatments/acne-treatment/",
+              ):
+                  mobile_page.goto(
+                      base + route,
+                      wait_until="domcontentloaded",
+                      timeout=60000,
+                  )
+                  gallery = mobile_page.locator(
+                      ".page-hero-art .clinical-results--hero[data-clinical-ready='true']"
+                  )
+                  gallery.wait_for(state="visible")
+                  check(gallery.is_visible(), f"{route}: mobile hero gallery hidden")
+                  check(
+                      not gallery.locator("[data-clinical-error]").is_visible(),
+                      f"{route}: mobile false load error visible",
+                  )
+              mobile_page.screenshot(
+                  path=str(output / "acne-treatment-mobile.png"),
+                  full_page=True,
+              )
+              mobile.close()
+              browser.close()
+
+          report = [
+              "# PR45 canonical live verification",
+              "",
+              f"- Gallery routes checked: {len(routes)}",
+              "- Desktop hero replacement: checked",
+              "- Carousel next-slide loading: checked",
+              "- False image error: checked",
+              "- Acne-scar semantic bullets: checked",
+              "- Mobile hero visibility: checked",
+              f"- Failures: {len(failures)}",
+          ]
+          report.extend(f"- {failure}" for failure in failures)
+          (output / "report.md").write_text("\n".join(report) + "\n")
+          print("\n".join(report))
+          if failures:
+              raise SystemExit(1)
+          PY
+
+      - name: Upload canonical verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-live-pr45-${{ github.sha }}
+          path: audit-artifacts/live-pr45/
+          if-no-files-found: warn
+          retention-days: 14
