@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from html import unescape
+import json
 import re
 from urllib.parse import urlsplit
 
@@ -12,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.urls import path, reverse
 from django.utils.html import format_html, strip_tags
+from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_GET
 from wagtail import hooks
 from wagtail.models import Page
@@ -113,7 +115,7 @@ def editor_placement_javascript():
     return format_html(
         '<script>window.AASTHA_EDITOR_PLACEMENT_URL={};</script>'
         '<script src="{}" defer></script>',
-        repr(endpoint),
+        mark_safe(json.dumps(endpoint)),
         static("js/editor-placement-map.js"),
     )
 
