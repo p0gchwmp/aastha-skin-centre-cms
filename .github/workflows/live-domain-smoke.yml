@@ -33,6 +33,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install requests beautifulsoup4 lxml
 
+      - name: Validate audit sources
+        run: |
+          python -m py_compile tools/audit_domain_cutover.py
+          python -m py_compile tools/audit_seo_foundation.py
+          python -m py_compile tools/audit_google_measurement_readiness.py
+
       - name: Wait for canonical domain
         run: |
           for attempt in $(seq 1 30); do
@@ -101,6 +107,14 @@ jobs:
             --render https://aastha-skin-centre-cms.onrender.com \
             --expected-release "$canonical_release" \
             --output audit-artifacts/live-domain
+
+      - name: Audit Google measurement readiness
+        run: |
+          python tools/audit_google_measurement_readiness.py \
+            --base https://www.aasthaskincentre.in \
+            --output audit-artifacts/live-domain/google-measurement
+          cat audit-artifacts/live-domain/google-measurement/google-measurement-readiness.md \
+            >> "$GITHUB_STEP_SUMMARY"
 
       - name: Crawl the canonical SEO foundation
         if: github.event_name != 'pull_request'
