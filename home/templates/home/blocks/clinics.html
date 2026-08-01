@@ -1,4 +1,21 @@
+{% load entity_links %}
 <section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-clinics cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
   {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
-  <div class="clinic-choice-grid">{% for clinic in value.clinics %}<article><h3>{{ clinic.name }}</h3><address>{{ clinic.address|linebreaksbr }}</address>{% if clinic.doctor_hours %}<p><strong>Doctor consultation</strong><br>{{ clinic.doctor_hours|linebreaksbr }}</p>{% endif %}{% if clinic.google_maps_url %}<a class="plain-link" href="{{ clinic.google_maps_url }}" target="_blank" rel="noopener">Directions →</a>{% endif %}</article>{% endfor %}</div>
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <div class="clinic-choice-grid cms-columns-{{ value.columns }}">
+    {% for clinic in clinics_to_show %}
+      <article>
+        <h3>{{ clinic.name }}</h3>
+        <address>{{ clinic.address|linebreaksbr }}</address>
+        {% if value.show_hours and clinic.doctor_hours %}<p><strong>Doctor consultation</strong><br>{{ clinic.doctor_hours|linebreaksbr }}</p>{% endif %}
+        {% if value.show_contact %}{% if clinic.mobile %}<p><a href="tel:{{ clinic.mobile }}">{{ clinic.mobile }}</a>{% if clinic.email %}<br><a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a>{% endif %}</p>{% elif clinic.email %}<p><a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a></p>{% endif %}{% endif %}
+        <div class="cms-inline-actions">
+          {% if value.show_map_link and clinic.google_maps_url %}<a class="plain-link" href="{{ clinic.google_maps_url }}" target="_blank" rel="noopener noreferrer">Directions →</a>{% endif %}
+          {% if value.show_profile_link %}{% with profile_url=clinic|live_profile_url %}{% if profile_url %}<a class="plain-link" href="{{ profile_url }}">Clinic details →</a>{% endif %}{% endwith %}{% endif %}
+        </div>
+      </article>
+    {% empty %}
+      {% include "home/blocks/_entity_empty_state.html" %}
+    {% endfor %}
+  </div>
 </section>
