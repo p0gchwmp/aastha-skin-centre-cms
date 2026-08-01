@@ -90,6 +90,11 @@ def _sync_linked_pages(instance) -> bool:
                 instance.slug or instance.name,
                 exclude_page=page,
             )
+
+        # save_revision() serialises the in-memory page but does not update the
+        # current page row for an unpublished draft. Persist first so the editor,
+        # API and subsequent signals all see the newly synchronised values.
+        page.save()
         revision = page.save_revision()
         if page.live:
             revision.publish()
@@ -120,6 +125,7 @@ def _create_profile_page(*, instance, page_model, relation_name, index_kind):
         image = _record_image(instance)
         if image is not None:
             matching.hero_image = image
+        matching.save()
         revision = matching.save_revision()
         if instance.publish_public_page_automatically:
             revision.publish()
