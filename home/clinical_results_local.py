@@ -54,7 +54,7 @@ HERO_GALLERY_STYLE = r"""
 .clinical-results--hero .clinical-results__controls {
   margin-top: .75rem;
 }
-.clinical-results__replaced-placeholder {
+.clinical-results--hero + .clinical-results__replaced-placeholder {
   display: none !important;
 }
 .clinical-results__load-error[hidden],
