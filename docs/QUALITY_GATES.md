@@ -39,31 +39,26 @@ date.
 
 ## Lighthouse release floor
 
-The first release floor is deliberately a regression-prevention baseline:
+The measured production-like baseline supports the intended category target as
+a blocking release floor:
 
 | Category or metric | Blocking floor |
 |---|---:|
-| Performance category | 85 |
-| Accessibility category | 95 |
-| Best Practices category | 95 |
-| SEO category | 95 |
+| Performance category | 95 |
+| Accessibility category | 100 |
+| Best Practices category | 100 |
+| SEO category | 100 |
 | First Contentful Paint | <= 2.5 s |
 | Largest Contentful Paint | <= 3.0 s |
 | Cumulative Layout Shift | <= 0.10 |
 | Total Blocking Time | <= 300 ms |
 
-The product target remains:
-
-- Performance 95+;
-- Accessibility 100;
-- Best Practices 100;
-- SEO 100;
-- LCP <= 2.5 seconds;
-- CLS <= 0.10.
+The remaining performance ratchet is to bring every representative mobile LCP
+to 2.5 seconds or faster. The current 3.0-second release guard prevents material
+regression while the photograph-heavy treatment hero is optimised further.
 
 Do not lower a blocking threshold merely to make a pull request green. Fix the
-regression or document why a metric is currently unstable. Raise thresholds as
-reports establish a repeatable higher baseline.
+regression or document why a metric is currently unstable.
 
 ## Evidence
 
@@ -71,10 +66,14 @@ Every workflow run uploads for 30 days:
 
 - mobile Lighthouse reports;
 - desktop Lighthouse reports;
+- a Markdown Lighthouse scorecard;
 - axe JSON results;
 - axe Markdown summary;
 - screenshots for pages with blocking accessibility violations;
 - local server log.
+
+The GitHub Actions job summary shows the full route-by-route category and metric
+table without requiring an artifact download.
 
 ## Local commands
 
@@ -88,6 +87,15 @@ npm install --no-save --no-package-lock \
 npx playwright install chromium
 ```
 
+Run the same production-like asset build before auditing:
+
+```bash
+python tools/build_visual_cue_assets.py
+python tools/install_curated_visual_cue_assets.py
+python tools/verify_exact_page_snapshots.py
+python manage.py collectstatic --no-input
+```
+
 With the Django site running at `http://127.0.0.1:8000`:
 
 ```bash
@@ -97,6 +105,10 @@ node tools/audit_accessibility.mjs \
 
 LHCI_FORM_FACTOR=mobile npx lhci autorun --config=lighthouserc.cjs
 LHCI_FORM_FACTOR=desktop npx lhci autorun --config=lighthouserc.cjs
+
+python tools/summarize_lighthouse.py \
+  --root audit-artifacts \
+  --output audit-artifacts/lighthouse-summary.md
 ```
 
 ## Interpreting failures
