@@ -60,7 +60,7 @@ def wait_for_image(page: Page, selector: str, timeout_ms: int) -> None:
           return Boolean(image && image.complete && image.naturalWidth > 0);
         }
         """,
-        selector,
+        arg=selector,
         timeout=timeout_ms,
     )
 
@@ -147,7 +147,7 @@ def audit_route(page: Page, base: str, route: str, expected: int, timeout_ms: in
                           return current && Number(current.textContent) === expectedIndex + 1;
                         }
                         """,
-                        index,
+                        arg=index,
                         timeout=timeout_ms,
                     )
                 selector = (
@@ -183,7 +183,7 @@ def audit_route(page: Page, base: str, route: str, expected: int, timeout_ms: in
                   '.clinical-results [data-clinical-current]'
                 )?.textContent.trim() === String(expected)
                 """,
-                expected,
+                arg=expected,
                 timeout=timeout_ms,
             )
 
