@@ -88,23 +88,33 @@ class ExactLayoutInsertionTests(SimpleTestCase):
 class EntityPageAutomationTests(WagtailPageTestCase):
     def setUp(self):
         root = Page.get_first_root_node()
-        self.home = HomePage(title="Home", slug="home")
-        root.add_child(instance=self.home)
-        Site.objects.create(
-            hostname="testserver",
-            root_page=self.home,
-            is_default_site=True,
-        )
+        self.home = HomePage.objects.first()
+        if self.home is None:
+            self.home = HomePage(title="Home", slug="home")
+            root.add_child(instance=self.home)
+
+        site = Site.objects.filter(is_default_site=True).first()
+        if site is None:
+            Site.objects.create(
+                hostname="testserver",
+                root_page=self.home,
+                is_default_site=True,
+            )
+        else:
+            site.hostname = "testserver"
+            site.root_page = self.home
+            site.save(update_fields=["hostname", "root_page"])
+
         self.doctors = ContentIndexPage(
-            title="Doctors",
-            slug="doctors",
+            title="Future Doctors",
+            slug="future-doctors",
             index_kind="doctors",
         )
         self.home.add_child(instance=self.doctors)
         self.doctors.save_revision().publish()
         self.clinics = ContentIndexPage(
-            title="Locations",
-            slug="locations",
+            title="Future Locations",
+            slug="future-locations",
             index_kind="clinics",
         )
         self.home.add_child(instance=self.clinics)
@@ -137,6 +147,22 @@ class EntityPageAutomationTests(WagtailPageTestCase):
         self.assertEqual(page.get_parent().specific, self.clinics)
         self.assertEqual(page.layout_mode, "builder")
 
+    def test_published_record_updates_its_linked_draft_page(self):
+        doctor = Doctor.objects.create(
+            name="Dr Original",
+            slug="dr-original",
+            short_bio="Original biography.",
+            live=True,
+            create_public_page=True,
+        )
+        page = DoctorPage.objects.get(doctor=doctor)
+        doctor.name = "Dr Updated"
+        doctor.short_bio = "Updated biography."
+        doctor.save()
+        page.refresh_from_db()
+        self.assertEqual(page.title, "Dr Updated")
+        self.assertEqual(page.introduction, "Updated biography.")
+
     def test_automatic_lists_ignore_inactive_records(self):
         Doctor.objects.create(
             name="Inactive Doctor",
@@ -145,4 +171,10 @@ class EntityPageAutomationTests(WagtailPageTestCase):
             live=True,
             create_public_page=False,
         )
-        self.assertFalse(Doctor.objects.filter(is_active=True, live=True).exists())
+        self.assertFalse(
+            Doctor.objects.filter(
+                slug="inactive-doctor",
+                is_active=True,
+                live=True,
+            ).exists()
+        )
