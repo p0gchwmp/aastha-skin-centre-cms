@@ -3,6 +3,7 @@ set -o errexit
 
 python -m pip install -r requirements.txt
 python tools/build_visual_cue_assets.py
+python tools/install_curated_visual_cue_assets.py
 python tools/verify_exact_page_snapshots.py
 python manage.py collectstatic --no-input
 python manage.py migrate --no-input
