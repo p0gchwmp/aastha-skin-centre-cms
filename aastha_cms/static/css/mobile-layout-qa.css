@@ -1,14 +1,25 @@
 /* =====================================================================
    Mobile layout quality-assurance layer
 
-   This file is deliberately loaded last. It protects repeated CMS and legacy
-   card layouts from min-content sizing, fixed desktop columns and Safari grid
-   shrinkage on narrow screens.
+   This file is deliberately loaded late. It protects repeated CMS and legacy
+   card layouts from min-content sizing, fixed desktop columns, Safari grid
+   shrinkage and iOS text inflation on narrow screens.
    ===================================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body.release-v24 {
+  max-width: 100%;
+  overflow-x: clip;
+}
 
 @media (max-width: 720px) {
   .release-v24 main {
     min-width: 0;
+    max-width: 100%;
     padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px));
   }
 
@@ -20,8 +31,13 @@
     .section,
     .section-heading,
     .article-stack,
-    .prose
+    .prose,
+    .trust-ribbon,
+    .hub-category-grid,
+    .hub-category,
+    .hub-category-heading
   ) {
+    box-sizing: border-box;
     min-width: 0;
     max-width: 100%;
   }
@@ -53,7 +69,8 @@
     .hub-link-grid,
     .directory-grid,
     .card-grid,
-    .category-grid
+    .category-grid,
+    .hub-category-grid
   ) {
     box-sizing: border-box;
     width: 100% !important;
@@ -86,7 +103,8 @@
     .about-story-grid,
     .clinic-location-grid,
     .guide-grid,
-    .cms-card-grid
+    .cms-card-grid,
+    .hub-category-grid
   )) {
     box-sizing: border-box;
     grid-column: 1 / -1;
@@ -122,7 +140,8 @@
     .hub-link-grid,
     .directory-grid,
     .card-grid,
-    .category-grid
+    .category-grid,
+    .hub-category-grid
   ) > * {
     box-sizing: border-box;
     max-width: 100%;
@@ -151,6 +170,7 @@
     .clinic-location-card,
     .patient-guide-card,
     .cms-card,
+    .hub-category,
     .hub-link,
     .directory-link,
     .card
@@ -180,12 +200,24 @@
     .clinic-location-card,
     .patient-guide-card,
     .cms-card,
+    .hub-category,
     .hub-link,
     .directory-link,
-    .card
-  ) :where(h2, h3, h4, p, address, li, a, span, strong) {
+    .card,
+    .trust-item
+  ) :where(h1, h2, h3, h4, p, address, li, a, span, strong) {
     min-width: 0;
+    max-width: 100%;
+    white-space: normal;
     overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .release-v24 .hub-category-heading,
+  .release-v24 .hub-category-heading > div,
+  .release-v24 .trust-item > div {
+    min-width: 0;
+    max-width: 100%;
   }
 }
 
@@ -218,7 +250,8 @@
     .hub-link-grid,
     .directory-grid,
     .card-grid,
-    .category-grid
+    .category-grid,
+    .hub-category-grid
   ) {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) !important;
@@ -252,7 +285,8 @@
     .hub-link-grid,
     .directory-grid,
     .card-grid,
-    .category-grid
+    .category-grid,
+    .hub-category-grid
   ) > * {
     grid-column: 1 / -1 !important;
     width: 100% !important;
