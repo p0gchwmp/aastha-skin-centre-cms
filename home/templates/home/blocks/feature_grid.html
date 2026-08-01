@@ -1,0 +1,16 @@
+{% load wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-feature-section cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.eyebrow %}<span class="quiet-label">{{ value.eyebrow }}</span>{% endif %}
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <div class="cms-feature-grid cms-columns-{{ value.columns }}">
+    {% for item in value.items %}
+      <article class="cms-feature-card">
+        {% if item.icon_image %}<div class="cms-feature-icon">{% image item.icon_image max-180x180 loading="lazy" decoding="async" %}</div>{% elif item.short_icon %}<span class="cms-feature-symbol" aria-hidden="true">{{ item.short_icon }}</span>{% endif %}
+        <h3>{{ item.heading }}</h3>
+        {% if item.text %}<p>{{ item.text }}</p>{% endif %}
+        {% if item.link %}<a class="plain-link" href="{{ item.link.url }}"{% if item.link.new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.link.label }} →</a>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>

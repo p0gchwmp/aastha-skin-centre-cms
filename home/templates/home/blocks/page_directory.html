@@ -1,0 +1,15 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-directory-section cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <div class="cms-card-grid cms-columns-{{ value.columns }}">
+    {% for entry in directory_pages %}
+      <article class="cms-card cms-directory-card">
+        {% if entry.hero_image %}{% image entry.hero_image fill-760x480-c100 loading="lazy" decoding="async" %}{% endif %}
+        <div>{% if entry.eyebrow %}<span class="quiet-label">{{ entry.eyebrow }}</span>{% endif %}<h3>{{ entry.title }}</h3><p>{{ entry.introduction|default:entry.search_description|truncatewords:28 }}</p><a class="plain-link" href="{% pageurl entry %}">Open page →</a></div>
+      </article>
+    {% empty %}
+      {% include "home/blocks/_entity_empty_state.html" with message="No matching pages are published yet." %}
+    {% endfor %}
+  </div>
+</section>

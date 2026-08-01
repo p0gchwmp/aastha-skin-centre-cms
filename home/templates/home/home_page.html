@@ -5,7 +5,7 @@
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
-{{ exact_main }}
+  {% exact_page_with_editor_sections exact_main %}
 {% else %}
 <main id="main-content" class="home-main">
   {% if page.body %}
@@ -15,6 +15,9 @@
     <section class="section"><div class="container">
       <div class="section-heading"><div><span class="quiet-label">Website editor ready</span><h2>Add homepage sections without code</h2><p>Open this page in the admin and add heroes, cards, galleries, videos, carousels, doctors, clinics and calls to action.</p></div></div>
     </div></section>
+  {% endif %}
+  {% if page.layout_mode == "hybrid" and page.layout_additions %}
+    {% include_block page.layout_additions %}
   {% endif %}
 </main>
 {% endif %}

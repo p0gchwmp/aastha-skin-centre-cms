@@ -3,7 +3,7 @@
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
-{{ exact_main }}
+  {% exact_page_with_editor_sections exact_main %}
 {% else %}
 <main id="main-content">
   {% include "home/partials/page_hero.html" %}
@@ -33,6 +33,9 @@
       </nav>
     {% endif %}
   </div></section>
+  {% if page.layout_mode == "hybrid" and page.layout_additions %}
+    {% include_block page.layout_additions %}
+  {% endif %}
 </main>
 {% endif %}
 {% endblock %}

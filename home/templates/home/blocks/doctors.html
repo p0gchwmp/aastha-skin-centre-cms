@@ -1,5 +1,15 @@
-{% load wagtailimages_tags %}
+{% load wagtailimages_tags entity_links %}
 <section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-people cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
   {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
-  <div class="cms-card-grid cms-columns-3">{% for doctor in value.doctors %}<article class="cms-card">{% if doctor.photo %}{% image doctor.photo fill-600x700-c100 %}{% endif %}<div><h3>{{ doctor.name }}</h3><p><strong>{{ doctor.qualifications }}</strong><br>{{ doctor.role }}</p><p>{{ doctor.short_bio }}</p></div></article>{% endfor %}</div>
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <div class="cms-card-grid cms-columns-{{ value.columns }}">
+    {% for doctor in doctors_to_show %}
+      <article class="cms-card cms-doctor-card">
+        {% if doctor.photo %}{% image doctor.photo fill-600x700-c100 loading="lazy" decoding="async" %}{% endif %}
+        <div><h3>{{ doctor.name }}</h3>{% if doctor.qualifications or doctor.role %}<p><strong>{{ doctor.qualifications }}</strong>{% if doctor.role %}<br>{{ doctor.role }}{% endif %}</p>{% endif %}{% if value.show_biography and doctor.short_bio %}<p>{{ doctor.short_bio }}</p>{% endif %}{% if value.show_profile_link %}{% with profile_url=doctor|live_profile_url %}{% if profile_url %}<a class="plain-link" href="{{ profile_url }}">View profile →</a>{% endif %}{% endwith %}{% endif %}</div>
+      </article>
+    {% empty %}
+      {% include "home/blocks/_entity_empty_state.html" %}
+    {% endfor %}
+  </div>
 </section>
