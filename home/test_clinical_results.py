@@ -46,7 +46,7 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         for route in CLINICAL_RESULT_GALLERIES:
             html = gallery_markup(route)
             self.assertNotIn("drive.google.com", html)
-            self.assertIn("/static/images/clinical-results/", html)
+            self.assertIn("/assets/images/clinical-results/", html)
             self.assertNotIn("data-fallback-src", html)
 
     def test_one_image_uses_static_figure_without_carousel_controls(self):
@@ -62,7 +62,7 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertIsNotNone(image)
         self.assertEqual(
             image.get("src"),
-            "/static/images/clinical-results/acne-treatment/acne-treatment-01.webp",
+            "/assets/images/clinical-results/acne-treatment/acne-treatment-01.webp",
         )
 
     def test_multiple_images_use_accessible_non_autoplay_carousel(self):
