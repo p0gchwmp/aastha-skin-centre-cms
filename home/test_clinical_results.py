@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from bs4 import BeautifulSoup
 from django.test import SimpleTestCase
 
 from home.clinical_results import (
@@ -39,17 +40,25 @@ class ClinicalResultGalleryTests(SimpleTestCase):
 
     def test_one_image_uses_static_figure_without_carousel_controls(self):
         html = gallery_markup("/treatments/acne-treatment/")
-        self.assertIn("Clinical photographs", html)
-        self.assertNotIn("data-clinical-carousel", html)
-        self.assertNotIn("data-clinical-previous", html)
-        self.assertIn("data-fallback-src", html)
+        soup = BeautifulSoup(html, "html.parser")
+        gallery = soup.select_one("section.clinical-results")
+
+        self.assertIsNotNone(gallery)
+        self.assertIn("Clinical photographs", gallery.get_text(" ", strip=True))
+        self.assertFalse(gallery.has_attr("data-clinical-carousel"))
+        self.assertIsNone(gallery.select_one("[data-clinical-previous]"))
+        self.assertIsNotNone(gallery.select_one("img[data-fallback-src]"))
 
     def test_multiple_images_use_accessible_non_autoplay_carousel(self):
         html = gallery_markup("/treatments/acne-scar-treatment/")
-        self.assertIn("data-clinical-carousel", html)
-        self.assertIn("data-clinical-previous", html)
-        self.assertIn("data-clinical-next", html)
-        self.assertIn('aria-live="polite"', html)
+        soup = BeautifulSoup(html, "html.parser")
+        gallery = soup.select_one("section.clinical-results")
+
+        self.assertIsNotNone(gallery)
+        self.assertTrue(gallery.has_attr("data-clinical-carousel"))
+        self.assertIsNotNone(gallery.select_one("[data-clinical-previous]"))
+        self.assertIsNotNone(gallery.select_one("[data-clinical-next]"))
+        self.assertIsNotNone(gallery.select_one('[aria-live="polite"]'))
         self.assertIn("touchstart", html)
         self.assertIn("ArrowRight", html)
         self.assertNotIn("setInterval", html)
@@ -57,9 +66,13 @@ class ClinicalResultGalleryTests(SimpleTestCase):
 
     def test_hidden_slides_are_deferred(self):
         html = gallery_markup("/treatments/hair-fall-treatment/")
-        self.assertEqual(html.count(' loading="lazy"'), 6)
-        self.assertEqual(html.count(" data-src="), 5)
-        self.assertEqual(html.count(" hidden>"), 5)
+        soup = BeautifulSoup(html, "html.parser")
+        slides = soup.select("[data-clinical-slide]")
+
+        self.assertEqual(len(slides), 6)
+        self.assertEqual(sum(slide.has_attr("hidden") for slide in slides), 5)
+        self.assertEqual(len(soup.select("[data-clinical-slide] img[data-src]")), 5)
+        self.assertEqual(len(soup.select('[data-clinical-slide] img[loading="lazy"]')), 6)
 
     def test_unknown_page_has_no_gallery(self):
         self.assertEqual(gallery_markup("/treatments/rosacea-treatment/"), "")
