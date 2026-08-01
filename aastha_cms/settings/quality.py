@@ -3,7 +3,7 @@
 The quality server uses WhiteNoise, compressed manifest assets and DEBUG=False
 so Lighthouse measures the same delivery path as production. HTTPS-only cookie
 and redirect settings are relaxed solely because the ephemeral CI server binds
-to local HTTP.
+to local HTTP. Server exceptions are logged to the CI console for diagnosis.
 """
 
 import os
@@ -19,3 +19,25 @@ SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SECURE_HSTS_SECONDS = 0
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
