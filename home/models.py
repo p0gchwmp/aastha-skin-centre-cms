@@ -22,7 +22,7 @@ from wagtail.models import DraftStateMixin, LockableMixin, Page, RevisionMixin
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 
-from .blocks import LinkBlock, PageBodyStreamBlock
+from .blocks import LinkBlock, PageAdditionStreamBlock, PageBodyStreamBlock
 
 
 REVIEW_CHOICES = [
@@ -31,6 +31,21 @@ REVIEW_CHOICES = [
     ("medical", "Medical review required"),
     ("approved", "Medically approved"),
     ("update_due", "Review update due"),
+]
+
+LAYOUT_MODE_CHOICES = [
+    (
+        "hybrid",
+        "Exact design + editor additions (recommended)",
+    ),
+    (
+        "builder",
+        "Full visual page builder",
+    ),
+    (
+        "exact",
+        "Exact design only — hide editor additions",
+    ),
 ]
 
 
@@ -96,6 +111,20 @@ class Doctor(
     )
     is_active = models.BooleanField(default=True)
     sort_order = models.PositiveIntegerField(default=0)
+    create_public_page = models.BooleanField(
+        default=True,
+        help_text=(
+            "When this published record has no linked Doctor page, create one "
+            "automatically as a draft."
+        ),
+    )
+    publish_public_page_automatically = models.BooleanField(
+        default=False,
+        help_text=(
+            "Publish the generated Doctor page immediately. Leave disabled to "
+            "review and publish the page manually."
+        ),
+    )
 
     panels = [
         MultiFieldPanel(
@@ -119,6 +148,17 @@ class Doctor(
                 FieldPanel("booking_label"),
             ],
             heading="Contact and booking",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("create_public_page"),
+                FieldPanel("publish_public_page_automatically"),
+            ],
+            heading="Website page automation",
+            help_text=(
+                "Automatic doctor lists update from active published records. "
+                "These options additionally create and maintain a dedicated page."
+            ),
         ),
         FieldRowPanel([FieldPanel("is_active"), FieldPanel("sort_order")]),
         PublishingPanel(),
@@ -170,6 +210,20 @@ class ClinicLocation(
     is_primary = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     sort_order = models.PositiveIntegerField(default=0)
+    create_public_page = models.BooleanField(
+        default=True,
+        help_text=(
+            "When this published record has no linked Clinic page, create one "
+            "automatically as a draft."
+        ),
+    )
+    publish_public_page_automatically = models.BooleanField(
+        default=False,
+        help_text=(
+            "Publish the generated Clinic page immediately. Leave disabled to "
+            "review and publish the page manually."
+        ),
+    )
 
     panels = [
         MultiFieldPanel(
@@ -203,6 +257,17 @@ class ClinicLocation(
         ),
         FieldPanel("directions"),
         FieldPanel("hero_image"),
+        MultiFieldPanel(
+            [
+                FieldPanel("create_public_page"),
+                FieldPanel("publish_public_page_automatically"),
+            ],
+            heading="Website page automation",
+            help_text=(
+                "Automatic clinic lists update from active published records. "
+                "These options additionally create and maintain a dedicated page."
+            ),
+        ),
         FieldRowPanel(
             [
                 FieldPanel("is_primary"),
@@ -247,6 +312,12 @@ class ReusableSection(
     panels = [
         FieldPanel("name"),
         FieldPanel("description"),
+        HelpPanel(
+            content=(
+                "<p>Reusable sections can be inserted on many pages. Editing "
+                "and publishing this record updates every page that uses it.</p>"
+            )
+        ),
         FieldPanel("body"),
         FieldPanel("is_active"),
         PublishingPanel(),
@@ -471,12 +542,7 @@ def re_digits(value: str) -> str:
 
 @register_snippet
 class ExactPageLayout(models.Model):
-    """Verified static-page markup used by the public parity renderer.
-
-    These records preserve the original page hierarchy, illustrations,
-    accordions, cards and form markup exactly. Editors can update a snapshot
-    directly or disable it to return that route to the structured page builder.
-    """
+    """Verified static-page markup used by the public parity renderer."""
 
     path = models.CharField(
         max_length=255,
@@ -515,6 +581,16 @@ class ExactPageLayout(models.Model):
 
 
 class BaseFlexiblePage(Page):
+    layout_mode = models.CharField(
+        max_length=20,
+        choices=LAYOUT_MODE_CHOICES,
+        default="hybrid",
+        help_text=(
+            "Hybrid keeps the verified design and inserts sections from the "
+            "Exact-design additions field. Builder replaces the exact design "
+            "with the Full page builder."
+        ),
+    )
     eyebrow = models.CharField(max_length=120, blank=True)
     introduction = models.TextField(blank=True)
     hero_image = models.ForeignKey(
@@ -535,10 +611,23 @@ class BaseFlexiblePage(Page):
         ],
         default="right",
     )
+    layout_additions = StreamField(
+        PageAdditionStreamBlock(),
+        blank=True,
+        use_json_field=True,
+        help_text=(
+            "Sections added here appear inside the current exact design. "
+            "Each section has its own Placement, spacing and responsive layout."
+        ),
+    )
     body = StreamField(
         PageBodyStreamBlock(),
         blank=True,
         use_json_field=True,
+        help_text=(
+            "Complete replacement layout used when Rendering mode is Full "
+            "visual page builder."
+        ),
     )
     categories = ParentalManyToManyField(
         ContentCategory,
@@ -578,6 +667,14 @@ class BaseFlexiblePage(Page):
 
     content_panels = Page.content_panels + [
         MultiFieldPanel(
+            [FieldPanel("layout_mode")],
+            heading="Rendering mode",
+            help_text=(
+                "Recommended: keep Exact design + editor additions. Switch to "
+                "Full visual page builder only when replacing the complete page."
+            ),
+        ),
+        MultiFieldPanel(
             [
                 FieldPanel("eyebrow"),
                 FieldPanel("introduction"),
@@ -585,18 +682,41 @@ class BaseFlexiblePage(Page):
                 FieldPanel("hero_video_url"),
                 FieldPanel("hero_media_position"),
             ],
-            heading="Page introduction and hero",
+            heading="Page introduction and builder hero",
+            classname="collapsible collapsed",
         ),
         HelpPanel(
             content=(
-                "<p><strong>No-code page builder:</strong> add a section, "
-                "drag its handle to reorder it, then open <em>Layout and "
-                "position</em> to control width, colour, alignment and "
-                "spacing. Use an internal page link instead of pasting a URL "
-                "so links keep working when pages move.</p>"
+                "<div class='aastha-editor-guide'>"
+                "<p><strong>Adding to the current design:</strong> use "
+                "<em>Exact-design additions</em>. Add a section, open its "
+                "<em>Placement, spacing and responsive layout</em>, then choose "
+                "After hero, article end, page end, or before/after an existing "
+                "section anchor.</p>"
+                "<p><strong>Replacing the page:</strong> choose Full visual page "
+                "builder and edit the complete builder below. Preview before "
+                "publishing; revisions allow rollback.</p>"
+                "</div>"
             )
         ),
-        FieldPanel("body"),
+        MultiFieldPanel(
+            [FieldPanel("layout_additions")],
+            heading="Exact-design additions",
+            help_text=(
+                "This field is empty on existing pages, so nothing changes "
+                "until you add a section. Drag sections to control their order "
+                "within the same placement."
+            ),
+        ),
+        MultiFieldPanel(
+            [FieldPanel("body")],
+            heading="Full page builder",
+            help_text=(
+                "Used only in Full visual page builder mode, or as a safe "
+                "fallback when no exact layout exists."
+            ),
+            classname="collapsible collapsed",
+        ),
         MultiFieldPanel(
             [
                 FieldPanel("categories"),
@@ -605,6 +725,7 @@ class BaseFlexiblePage(Page):
                 FieldPanel("show_medical_disclaimer"),
             ],
             heading="Page relationships and shared sections",
+            classname="collapsible collapsed",
         ),
         MultiFieldPanel(
             [
@@ -618,6 +739,7 @@ class BaseFlexiblePage(Page):
                 ),
             ],
             heading="Medical review",
+            classname="collapsible collapsed",
         ),
     ]
 
@@ -630,7 +752,9 @@ class BaseFlexiblePage(Page):
 
     search_fields = Page.search_fields + [
         index.SearchField("introduction"),
+        index.SearchField("layout_additions"),
         index.SearchField("body"),
+        index.FilterField("layout_mode"),
         index.FilterField("review_status"),
         index.FilterField("hide_from_internal_search"),
     ]
@@ -716,11 +840,7 @@ class ContentIndexPage(BaseFlexiblePage):
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        entries = (
-            self.get_children()
-            .live()
-            .public()
-        )
+        entries = self.get_children().live().public()
         if self.listing_order == "newest":
             entries = entries.order_by("-first_published_at", "title")
         elif self.listing_order == "alphabetical":
@@ -802,9 +922,19 @@ class DoctorPage(BaseFlexiblePage):
         on_delete=models.SET_NULL,
         related_name="pages",
     )
+    auto_sync_from_record = models.BooleanField(
+        default=True,
+        help_text=(
+            "Keep page title, slug, introduction and hero image synchronised "
+            "with the linked Doctor record. Disable before customising those fields."
+        ),
+    )
 
     content_panels = BaseFlexiblePage.content_panels + [
-        FieldPanel("doctor"),
+        MultiFieldPanel(
+            [FieldPanel("doctor"), FieldPanel("auto_sync_from_record")],
+            heading="Doctor record connection",
+        ),
     ]
 
     parent_page_types = ["home.HomePage", "home.ContentIndexPage"]
@@ -820,9 +950,19 @@ class ClinicPage(BaseFlexiblePage):
         on_delete=models.SET_NULL,
         related_name="pages",
     )
+    auto_sync_from_record = models.BooleanField(
+        default=True,
+        help_text=(
+            "Keep page title, slug, introduction and hero image synchronised "
+            "with the linked Clinic record. Disable before customising those fields."
+        ),
+    )
 
     content_panels = BaseFlexiblePage.content_panels + [
-        FieldPanel("clinic"),
+        MultiFieldPanel(
+            [FieldPanel("clinic"), FieldPanel("auto_sync_from_record")],
+            heading="Clinic record connection",
+        ),
     ]
 
     parent_page_types = ["home.HomePage", "home.ContentIndexPage"]
