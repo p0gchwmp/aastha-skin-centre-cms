@@ -9,26 +9,12 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 
-CATEGORY_KEYS = (
-    ("performance", "Performance"),
-    ("accessibility", "Accessibility"),
-    ("best-practices", "Best Practices"),
-    ("seo", "SEO"),
-)
-METRIC_KEYS = (
-    ("first-contentful-paint", "FCP"),
-    ("largest-contentful-paint", "LCP"),
-    ("cumulative-layout-shift", "CLS"),
-    ("total-blocking-time", "TBT"),
-)
-
-
 def _score(report: dict, category: str) -> int:
     value = report["categories"][category]["score"]
     return round(float(value) * 100)
 
 
-def _milliseconds(report: dict, audit: str) -> float:
+def _numeric_value(report: dict, audit: str) -> float:
     return float(report["audits"][audit].get("numericValue") or 0)
 
 
@@ -52,10 +38,10 @@ def collect_reports(root: Path) -> list[dict]:
                     "accessibility": _score(report, "accessibility"),
                     "best_practices": _score(report, "best-practices"),
                     "seo": _score(report, "seo"),
-                    "fcp": _milliseconds(report, "first-contentful-paint"),
-                    "lcp": _milliseconds(report, "largest-contentful-paint"),
-                    "cls": _milliseconds(report, "cumulative-layout-shift"),
-                    "tbt": _milliseconds(report, "total-blocking-time"),
+                    "fcp": _numeric_value(report, "first-contentful-paint"),
+                    "lcp": _numeric_value(report, "largest-contentful-paint"),
+                    "cls": _numeric_value(report, "cumulative-layout-shift"),
+                    "tbt": _numeric_value(report, "total-blocking-time"),
                 }
             )
     return sorted(rows, key=lambda row: (row["form_factor"], row["route"]))
@@ -77,14 +63,15 @@ def render_markdown(rows: list[dict]) -> str:
         ]
     )
     for row in rows:
+        display = {
+            **row,
+            "fcp_seconds": row["fcp"] / 1000,
+            "lcp_seconds": row["lcp"] / 1000,
+        }
         lines.append(
             "| {form_factor} | `{route}` | {performance} | {accessibility} | "
-            "{best_practices} | {seo} | {fcp:.2f}s | {lcp:.2f}s | {cls:.3f} | "
-            "{tbt:.0f}ms |".format(
-                **row,
-                fcp=row["fcp"] / 1000,
-                lcp=row["lcp"] / 1000,
-            )
+            "{best_practices} | {seo} | {fcp_seconds:.2f}s | "
+            "{lcp_seconds:.2f}s | {cls:.3f} | {tbt:.0f}ms |".format(**display)
         )
 
     lines.extend(
