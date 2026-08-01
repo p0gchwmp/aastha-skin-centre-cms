@@ -10,7 +10,6 @@ class CuratedVisualCueTests(SimpleTestCase):
     CUES = {
         "acne": "acne-care",
         "pigmentation": "pigmentation-care",
-        "hair": "hair-scalp-care",
         "infection": "fungal-infection-care",
         "allergy": "allergy-inflammatory-rashes",
         "growths": "moles-growths-nails",
@@ -29,8 +28,16 @@ class CuratedVisualCueTests(SimpleTestCase):
             cls.root / "home" / "static" / "images" / "visual-cue-sources"
         )
         cls.outputs = cls.root / "home" / "static" / "images" / "visual-cues"
+        cls.generator = cls.root / "tools" / "build_visual_cue_assets.py"
         cls.installer = (
             cls.root / "tools" / "install_curated_visual_cue_assets.py"
+        )
+        subprocess.run(
+            [sys.executable, str(cls.generator)],
+            cwd=cls.root,
+            check=True,
+            capture_output=True,
+            text=True,
         )
         subprocess.run(
             [sys.executable, str(cls.installer)],
@@ -40,13 +47,21 @@ class CuratedVisualCueTests(SimpleTestCase):
             text=True,
         )
 
-    def test_build_runs_curated_pass_after_fallback_generator(self):
+    def test_build_runs_curated_pass_after_core_generator(self):
         build = (self.root / "build.sh").read_text(encoding="utf-8")
         generator = "python tools/build_visual_cue_assets.py"
         installer = "python tools/install_curated_visual_cue_assets.py"
         self.assertIn(generator, build)
         self.assertIn(installer, build)
         self.assertLess(build.index(generator), build.index(installer))
+
+    def test_hair_is_not_replaced_by_curated_override(self):
+        installer_source = self.installer.read_text(encoding="utf-8")
+        curated_block = installer_source.split("CURATED_CUES = {", 1)[1].split(
+            "}", 1
+        )[0]
+        self.assertNotIn('"hair"', curated_block)
+        self.assertIn("black/glitched artwork", installer_source)
 
     def test_curated_sources_and_responsive_outputs_are_transparent(self):
         installer_source = self.installer.read_text(encoding="utf-8")
