@@ -20,6 +20,103 @@ from home.clinical_results import (
 )
 
 
+HERO_GALLERY_STYLE = r"""
+<style>
+.clinical-results--hero {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100%;
+}
+.clinical-results--hero .clinical-results__inner {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: none;
+}
+.clinical-results--hero header,
+.clinical-results--hero .clinical-results__note {
+  display: none;
+}
+.clinical-results--hero .clinical-results__viewport {
+  border-radius: inherit;
+}
+.clinical-results--hero .clinical-results__slide {
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+}
+.clinical-results--hero .clinical-results__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.clinical-results--hero .clinical-results__controls {
+  margin-top: .75rem;
+}
+.clinical-results__load-error[hidden],
+.clinical-results__load-error[data-suppressed="true"] {
+  display: none !important;
+}
+</style>
+"""
+
+
+HERO_GALLERY_SCRIPT = r"""
+<script>
+(() => {
+  const placeGalleryInHero = root => {
+    if (root.dataset.heroPlaced === 'true') return;
+    const main = root.closest('main') || document.querySelector('main');
+    const heading = main?.querySelector('h1');
+    const hero = heading?.closest('section');
+    if (!hero) return;
+
+    const headingColumn = heading.closest('div');
+    const candidates = [...hero.querySelectorAll(':scope > div, :scope > figure')]
+      .filter(node => node !== headingColumn && !node.contains(heading));
+    const visual = candidates.find(node => node.querySelector('img, svg, picture'));
+    if (!visual) return;
+
+    visual.replaceChildren(root);
+    root.classList.add('clinical-results--hero');
+    root.dataset.heroPlaced = 'true';
+  };
+
+  const reconcileErrors = root => {
+    const error = root.querySelector('[data-clinical-error]');
+    if (!error) return;
+    const images = [...root.querySelectorAll('[data-clinical-slide] img')];
+    const failed = images.some(image => image.complete && image.naturalWidth === 0);
+    error.hidden = !failed;
+    error.dataset.suppressed = failed ? 'false' : 'true';
+    error.style.display = failed ? '' : 'none';
+  };
+
+  const initialise = () => {
+    document.querySelectorAll('.clinical-results').forEach(root => {
+      placeGalleryInHero(root);
+      const images = [...root.querySelectorAll('[data-clinical-slide] img')];
+      images.forEach(image => {
+        image.addEventListener('load', () => reconcileErrors(root));
+        image.addEventListener('error', () => reconcileErrors(root));
+      });
+      reconcileErrors(root);
+      requestAnimationFrame(() => reconcileErrors(root));
+      setTimeout(() => reconcileErrors(root), 500);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialise, {once: true});
+  } else {
+    initialise();
+  }
+})();
+</script>
+"""
+
+
 def local_asset_path(path: str, index: int) -> str:
     """Return the deterministic static path for one route/image placement."""
     slug = normalise_path(path).strip("/").split("/")[-1]
@@ -81,6 +178,7 @@ def gallery_markup(path: str) -> str:
 
     return (
         CLINICAL_RESULTS_STYLE
+        + HERO_GALLERY_STYLE
         + f'<section class="clinical-results" id="{gallery_id}"{carousel_attrs}>'
         + '<div class="clinical-results__inner">'
         + '<header>'
@@ -92,7 +190,8 @@ def gallery_markup(path: str) -> str:
         + ''.join(figures)
         + '</div>'
         + controls
-        + '<p class="clinical-results__load-error" data-clinical-error hidden>'
+        + '<p class="clinical-results__load-error" data-clinical-error '
+          'data-suppressed="true" hidden style="display:none">'
           'A clinical photograph could not be loaded. Please try again later.'
           '</p>'
         + '<p class="clinical-results__note">'
@@ -101,4 +200,5 @@ def gallery_markup(path: str) -> str:
           '</p>'
         + '</div></section>'
         + CLINICAL_RESULTS_SCRIPT
+        + HERO_GALLERY_SCRIPT
     )
