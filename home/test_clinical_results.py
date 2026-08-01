@@ -112,3 +112,29 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertNotIn("allow_main_differences", wrapper)
         self.assertIn("audit_deployed_sites_with_extensions.py", workflow)
         self.assertNotIn("--allow-main-differences", workflow)
+
+    def test_visual_parity_masks_only_gallery_and_browser_audit_covers_it(self):
+        browser_parity = (
+            Path(__file__).resolve().parents[1]
+            / "tools"
+            / "audit_browser_parity_hydrated.py"
+        ).read_text(encoding="utf-8")
+        gallery_browser = (
+            Path(__file__).resolve().parents[1]
+            / "tools"
+            / "audit_clinical_result_galleries_browser.py"
+        ).read_text(encoding="utf-8")
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github"
+            / "workflows"
+            / "prelaunch-parity.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("document.querySelectorAll('.clinical-results')", browser_parity)
+        self.assertIn("audit_clinical_result_galleries_browser.py", workflow)
+        self.assertIn("CLINICAL_RESULT_GALLERIES", gallery_browser)
+        self.assertIn("naturalWidth > 0", gallery_browser)
+        self.assertIn("data-clinical-next", gallery_browser)
+        self.assertIn("horizontal_overflow", gallery_browser)
+        self.assertIn("page.wait_for_timeout(850)", gallery_browser)
