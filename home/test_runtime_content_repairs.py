@@ -54,7 +54,8 @@ class RuntimeContentRepairTests(SimpleTestCase):
         html = gallery_markup("/treatments/acne-treatment/")
         self.assertIn("placeGalleryInHero", html)
         self.assertIn("root.classList.add('clinical-results--hero')", html)
-        self.assertIn("visual.replaceChildren(root)", html)
+        self.assertIn("visual.classList.add('clinical-results__replaced-placeholder')", html)
+        self.assertIn("visual.parentNode.insertBefore(root, visual)", html)
 
     def test_deferred_images_do_not_trigger_false_load_error(self):
         html = gallery_markup("/treatments/acne-scar-treatment/")
