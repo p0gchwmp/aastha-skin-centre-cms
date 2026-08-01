@@ -23,18 +23,15 @@
     });
   });
 
-  // Make cards keyboard accessible when the entire card contains one main link.
+  // Preserve the native anchor as the only keyboard target. Pointer users may
+  // click the card surface, while keyboard users activate the real link with
+  // its valid semantics and visible focus treatment.
   document.querySelectorAll("[data-card-link]").forEach(card => {
     const link = card.querySelector("a[href]");
     if (!link) return;
-    card.tabIndex = 0;
-    card.setAttribute("role", "link");
     card.addEventListener("click", event => {
       if (event.target.closest("a,button,input,select,textarea")) return;
       link.click();
-    });
-    card.addEventListener("keydown", event => {
-      if (event.key === "Enter") link.click();
     });
   });
 })();
