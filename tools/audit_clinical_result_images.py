@@ -1,102 +1,99 @@
 #!/usr/bin/env python3
-"""Verify that every Drive-backed clinical photograph is publicly renderable."""
+"""Validate every locally materialised clinical-result WebP asset."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import requests
+from PIL import Image
 
-from home.clinical_results import (
-    CLINICAL_RESULT_GALLERIES,
-    drive_fallback_url,
-    drive_thumbnail_url,
-)
+from home.clinical_results import CLINICAL_RESULT_GALLERIES
+from home.clinical_results_local import local_asset_path
 
 OUTPUT = ROOT / "audit-artifacts" / "clinical-result-images.json"
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        "Chrome/151 Safari/537.36"
-    )
-}
+STATIC_ROOT = ROOT / "home" / "static"
 
 
-def check(file_id: str) -> dict:
-    attempts = []
-    for url in (drive_thumbnail_url(file_id), drive_fallback_url(file_id)):
-        for retry in range(3):
-            try:
-                response = requests.get(
-                    url,
-                    headers=HEADERS,
-                    timeout=30,
-                    allow_redirects=True,
-                    stream=True,
-                )
-                content_type = response.headers.get("content-type", "")
-                first_chunk = next(response.iter_content(16384), b"")
-                result = {
-                    "url": url,
-                    "final_url": response.url,
-                    "status": response.status_code,
-                    "content_type": content_type,
-                    "first_chunk_bytes": len(first_chunk),
-                }
-                attempts.append(result)
-                if (
-                    response.ok
-                    and content_type.lower().startswith("image/")
-                    and len(first_chunk) >= 1024
-                ):
-                    return {
-                        "file_id": file_id,
-                        "ok": True,
-                        "selected": result,
-                        "attempts": attempts,
-                    }
-            except requests.RequestException as error:
-                attempts.append({"url": url, "error": str(error)})
-            time.sleep(1 + retry)
-    return {"file_id": file_id, "ok": False, "attempts": attempts}
+def check(route: str, index: int) -> dict:
+    relative = local_asset_path(route, index)
+    path = STATIC_ROOT / relative
+    result = {
+        "route": route,
+        "index": index,
+        "relative_path": relative,
+        "path": path.relative_to(ROOT).as_posix(),
+        "ok": False,
+        "errors": [],
+    }
+    if not path.is_file():
+        result["errors"].append("file is missing")
+        return result
+
+    payload = path.read_bytes()
+    result["bytes"] = len(payload)
+    result["sha256"] = hashlib.sha256(payload).hexdigest()
+    if len(payload) < 4096:
+        result["errors"].append("file is unexpectedly small")
+
+    try:
+        with Image.open(path) as image:
+            image.verify()
+        with Image.open(path) as image:
+            result["format"] = image.format
+            result["width"], result["height"] = image.size
+            if image.format != "WEBP":
+                result["errors"].append(f"format is {image.format}, expected WEBP")
+            if image.width <= 0 or image.height <= 0:
+                result["errors"].append("image has invalid dimensions")
+            if max(image.size) > 1200:
+                result["errors"].append("longest edge exceeds 1200px")
+    except Exception as error:
+        result["errors"].append(f"Pillow could not decode image: {error}")
+
+    result["ok"] = not result["errors"]
+    return result
 
 
 def main() -> int:
-    ids = sorted({
-        image["id"]
-        for gallery in CLINICAL_RESULT_GALLERIES.values()
-        for image in gallery["images"]
-    })
-    results = []
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        futures = {executor.submit(check, file_id): file_id for file_id in ids}
-        for future in as_completed(futures):
-            results.append(future.result())
-    results.sort(key=lambda item: item["file_id"])
+    results = [
+        check(route, index)
+        for route, gallery in sorted(CLINICAL_RESULT_GALLERIES.items())
+        for index in range(1, len(gallery["images"]) + 1)
+    ]
+    paths = [result["relative_path"] for result in results]
+    duplicates = sorted({path for path in paths if paths.count(path) > 1})
+    if duplicates:
+        for result in results:
+            if result["relative_path"] in duplicates:
+                result["ok"] = False
+                result["errors"].append("duplicate output path")
 
     payload = {
         "checked": len(results),
-        "passed": sum(item["ok"] for item in results),
-        "failed": [item for item in results if not item["ok"]],
+        "passed": sum(result["ok"] for result in results),
+        "failed": [result for result in results if not result["ok"]],
         "results": results,
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(
         f'Clinical image audit: {payload["passed"]}/{payload["checked"]} '
-        "Drive images are publicly renderable."
+        "local WebP assets pass."
     )
     if payload["failed"]:
         for failure in payload["failed"]:
-            print(f'- {failure["file_id"]}: not renderable', file=sys.stderr)
+            print(
+                f'- {failure["relative_path"]}: '
+                + "; ".join(failure["errors"]),
+                file=sys.stderr,
+            )
         return 1
     return 0
 
