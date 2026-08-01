@@ -1,0 +1,350 @@
+/* Extended no-code editor components.
+ * Editors choose presets and semantic intent; templates own the responsive
+ * geometry so future additions cannot create horizontal overflow.
+ */
+
+.cms-enhanced-card-section,
+.cms-columns-section,
+.cms-notice,
+.cms-testimonials,
+.cms-logo-strip {
+  min-width: 0;
+}
+
+.cms-card-grid.cms-card-style-elevated .cms-card {
+  border: 1px solid var(--cms-line);
+  border-radius: 1.15rem;
+  background: var(--cms-surface);
+  box-shadow: 0 18px 44px rgba(59, 28, 40, .09);
+}
+
+.cms-card-grid.cms-card-style-outlined .cms-card {
+  border: 1px solid var(--cms-line);
+  border-radius: 1.15rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cms-card-grid.cms-card-style-soft .cms-card {
+  border: 1px solid transparent;
+  border-radius: 1.15rem;
+  background: var(--cms-soft);
+  box-shadow: none;
+}
+
+.cms-card-grid.cms-card-style-minimal .cms-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cms-card-grid .cms-card {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.cms-card-grid .cms-card-media {
+  overflow: hidden;
+  width: 100%;
+  background: var(--cms-soft);
+}
+
+.cms-card-grid .cms-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cms-card-grid.cms-card-image-landscape .cms-card-media { aspect-ratio: 16 / 10; }
+.cms-card-grid.cms-card-image-square .cms-card-media { aspect-ratio: 1; }
+.cms-card-grid.cms-card-image-portrait .cms-card-media { aspect-ratio: 4 / 5; }
+.cms-card-grid.cms-card-image-natural .cms-card-media { aspect-ratio: auto; }
+.cms-card-grid.cms-card-image-natural .cms-card-media img { height: auto; }
+
+.cms-card-grid .cms-card-copy {
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.45rem);
+}
+
+.cms-card-grid .cms-card--featured {
+  border-color: var(--cms-wine);
+  box-shadow: 0 20px 50px rgba(123, 30, 58, .16);
+}
+
+.cms-card-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: .65rem;
+  padding: .28rem .62rem;
+  border-radius: 999px;
+  color: var(--cms-wine);
+  background: var(--cms-soft);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cms-card-grid.cms-card-hover .cms-card {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+
+  .cms-card-grid.cms-card-hover .cms-card:hover,
+  .cms-card-grid.cms-card-hover .cms-card:focus-within {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--cms-wine) 35%, var(--cms-line));
+    box-shadow: 0 22px 52px rgba(59, 28, 40, .14);
+  }
+}
+
+.cms-general-columns {
+  display: grid;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  margin-top: 1.5rem;
+}
+
+.cms-general-columns.cms-columns-auto {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+}
+
+.cms-general-columns.cms-columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cms-general-columns.cms-columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cms-general-columns.cms-columns-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.cms-general-columns.cms-equal-height {
+  align-items: stretch;
+}
+
+.cms-column-item {
+  display: flex;
+  overflow: hidden;
+  min-width: 0;
+  flex-direction: column;
+  border: 1px solid var(--cms-line);
+  border-radius: 1.1rem;
+  background: var(--cms-surface);
+}
+
+.cms-column-media {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--cms-soft);
+}
+
+.cms-column-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cms-column-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.cms-column-align-center .cms-column-copy { justify-content: center; }
+.cms-column-align-bottom .cms-column-copy { justify-content: flex-end; }
+
+.cms-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: clamp(1.1rem, 3vw, 1.7rem);
+  border: 1px solid var(--cms-line);
+  border-left: .34rem solid var(--cms-wine);
+  border-radius: 1rem;
+  background: var(--cms-soft);
+}
+
+.cms-notice-warning {
+  border-left-color: #9a5c12;
+}
+
+.cms-notice-medical {
+  border-left-color: #2b6f65;
+}
+
+.cms-notice-update {
+  border-left-color: #385b8a;
+}
+
+.cms-notice-icon {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--cms-wine);
+  font-weight: 900;
+}
+
+.cms-notice-warning .cms-notice-icon { background: #9a5c12; }
+.cms-notice-medical .cms-notice-icon { background: #2b6f65; }
+.cms-notice-update .cms-notice-icon { background: #385b8a; }
+.cms-notice-copy { min-width: 0; }
+.cms-notice-copy h2 { margin-top: 0; }
+
+.cms-testimonial-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.cms-testimonial-grid.cms-columns-auto {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.cms-testimonial-grid.cms-columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cms-testimonial-grid.cms-columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cms-testimonial-grid.cms-columns-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.cms-testimonial-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0;
+  padding: clamp(1.15rem, 3vw, 1.65rem);
+  border: 1px solid var(--cms-line);
+  border-radius: 1.1rem;
+  background: var(--cms-surface);
+}
+
+.cms-testimonial-card blockquote {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.cms-testimonial-card blockquote p::before { content: "“"; }
+.cms-testimonial-card blockquote p::after { content: "”"; }
+
+.cms-testimonial-card figcaption {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin-top: 1.25rem;
+}
+
+.cms-testimonial-card figcaption strong,
+.cms-testimonial-card figcaption small {
+  display: block;
+}
+
+.cms-testimonial-card figcaption small {
+  margin-top: .2rem;
+  color: var(--cms-muted);
+}
+
+.cms-testimonial-photo {
+  overflow: hidden;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
+  border-radius: 50%;
+}
+
+.cms-testimonial-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cms-testimonial-disclaimer {
+  margin-top: 1rem;
+  color: var(--cms-muted);
+  font-size: .88rem;
+}
+
+.cms-logo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cms-logo-list li,
+.cms-logo-list a {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: .65rem;
+  text-align: center;
+}
+
+.cms-logo-list li {
+  padding: 1rem;
+  border: 1px solid var(--cms-line);
+  border-radius: 1rem;
+  background: var(--cms-surface);
+}
+
+.cms-logo-list img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 76px;
+  object-fit: contain;
+}
+
+.cms-logo-list span {
+  color: var(--cms-muted);
+  font-size: .85rem;
+}
+
+.cms-logo-strip--monochrome .cms-logo-list img {
+  filter: grayscale(1);
+  opacity: .78;
+}
+
+[data-theme="dark"] .cms-card-grid.cms-card-style-elevated .cms-card,
+[data-theme="dark"] .cms-column-item,
+[data-theme="dark"] .cms-testimonial-card,
+[data-theme="dark"] .cms-logo-list li {
+  background: color-mix(in srgb, var(--cms-surface) 92%, #fff 8%);
+}
+
+@media (max-width: 900px) {
+  .cms-general-columns.cms-columns-3,
+  .cms-general-columns.cms-columns-4,
+  .cms-testimonial-grid.cms-columns-3,
+  .cms-testimonial-grid.cms-columns-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .cms-general-columns,
+  .cms-general-columns.cms-columns-2,
+  .cms-general-columns.cms-columns-3,
+  .cms-general-columns.cms-columns-4,
+  .cms-testimonial-grid,
+  .cms-testimonial-grid.cms-columns-2,
+  .cms-testimonial-grid.cms-columns-3,
+  .cms-testimonial-grid.cms-columns-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .cms-notice {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cms-card-grid.cms-card-hover .cms-card {
+    transition: none;
+  }
+}
