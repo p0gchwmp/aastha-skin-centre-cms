@@ -22,6 +22,23 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("tools/audit_accessibility.mjs", workflow)
         self.assertIn("retention-days: 30", workflow)
 
+    def test_workflow_matches_render_asset_build_before_collectstatic(self):
+        workflow = self.read(".github/workflows/quality-gates.yml")
+        build_visuals = workflow.index("python tools/build_visual_cue_assets.py")
+        install_curated = workflow.index(
+            "python tools/install_curated_visual_cue_assets.py"
+        )
+        verify_snapshots = workflow.index(
+            "python tools/verify_exact_page_snapshots.py"
+        )
+        collectstatic = workflow.index("python manage.py collectstatic --no-input")
+
+        self.assertLess(build_visuals, install_curated)
+        self.assertLess(install_curated, verify_snapshots)
+        self.assertLess(verify_snapshots, collectstatic)
+        self.assertIn("DJANGO_SETTINGS_MODULE: aastha_cms.settings.quality", workflow)
+        self.assertIn("gunicorn aastha_cms.wsgi:application", workflow)
+
     def test_lighthouse_config_covers_representative_pages_and_thresholds(self):
         config = self.read("lighthouserc.cjs")
 
