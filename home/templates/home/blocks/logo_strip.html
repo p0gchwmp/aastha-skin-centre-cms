@@ -1,0 +1,15 @@
+{% load wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-logo-strip cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.monochrome %} cms-logo-strip--monochrome{% endif %}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <ul class="cms-logo-list" role="list">
+    {% for item in value.items %}
+      <li>
+        {% if item.link %}<a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{% endif %}
+        {% image item.image max-320x160 loading="lazy" decoding="async" alt=item.alt_text %}
+        {% if item.label %}<span>{{ item.label }}</span>{% endif %}
+        {% if item.link %}</a>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</section>
