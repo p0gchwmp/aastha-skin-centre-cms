@@ -1,4 +1,5 @@
 import importlib.util
+import sys
 from pathlib import Path
 
 from django.conf import settings
@@ -14,6 +15,7 @@ SPEC = importlib.util.spec_from_file_location(
 )
 assert SPEC and SPEC.loader
 measurement_audit = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = measurement_audit
 SPEC.loader.exec_module(measurement_audit)
 
 
