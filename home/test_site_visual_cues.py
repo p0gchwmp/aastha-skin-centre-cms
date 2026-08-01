@@ -94,6 +94,8 @@ class SiteVisualCueTests(SimpleTestCase):
         self.assertIn("256w", self.script)
         self.assertIn("512w", self.script)
         self.assertIn("image.sizes", self.script)
+        self.assertIn("image.loading = 'lazy'", self.script)
+        self.assertNotIn("image.loading = 'eager'", self.script)
         self.assertIn("decoding = 'async'", self.script)
         self.assertIn("element.replaceChildren(image)", self.script)
         self.assertIn("restoreOriginal(element)", self.script)
