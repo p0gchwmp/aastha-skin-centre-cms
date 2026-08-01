@@ -46,6 +46,7 @@ jobs:
           python -m py_compile tools/audit_domain_cutover.py
           python -m py_compile tools/audit_seo_foundation.py
           python -m py_compile tools/audit_clinical_result_images.py
+          python -m py_compile tools/audit_deployed_sites_with_extensions.py
           python manage.py makemigrations --check --dry-run
           python manage.py check
           python manage.py test
@@ -74,7 +75,7 @@ jobs:
 
       - name: Compare every legacy route with static reference
         run: |
-          python tools/audit_deployed_sites.py \
+          python tools/audit_deployed_sites_with_extensions.py \
             --cms http://127.0.0.1:8000 \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/local-structure
@@ -144,7 +145,7 @@ jobs:
 
       - name: Compare deployed sites across every legacy route
         run: |
-          python tools/audit_deployed_sites.py \
+          python tools/audit_deployed_sites_with_extensions.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/deployed-structure
