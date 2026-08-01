@@ -1,0 +1,49 @@
+.aastha-editor-workflows {
+  margin-top: 1.5rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #ead9df;
+  border-radius: .8rem;
+  background: rgb(255 255 255 / .72);
+}
+
+.aastha-editor-workflows h3 {
+  margin: 0 0 .6rem;
+  color: #6c1733;
+  font-size: 1rem;
+}
+
+.aastha-editor-workflows ol {
+  display: grid;
+  gap: .45rem;
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #67565d;
+}
+
+.aastha-editor-guide {
+  padding: 1rem 1.15rem;
+  border-left: 4px solid #7b1e3a;
+  border-radius: .4rem;
+  background: #fbf3f5;
+}
+
+.aastha-editor-guide p {
+  margin: .35rem 0;
+}
+
+/* Make long StreamFields easier to scan without removing Wagtail controls. */
+[data-contentpath="layout_additions"] .w-panel__heading,
+[data-contentpath="body"] .w-panel__heading {
+  color: #6c1733;
+}
+
+[data-contentpath="layout_additions"] .w-streamfield__block,
+[data-contentpath="body"] .w-streamfield__block {
+  border-radius: .65rem;
+}
+
+@media (max-width: 760px) {
+  .aastha-editor-workflows {
+    padding: .9rem;
+  }
+}
