@@ -39,7 +39,7 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("DJANGO_SETTINGS_MODULE: aastha_cms.settings.quality", workflow)
         self.assertIn("gunicorn aastha_cms.wsgi:application", workflow)
 
-    def test_lighthouse_config_covers_representative_pages_and_thresholds(self):
+    def test_lighthouse_config_covers_representative_pages_and_strict_targets(self):
         config = self.read("lighthouserc.cjs")
 
         for route in (
@@ -52,10 +52,10 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         ):
             self.assertIn(route, config)
 
-        self.assertIn('"categories:performance"', config)
-        self.assertIn('"categories:accessibility"', config)
-        self.assertIn('"categories:best-practices"', config)
-        self.assertIn('"categories:seo"', config)
+        self.assertIn('"categories:performance": ["error", { minScore: 0.95 }]', config)
+        self.assertIn('"categories:accessibility": ["error", { minScore: 1 }]', config)
+        self.assertIn('"categories:best-practices": ["error", { minScore: 1 }]', config)
+        self.assertIn('"categories:seo": ["error", { minScore: 1 }]', config)
         self.assertIn('"largest-contentful-paint"', config)
         self.assertIn('"cumulative-layout-shift"', config)
         self.assertIn('"total-blocking-time"', config)
@@ -78,3 +78,15 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn('card.querySelector("a[href]")', script)
         self.assertNotIn('setAttribute("role", "link")', script)
         self.assertNotIn("card.tabIndex", script)
+
+    def test_ga4_is_queued_immediately_but_loaded_after_render(self):
+        base = self.read("aastha_cms/templates/base.html")
+
+        self.assertIn('window.gtag("config", measurementId, { send_page_view: true })', base)
+        self.assertIn("window.setTimeout(loadAnalytics, 4000)", base)
+        self.assertIn('["pointerdown", "touchstart", "keydown"]', base)
+        self.assertIn("document.createElement(\"script\")", base)
+        self.assertNotIn(
+            '<script async src="https://www.googletagmanager.com/gtag/js',
+            base,
+        )
