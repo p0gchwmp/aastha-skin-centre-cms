@@ -3,6 +3,7 @@
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
+  {# Compatibility contract: {% exact_page_with_clinical_results exact_main %} now feeds the positioned editor renderer below. #}
   {% exact_page_with_clinical_results exact_main as exact_with_results %}
   {% exact_page_with_editor_sections exact_with_results %}
 {% else %}
