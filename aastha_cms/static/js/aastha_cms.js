@@ -3,6 +3,66 @@
   const clinicName =
     document.body.dataset.clinicShortName || "Aastha Skin Centre";
 
+  const setupGlobalLogo = () => {
+    const logoUrl = document.body.dataset.logoUrl || "";
+    if (!logoUrl) return;
+
+    const logoWidth = Number(document.body.dataset.logoWidth || 0);
+    const logoHeight = Number(document.body.dataset.logoHeight || 0);
+
+    const applyLogo = (root) => {
+      const marks = [...root.querySelectorAll(".brand-mark")].filter(
+        (mark) => mark.dataset.globalLogoApplied !== "true",
+      );
+      if (!marks.length) return false;
+
+      marks.forEach((mark) => {
+        const fallback = (mark.textContent || "A").trim() || "A";
+        const image = new Image();
+        image.src = logoUrl;
+        image.alt = "";
+        image.decoding = "async";
+        image.loading = root.matches("[data-site-footer]") ? "lazy" : "eager";
+        if (!image.loading || image.loading === "eager") {
+          image.fetchPriority = "high";
+        }
+        if (logoWidth > 0) image.width = logoWidth;
+        if (logoHeight > 0) image.height = logoHeight;
+
+        image.addEventListener(
+          "error",
+          () => {
+            mark.classList.remove("brand-mark--image");
+            mark.removeAttribute("data-global-logo-applied");
+            mark.textContent = fallback;
+          },
+          { once: true },
+        );
+
+        mark.dataset.globalLogoApplied = "true";
+        mark.classList.add("brand-mark--image");
+        mark.replaceChildren(image);
+      });
+      return true;
+    };
+
+    document
+      .querySelectorAll("[data-site-header], [data-site-footer]")
+      .forEach((root) => {
+        if (applyLogo(root)) return;
+
+        // site.js hydrates the shared header and footer asynchronously after it
+        // loads the legacy JSON config. Observe each mount point so the current
+        // Wagtail logo is applied regardless of network timing.
+        const observer = new MutationObserver(() => {
+          if (applyLogo(root)) observer.disconnect();
+        });
+        observer.observe(root, { childList: true, subtree: true });
+      });
+  };
+
+  setupGlobalLogo();
+
   const openWhatsApp = (lines) => {
     if (!whatsappUrl) return;
     const separator = whatsappUrl.includes("?") ? "&" : "?";

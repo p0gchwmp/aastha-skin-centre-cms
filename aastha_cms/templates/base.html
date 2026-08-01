@@ -1,4 +1,5 @@
-{% load static wagtailcore_tags wagtailimages_tags wagtailuserbar seo_tags %}
+{% load static wagtailcore_tags wagtailimages_tags wagtailuserbar seo_tags brand_assets %}
+{% global_brand_assets settings.home.SiteSettings as brand_assets %}
 <!doctype html>
 <html lang="en-IN">
 <head>
@@ -18,11 +19,53 @@
     @media (max-width: 700px) {
       [data-site-header] { min-height: 110px; }
     }
+
+    /* The JavaScript header keeps its accessible clinic-name text and swaps
+       only the placeholder A mark for the logo selected in global settings. */
+    .brand .brand-mark.brand-mark--image {
+      display: inline-flex;
+      width: auto;
+      min-width: 44px;
+      max-width: 150px;
+      height: 52px;
+      flex: 0 1 auto;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .brand .brand-mark.brand-mark--image img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .brand-footer .brand-mark.brand-mark--image {
+      max-width: 170px;
+      height: 58px;
+    }
+    @media (max-width: 700px) {
+      .brand .brand-mark.brand-mark--image {
+        min-width: 40px;
+        max-width: 105px;
+        height: 44px;
+      }
+    }
   </style>
   <title>{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | {{ settings.home.SiteSettings.short_name }}{% endblock %}</title>
   <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
   {% block robots_meta %}{% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% elif page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}{% endblock %}
   <link rel="canonical" href="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ canonical_url }}{% endif %}">
+  {% if brand_assets.favicon.url %}
+    <link rel="icon" href="{{ brand_assets.favicon.url }}" sizes="64x64">
+    <link rel="apple-touch-icon" href="{{ brand_assets.favicon.url }}">
+  {% endif %}
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:locale" content="en_IN">
   <meta property="og:title" content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}">
@@ -61,6 +104,9 @@
   class="release-v24 {% block body_class %}{% endblock %}"
   data-clinic-name="{{ settings.home.SiteSettings.clinic_name }}"
   data-clinic-short-name="{{ settings.home.SiteSettings.short_name }}"
+  data-logo-url="{{ brand_assets.logo.url }}"
+  data-logo-width="{{ brand_assets.logo.width }}"
+  data-logo-height="{{ brand_assets.logo.height }}"
   data-consultation-fee="{{ settings.home.SiteSettings.consultation_fee|floatformat:"0" }}"
   data-currency-symbol="{{ settings.home.SiteSettings.currency_symbol }}"
   data-follow-up-days="{{ settings.home.SiteSettings.follow_up_days }}"
