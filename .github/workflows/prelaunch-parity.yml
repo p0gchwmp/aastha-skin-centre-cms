@@ -41,6 +41,7 @@ jobs:
       - name: Run build-time and Django checks
         run: |
           python tools/verify_exact_page_snapshots.py
+          python tools/audit_content_list_quality.py
           bash -n tools/create_portable_database_backup.sh
           bash -n tools/create_media_backup.sh
           python -m py_compile tools/audit_domain_cutover.py

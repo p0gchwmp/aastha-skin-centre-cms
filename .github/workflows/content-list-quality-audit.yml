@@ -1,0 +1,47 @@
+name: Content list quality audit
+
+on:
+  push:
+    branches:
+      - agent/fix-list-quality
+    paths:
+      - tools/audit_content_list_quality.py
+      - seed_data/exact-pages.json.gz.b64
+      - .github/workflows/content-list-quality-audit.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - tools/audit_content_list_quality.py
+      - seed_data/exact-pages.json.gz.b64
+      - .github/workflows/content-list-quality-audit.yml
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install beautifulsoup4
+
+      - name: Audit all exact-page lists
+        run: python tools/audit_content_list_quality.py
+
+      - name: Upload content-quality evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-list-quality-${{ github.sha }}
+          path: audit-artifacts/content-list-quality/
+          retention-days: 14
