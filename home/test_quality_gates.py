@@ -70,3 +70,11 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn('"mobile-dark"', audit)
         self.assertIn("blockingViolations", audit)
         self.assertNotIn("disableRules", audit)
+
+    def test_clickable_cards_keep_native_anchor_semantics(self):
+        script = self.read("home/static/js/professional.js")
+
+        self.assertIn('document.querySelectorAll("[data-card-link]")', script)
+        self.assertIn('card.querySelector("a[href]")', script)
+        self.assertNotIn('setAttribute("role", "link")', script)
+        self.assertNotIn("card.tabIndex", script)
