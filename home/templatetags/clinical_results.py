@@ -1,11 +1,38 @@
 """Template tags for route-specific clinical result galleries."""
 
+import re
+
 from django import template
 from django.utils.safestring import mark_safe
 
-from home.clinical_results_local import gallery_markup
+from home.clinical_results_local import gallery_markup, hero_gallery_markup
+
 
 register = template.Library()
+HERO_ART = re.compile(
+    r'(?P<open><div\b(?=[^>]*\bclass=(?P<quote>["\'])'
+    r'[^"\']*\bpage-hero-art\b[^"\']*(?P=quote))[^>]*>)'
+    r'(?P<body>.*?)(?P<close></div>)',
+    re.IGNORECASE | re.DOTALL,
+)
+HERO_GALLERY_VISIBILITY_STYLE = """
+<style>
+.page-hero-art:has(> .clinical-results--hero) {
+  display: flex !important;
+  flex-direction: column;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+@media (max-width: 760px) {
+  .page-hero-art:has(> .clinical-results--hero) {
+    display: flex !important;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 1.25rem;
+  }
+}
+</style>
+"""
 
 
 def _request_path(context) -> str:
@@ -27,12 +54,31 @@ def clinical_result_gallery(context):
 def exact_page_with_clinical_results(context, exact_main):
     if not exact_main:
         return ""
-    gallery = gallery_markup(_request_path(context))
-    if not gallery:
+
+    path = _request_path(context)
+    hero_gallery = hero_gallery_markup(path)
+    if not hero_gallery:
         return exact_main
+    hero_gallery = HERO_GALLERY_VISIBILITY_STYLE + hero_gallery
 
     source = str(exact_main)
+
+    def inject_into_hero(match: re.Match[str]) -> str:
+        return (
+            match.group("open")
+            + match.group("body")
+            + hero_gallery
+            + match.group("close")
+        )
+
+    source, replacements = HERO_ART.subn(inject_into_hero, source, count=1)
+    if replacements:
+        return mark_safe(source)
+
+    fallback_gallery = gallery_markup(path)
     closing_index = source.lower().rfind("</main>")
     if closing_index == -1:
-        return mark_safe(source + gallery)
-    return mark_safe(source[:closing_index] + gallery + source[closing_index:])
+        return mark_safe(source + fallback_gallery)
+    return mark_safe(
+        source[:closing_index] + fallback_gallery + source[closing_index:]
+    )

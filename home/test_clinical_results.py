@@ -1,11 +1,19 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 from bs4 import BeautifulSoup
 from django.contrib.staticfiles import finders
 from django.test import SimpleTestCase
 
 from home.clinical_results import CLINICAL_RESULT_GALLERIES
-from home.clinical_results_local import gallery_markup, local_asset_path
+from home.clinical_results_local import (
+    gallery_markup,
+    hero_gallery_markup,
+    local_asset_path,
+)
+from home.templatetags.clinical_results import (
+    exact_page_with_clinical_results,
+)
 
 
 class ClinicalResultGalleryTests(SimpleTestCase):
@@ -44,10 +52,10 @@ class ClinicalResultGalleryTests(SimpleTestCase):
 
     def test_runtime_markup_never_calls_google_drive(self):
         for route in CLINICAL_RESULT_GALLERIES:
-            html = gallery_markup(route)
-            self.assertNotIn("drive.google.com", html)
-            self.assertIn("/assets/images/clinical-results/", html)
-            self.assertNotIn("data-fallback-src", html)
+            for html in (gallery_markup(route), hero_gallery_markup(route)):
+                self.assertNotIn("drive.google.com", html)
+                self.assertIn("/assets/images/clinical-results/", html)
+                self.assertNotIn("data-fallback-src", html)
 
     def test_one_image_uses_static_figure_without_carousel_controls(self):
         html = gallery_markup("/treatments/acne-treatment/")
@@ -77,6 +85,8 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertIsNotNone(gallery.select_one('[aria-live="polite"]'))
         self.assertIn("touchstart", html)
         self.assertIn("ArrowRight", html)
+        self.assertIn("event.key === 'Home'", html)
+        self.assertIn("event.key === 'End'", html)
         self.assertNotIn("setInterval", html)
         self.assertNotIn("autoplay", html.lower())
 
@@ -88,10 +98,106 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertEqual(len(slides), 6)
         self.assertEqual(sum(slide.has_attr("hidden") for slide in slides), 5)
         self.assertEqual(len(soup.select("[data-clinical-slide] img[data-src]")), 5)
-        self.assertEqual(len(soup.select('[data-clinical-slide] img[loading="lazy"]')), 6)
+        self.assertEqual(
+            len(soup.select('[data-clinical-slide] img[loading="lazy"]')),
+            6,
+        )
+
+    def test_hero_gallery_uses_real_photograph_and_compact_controls(self):
+        html = hero_gallery_markup("/treatments/acne-scar-treatment/")
+        soup = BeautifulSoup(html, "html.parser")
+        gallery = soup.select_one("section.clinical-results--hero")
+
+        self.assertIsNotNone(gallery)
+        self.assertTrue(gallery.has_attr("data-clinical-carousel"))
+        first_image = gallery.select_one("[data-clinical-slide] img")
+        self.assertEqual(first_image.get("loading"), "eager")
+        self.assertEqual(first_image.get("fetchpriority"), "high")
+        self.assertEqual(
+            first_image.get("src"),
+            "/assets/images/clinical-results/acne-scar-treatment/"
+            "acne-scar-treatment-01.webp",
+        )
+        self.assertEqual(
+            len(gallery.select("[data-clinical-slide] img[data-src]")),
+            3,
+        )
+        self.assertEqual(
+            gallery.select_one("[data-clinical-previous]").get_text(
+                " ", strip=True
+            ),
+            "←",
+        )
+        self.assertEqual(
+            gallery.select_one("[data-clinical-next]").get_text(
+                " ", strip=True
+            ),
+            "→",
+        )
+
+    def test_deferred_images_do_not_trigger_false_load_error(self):
+        html = hero_gallery_markup("/treatments/acne-scar-treatment/")
+        soup = BeautifulSoup(html, "html.parser")
+        error = soup.select_one("[data-clinical-error]")
+
+        self.assertIsNotNone(error)
+        self.assertTrue(error.has_attr("hidden"))
+        self.assertIn("image.hasAttribute('src')", html)
+        self.assertNotIn("dispatchEvent(new Event('error'))", html)
+        self.assertIn(
+            ".clinical-results__load-error[hidden]",
+            html,
+        )
+
+    def test_exact_page_places_gallery_inside_existing_hero_art(self):
+        source = (
+            '<main id="main-content">'
+            '<section class="page-hero page-hero--professional">'
+            '<div class="container">'
+            '<div class="page-hero-copy"><h1>Acne scars</h1></div>'
+            '<div class="page-hero-art">'
+            '<img src="/assets/images/professional/acne-care.svg" '
+            'alt="Decorative illustration">'
+            "</div>"
+            "</div></section>"
+            "<p>Body copy</p>"
+            "</main>"
+        )
+        context = {
+            "request": SimpleNamespace(
+                path_info="/treatments/acne-scar-treatment/"
+            ),
+            "page": SimpleNamespace(url=""),
+        }
+
+        rendered = str(exact_page_with_clinical_results(context, source))
+        soup = BeautifulSoup(rendered, "html.parser")
+        hero_art = soup.select_one(".page-hero-art")
+
+        self.assertIsNotNone(hero_art)
+        self.assertIsNotNone(
+            hero_art.select_one(
+                'img[src="/assets/images/professional/acne-care.svg"]'
+            )
+        )
+        self.assertIsNotNone(
+            hero_art.select_one("section.clinical-results--hero")
+        )
+        self.assertEqual(
+            len(soup.select("section.clinical-results")),
+            1,
+        )
+        self.assertNotIn(
+            "1 clinic-supplied photograph",
+            rendered,
+        )
 
     def test_unknown_page_has_no_gallery(self):
         self.assertEqual(gallery_markup("/treatments/rosacea-treatment/"), "")
+        self.assertEqual(
+            hero_gallery_markup("/treatments/rosacea-treatment/"),
+            "",
+        )
 
     def test_flexible_template_places_gallery_inside_page_content(self):
         template = (
@@ -147,7 +253,10 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             / "prelaunch-parity.yml"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("document.querySelectorAll('.clinical-results')", browser_parity)
+        self.assertIn(
+            "document.querySelectorAll('.clinical-results')",
+            browser_parity,
+        )
         self.assertIn("audit_clinical_result_galleries_browser.py", workflow)
         self.assertIn("CLINICAL_RESULT_GALLERIES", gallery_browser)
         self.assertIn("naturalWidth > 0", gallery_browser)
