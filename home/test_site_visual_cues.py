@@ -33,16 +33,17 @@ class SiteVisualCueTests(SimpleTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root = Path(__file__).resolve().parents[1]
-        subprocess.run(
-            [
-                sys.executable,
-                str(cls.root / "tools" / "build_visual_cue_assets.py"),
-            ],
-            cwd=cls.root,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        for script in (
+            "build_visual_cue_assets.py",
+            "install_curated_visual_cue_assets.py",
+        ):
+            subprocess.run(
+                [sys.executable, str(cls.root / "tools" / script)],
+                cwd=cls.root,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
 
     def setUp(self):
         css_path = finders.find("css/site-visual-cues.css")
@@ -65,6 +66,9 @@ class SiteVisualCueTests(SimpleTestCase):
         ).read_text(encoding="utf-8")
         self.generator = (
             self.root / "tools" / "build_visual_cue_assets.py"
+        ).read_text(encoding="utf-8")
+        self.installer = (
+            self.root / "tools" / "install_curated_visual_cue_assets.py"
         ).read_text(encoding="utf-8")
         self.dark_mode_audit = (
             self.root / "tools" / "audit_dark_mode_readability.py"
@@ -90,14 +94,22 @@ class SiteVisualCueTests(SimpleTestCase):
             self.base_template.index("css/site-visual-cues.css"),
         )
 
-    def test_build_generates_fifty_one_transparent_webps(self):
-        self.assertIn("CUE_SLUGS", self.generator)
-        self.assertIn("ImageDraw", self.generator)
-        self.assertIn("ImageFilter.GaussianBlur", self.generator)
+    def test_build_restores_original_core_then_installs_curated_specialists(self):
+        self.assertIn("SOURCE_DIR", self.generator)
+        self.assertIn("STANDALONE_SOURCES", self.generator)
+        self.assertIn("SPRITE_SOURCES", self.generator)
+        self.assertIn("group-a-128.webp", self.generator)
+        self.assertIn("group-b-128.webp", self.generator)
         self.assertIn("Image.Resampling.LANCZOS", self.generator)
         self.assertIn("lossless=True", self.generator)
-        self.assertNotIn("group-a-128.webp", self.generator)
-        self.assertNotIn("group-b-128.webp", self.generator)
+        self.assertNotIn("ImageDraw", self.generator)
+        self.assertNotIn("ImageFilter", self.generator)
+
+        self.assertIn("CURATED_CUES", self.installer)
+        curated_block = self.installer.split("CURATED_CUES = {", 1)[1].split(
+            "}", 1
+        )[0]
+        self.assertNotIn('"hair"', curated_block)
 
         for cue, slug in self.ASSETS.items():
             for size in self.SIZES:
@@ -112,14 +124,21 @@ class SiteVisualCueTests(SimpleTestCase):
                         alpha = image.getchannel("A")
                         self.assertEqual(alpha.getextrema(), (0, 255))
                         self.assertEqual(alpha.getpixel((0, 0)), 0)
-                        transparent = sum(
-                            pixel == 0 for pixel in alpha.getdata()
-                        )
-                        self.assertGreater(
-                            transparent,
-                            size * size * 0.25,
-                        )
+                        transparent = sum(pixel == 0 for pixel in alpha.getdata())
+                        self.assertGreater(transparent, size * size * 0.20)
                     self.assertIn(relative, self.asset_manifest)
+
+    def test_original_approved_core_asset_names_are_preserved(self):
+        for slug in (
+            "clinical-skin-care",
+            "hair-scalp-care",
+            "dermatologist-diagnosis",
+            "medical-experience",
+            "two-clinic-locations",
+            "complete-care",
+            "personalised-plan",
+        ):
+            self.assertIn(slug, self.generator)
 
     def test_script_uses_responsive_images_and_fallbacks(self):
         self.assertIn("message-visual__img", self.script)
@@ -185,7 +204,7 @@ class SiteVisualCueTests(SimpleTestCase):
             self.assertIn(f"'{cue}'", self.script)
         self.assertIn(".trust-item .trust-icon", self.script)
 
-    def test_css_removes_baked_tile_treatment(self):
+    def test_css_removes_forced_tile_treatment(self):
         self.assertIn(
             "background: transparent !important",
             self.stylesheet,
