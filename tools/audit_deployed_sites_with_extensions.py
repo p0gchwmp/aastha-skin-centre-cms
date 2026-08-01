@@ -43,13 +43,20 @@ def _is_high_confidence_list_item(node: Tag) -> bool:
     return bool(text) and len(text) <= 160 and not re.search(r"[.!?:]", text)
 
 
+def _new_list_item() -> Tag:
+    item = BeautifulSoup("<li></li>", "lxml").find("li")
+    if item is None:  # pragma: no cover - parser contract guard
+        raise RuntimeError("Unable to create audit list item")
+    return item
+
+
 def normalise_approved_list_repairs(root: Tag) -> None:
     """Apply only the list corrections already approved in the CMS bundle."""
     for list_node in list(root.select(CLEAN_LIST_SELECTOR)):
         sibling = list_node.find_next_sibling()
         while isinstance(sibling, Tag) and _is_high_confidence_list_item(sibling):
             following = sibling.find_next_sibling()
-            item = root.new_tag("li")
+            item = _new_list_item()
             for child in list(sibling.contents):
                 item.append(child.extract())
 
