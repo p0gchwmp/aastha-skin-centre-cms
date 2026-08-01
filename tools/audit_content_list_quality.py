@@ -43,9 +43,9 @@ def following_paragraphs(list_node: Tag) -> list[Tag]:
 
 
 def looks_like_orphaned_list_item(text: str) -> bool:
-    """Short item-like copy without sentence punctuation should be an LI."""
+    """A short phrase after a list, with no sentence/list-lead punctuation, is an LI."""
     text = text.strip()
-    return bool(text) and len(text) <= 160 and not re.search(r"[.!?]", text)
+    return bool(text) and len(text) <= 160 and not re.search(r"[.!?:]", text)
 
 
 def main() -> int:
@@ -54,6 +54,7 @@ def main() -> int:
         "pages_checked": len(pages),
         "orphan_text_inside_lists": [],
         "visually_orphaned_list_items": [],
+        "dangling_list_leads": [],
         "empty_list_items": [],
         "duplicate_adjacent_items": [],
     }
@@ -88,13 +89,14 @@ def main() -> int:
                 text = clean_text(paragraph)
                 if looks_like_orphaned_list_item(text):
                     report["visually_orphaned_list_items"].append(
-                        {
-                            "path": path,
-                            "text": text,
-                            "list_items": [clean_text(item) for item in items],
-                            "context_html": str(list_node.parent)[:12000],
-                        }
+                        {"path": path, "text": text, "context_html": str(list_node.parent)[:12000]}
                     )
+
+        for lead in soup.select("p.list-lead"):
+            if lead.find_next_sibling() is None and lead.parent and lead.parent.name == "section":
+                report["dangling_list_leads"].append(
+                    {"path": path, "text": clean_text(lead), "context_html": str(lead.parent)[:12000]}
+                )
 
     OUTPUT.mkdir(parents=True, exist_ok=True)
     (OUTPUT / "report.json").write_text(
@@ -105,27 +107,30 @@ def main() -> int:
         "",
         f"- Pages checked: {report['pages_checked']}",
         f"- Visually orphaned list items: {len(report['visually_orphaned_list_items'])}",
+        f"- Dangling list leads: {len(report['dangling_list_leads'])}",
         f"- Orphan text inside lists: {len(report['orphan_text_inside_lists'])}",
         f"- Empty list items: {len(report['empty_list_items'])}",
         f"- Adjacent duplicate items: {len(report['duplicate_adjacent_items'])}",
     ]
     for issue in report["visually_orphaned_list_items"]:
         lines.extend(["", f"- `{issue['path']}`: {issue['text']}"])
+    for issue in report["dangling_list_leads"]:
+        lines.extend(["", f"- `{issue['path']}`: dangling lead: {issue['text']}"])
     (OUTPUT / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    failures = sum(
-        len(report[key])
-        for key in (
-            "visually_orphaned_list_items",
-            "orphan_text_inside_lists",
-            "empty_list_items",
-            "duplicate_adjacent_items",
-        )
+    defect_keys = (
+        "visually_orphaned_list_items",
+        "dangling_list_leads",
+        "orphan_text_inside_lists",
+        "empty_list_items",
+        "duplicate_adjacent_items",
     )
+    failures = sum(len(report[key]) for key in defect_keys)
     print(f"Content list audit: {len(pages)} pages checked; {failures} defects.")
     if failures:
-        for issue in report["visually_orphaned_list_items"]:
-            print(f"- {issue['path']}: orphaned list item: {issue['text']}", file=sys.stderr)
+        for key in defect_keys:
+            for issue in report[key]:
+                print(f"- {issue['path']}: {key}: {issue.get('text', issue.get('item', 'invalid list markup'))}", file=sys.stderr)
         return 1
     return 0
 
