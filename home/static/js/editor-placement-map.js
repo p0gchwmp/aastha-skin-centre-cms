@@ -21,7 +21,7 @@
     input.dispatchEvent(new Event("change", { bubbles: true }));
   };
 
-  const attachDatalist = (anchors) => {
+  const buildDatalist = (anchors) => {
     let datalist = document.getElementById("aastha-exact-anchor-options");
     if (!datalist) {
       datalist = document.createElement("datalist");
@@ -34,11 +34,15 @@
       option.label = anchor.label;
       return option;
     }));
+    return datalist.id;
+  };
 
+  const attachDatalistToInputs = (datalistId, hasAnchors) => {
     targetInputs().forEach((input) => {
-      input.setAttribute("list", datalist.id);
+      if (input.getAttribute("list") === datalistId) return;
+      input.setAttribute("list", datalistId);
       input.setAttribute("autocomplete", "off");
-      input.placeholder = anchors.length
+      input.placeholder = hasAnchors
         ? "Choose or type an existing section anchor"
         : "No compatible anchors detected; use a fixed placement";
     });
@@ -143,10 +147,13 @@
       if (!response.ok) return;
       const data = await response.json();
       const anchors = Array.isArray(data.anchors) ? data.anchors : [];
-      attachDatalist(anchors);
+      const datalistId = buildDatalist(anchors);
+      attachDatalistToInputs(datalistId, Boolean(anchors.length));
       insertPanel(helperPanel({ ...data, anchors }));
 
-      const observer = new MutationObserver(() => attachDatalist(anchors));
+      const observer = new MutationObserver(() => {
+        attachDatalistToInputs(datalistId, Boolean(anchors.length));
+      });
       observer.observe(document.body, { childList: true, subtree: true });
     } catch (error) {
       console.warn("Aastha placement map could not load", error);
