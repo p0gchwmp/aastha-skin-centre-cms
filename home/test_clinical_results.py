@@ -1,13 +1,11 @@
 from pathlib import Path
 
 from bs4 import BeautifulSoup
+from django.contrib.staticfiles import finders
 from django.test import SimpleTestCase
 
-from home.clinical_results import (
-    CLINICAL_RESULT_GALLERIES,
-    drive_thumbnail_url,
-    gallery_markup,
-)
+from home.clinical_results import CLINICAL_RESULT_GALLERIES
+from home.clinical_results_local import gallery_markup, local_asset_path
 
 
 class ClinicalResultGalleryTests(SimpleTestCase):
@@ -23,7 +21,7 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             CLINICAL_RESULT_GALLERIES,
         )
 
-    def test_drive_ids_are_explicit_and_unique(self):
+    def test_source_drive_ids_remain_explicit_and_unique_for_provenance(self):
         ids = [
             image["id"]
             for gallery in CLINICAL_RESULT_GALLERIES.values()
@@ -31,12 +29,25 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         ]
         self.assertEqual(len(ids), 44)
         self.assertEqual(len(set(ids)), 44)
-        self.assertTrue(
-            all(
-                url.startswith("https://drive.google.com/thumbnail?")
-                for url in map(drive_thumbnail_url, ids)
-            )
-        )
+
+    def test_every_placement_has_a_local_webp(self):
+        paths = [
+            local_asset_path(route, index)
+            for route, gallery in CLINICAL_RESULT_GALLERIES.items()
+            for index in range(1, len(gallery["images"]) + 1)
+        ]
+        self.assertEqual(len(paths), 44)
+        self.assertEqual(len(set(paths)), 44)
+        for path in paths:
+            self.assertTrue(path.endswith(".webp"))
+            self.assertIsNotNone(finders.find(path), path)
+
+    def test_runtime_markup_never_calls_google_drive(self):
+        for route in CLINICAL_RESULT_GALLERIES:
+            html = gallery_markup(route)
+            self.assertNotIn("drive.google.com", html)
+            self.assertIn("/static/images/clinical-results/", html)
+            self.assertNotIn("data-fallback-src", html)
 
     def test_one_image_uses_static_figure_without_carousel_controls(self):
         html = gallery_markup("/treatments/acne-treatment/")
@@ -47,7 +58,12 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertIn("Clinical photographs", gallery.get_text(" ", strip=True))
         self.assertFalse(gallery.has_attr("data-clinical-carousel"))
         self.assertIsNone(gallery.select_one("[data-clinical-previous]"))
-        self.assertIsNotNone(gallery.select_one("img[data-fallback-src]"))
+        image = gallery.select_one("img")
+        self.assertIsNotNone(image)
+        self.assertEqual(
+            image.get("src"),
+            "/static/images/clinical-results/acne-treatment/acne-treatment-01.webp",
+        )
 
     def test_multiple_images_use_accessible_non_autoplay_carousel(self):
         html = gallery_markup("/treatments/acne-scar-treatment/")
