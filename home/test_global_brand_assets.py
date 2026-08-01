@@ -57,6 +57,21 @@ class GlobalBrandAssetTests(TestCase):
         self.assertContains(response, f'data-logo-width="{expected.width}"')
         self.assertContains(response, f'data-logo-height="{expected.height}"')
 
+    def test_selected_logo_keeps_footer_geometry_stable(self):
+        logo = self._image("stable-footer-logo")
+        self.site_settings.logo = logo
+        self.site_settings.save(update_fields=["logo"])
+
+        response = self._homepage()
+        html = response.content.decode("utf-8")
+        footer_rule = html.split(
+            ".brand-footer .brand-mark.brand-mark--image {",
+            1,
+        )[1].split("}", 1)[0]
+
+        self.assertIn("height: 44px;", footer_rule)
+        self.assertNotIn("height: 58px;", footer_rule)
+
     def test_selected_favicon_is_rendered_in_document_head(self):
         favicon = self._image("updated-favicon", size=(128, 128))
         self.site_settings.favicon = favicon
