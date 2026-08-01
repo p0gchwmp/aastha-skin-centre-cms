@@ -9,6 +9,10 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import requests
 
 from home.clinical_results import (
@@ -17,7 +21,7 @@ from home.clinical_results import (
     drive_thumbnail_url,
 )
 
-OUTPUT = Path("audit-artifacts/clinical-result-images.json")
+OUTPUT = ROOT / "audit-artifacts" / "clinical-result-images.json"
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
