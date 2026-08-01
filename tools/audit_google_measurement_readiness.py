@@ -24,6 +24,11 @@ from bs4 import BeautifulSoup
 
 USER_AGENT = "AasthaGoogleMeasurementReadiness/1.0"
 GA4_ID_RE = re.compile(r"\bG-[A-Z0-9]{6,}\b")
+MEASUREMENT_ASSIGNMENT_RE = re.compile(
+    r'\bconst\s+measurementId\s*=\s*["\'](?P<value>[^"\']+)["\']\s*;'
+)
+JS_UNICODE_ESCAPE_RE = re.compile(r"\\u([0-9A-Fa-f]{4})")
+JS_HEX_ESCAPE_RE = re.compile(r"\\x([0-9A-Fa-f]{2})")
 VERIFICATION_TOKEN_RE = re.compile(r"^[A-Za-z0-9_-]{8,}$")
 GENERATE_LEAD_RE = re.compile(
     r'track\(\s*["\']generate_lead["\']\s*,\s*\{(?P<body>.*?)\}\s*\);',
@@ -84,6 +89,38 @@ def masked(value: str) -> str:
     return f"{value[:2]}…{value[-4:]} ({len(value)} chars)"
 
 
+def decode_javascript_literal(value: str) -> str:
+    """Decode escape sequences emitted by Django's ``escapejs`` filter.
+
+    Django intentionally renders punctuation such as ``-`` as ``\\u002D`` in
+    JavaScript string literals. The browser receives the correct GA4 ID after
+    evaluating that string, so the audit must validate the decoded value rather
+    than search only the raw HTML source.
+    """
+
+    value = JS_UNICODE_ESCAPE_RE.sub(
+        lambda match: chr(int(match.group(1), 16)),
+        value,
+    )
+    return JS_HEX_ESCAPE_RE.sub(
+        lambda match: chr(int(match.group(1), 16)),
+        value,
+    )
+
+
+def extract_measurement_ids(source: str) -> tuple[list[str], list[str]]:
+    configured_values = [
+        decode_javascript_literal(match.group("value"))
+        for match in MEASUREMENT_ASSIGNMENT_RE.finditer(source)
+    ]
+    valid_values = [
+        value for value in configured_values if GA4_ID_RE.fullmatch(value)
+    ]
+    if not configured_values:
+        valid_values = GA4_ID_RE.findall(source)
+    return sorted(set(valid_values)), configured_values
+
+
 def inspect_homepage(source: str, base: str) -> tuple[list[Check], str | None]:
     soup = BeautifulSoup(source, "lxml")
     checks: list[Check] = []
@@ -138,14 +175,24 @@ def inspect_homepage(source: str, base: str) -> tuple[list[Check], str | None]:
         )
     )
 
-    measurement_ids = sorted(set(GA4_ID_RE.findall(source)))
+    measurement_ids, configured_measurement_values = extract_measurement_ids(
+        source
+    )
+    if len(measurement_ids) == 1:
+        measurement_detail = masked(measurement_ids[0])
+    elif configured_measurement_values:
+        measurement_detail = (
+            "configured="
+            + repr([masked(value) for value in configured_measurement_values])
+            + f"; valid={measurement_ids!r}"
+        )
+    else:
+        measurement_detail = "measurementId assignment missing"
     checks.append(
         Check(
             "ga4_measurement_id",
             len(measurement_ids) == 1,
-            masked(measurement_ids[0])
-            if len(measurement_ids) == 1
-            else f"found={measurement_ids!r}",
+            measurement_detail,
         )
     )
 
