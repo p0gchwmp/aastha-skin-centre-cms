@@ -72,10 +72,9 @@ HERO_GALLERY_SCRIPT = r"""
     const hero = heading?.closest('section');
     if (!hero) return;
 
-    const headingColumn = heading.closest('div');
-    const candidates = [...hero.querySelectorAll(':scope > div, :scope > figure')]
-      .filter(node => node !== headingColumn && !node.contains(heading));
-    const visual = candidates.find(node => node.querySelector('img, svg, picture'));
+    const visual = [...hero.querySelectorAll('div, figure')].find(node =>
+      !node.contains(heading) && node.querySelector('img, svg, picture')
+    );
     if (!visual) return;
 
     visual.replaceChildren(root);
@@ -86,8 +85,12 @@ HERO_GALLERY_SCRIPT = r"""
   const reconcileErrors = root => {
     const error = root.querySelector('[data-clinical-error]');
     if (!error) return;
-    const images = [...root.querySelectorAll('[data-clinical-slide] img')];
-    const failed = images.some(image => image.complete && image.naturalWidth === 0);
+    const loadedOrLoadingImages = [
+      ...root.querySelectorAll('[data-clinical-slide] img[src]')
+    ];
+    const failed = loadedOrLoadingImages.some(
+      image => image.complete && image.naturalWidth === 0
+    );
     error.hidden = !failed;
     error.dataset.suppressed = failed ? 'false' : 'true';
     error.style.display = failed ? '' : 'none';
