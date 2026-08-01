@@ -1,0 +1,79 @@
+name: Verify Google readiness release
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 lxml
+
+      - name: Wait for exact release on both live domains
+        env:
+          EXPECTED_RELEASE: f3ae8a02e8cc20654fda54b28355aaf8736bb926
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import requests
+
+          expected = os.environ["EXPECTED_RELEASE"]
+          urls = [
+              "https://www.aasthaskincentre.in/healthz/",
+              "https://aastha-skin-centre-cms.onrender.com/healthz/",
+          ]
+          deadline = time.time() + 12 * 60
+          last = {}
+          while time.time() < deadline:
+              releases = {}
+              for url in urls:
+                  try:
+                      response = requests.get(url, timeout=30)
+                      payload = response.json()
+                      releases[url] = payload.get("release", "")
+                  except Exception as exc:
+                      releases[url] = f"error:{exc}"
+              last = releases
+              print(releases, flush=True)
+              if all(value == expected for value in releases.values()):
+                  raise SystemExit(0)
+              time.sleep(10)
+          raise SystemExit(
+              f"Production did not reach {expected}; last observed={last!r}"
+          )
+          PY
+
+      - name: Run Google measurement readiness audit
+        run: |
+          python tools/audit_google_measurement_readiness.py \
+            --base https://www.aasthaskincentre.in \
+            --output audit-artifacts/google-measurement
+          cat audit-artifacts/google-measurement/google-measurement-readiness.md \
+            >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-readiness-release-verification-${{ github.sha }}
+          path: audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
