@@ -1,0 +1,154 @@
+/* Progressive, mobile-only card carousels.
+
+   JavaScript activates these only for repeated promotional/editorial card
+   groups with at least three items. Without JavaScript every group remains the
+   existing full, readable grid. Treatment and condition directories are never
+   converted because patients need to scan those links at once. */
+
+.card-carousel-controls {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .release-v24 [data-mobile-card-carousel="true"] {
+    position: relative;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    touch-action: pan-y;
+    outline: none;
+  }
+
+  .release-v24 [data-mobile-card-carousel="true"] > [hidden] {
+    display: none !important;
+  }
+
+  .release-v24 [data-mobile-card-carousel="true"] > .card-carousel-slide--active {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-inline: 0 !important;
+    animation: card-carousel-reveal 180ms ease-out both;
+  }
+
+  .card-carousel-controls {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .card-carousel-controls[hidden] {
+    display: none !important;
+  }
+
+  .card-carousel-button {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--plum, #7a2748) 42%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface, #fffaf8) 94%, transparent);
+    color: var(--plum, #7a2748);
+    box-shadow: 0 8px 22px rgba(78, 23, 48, 0.10);
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.35rem;
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card-carousel-button:hover,
+  .card-carousel-button:focus-visible {
+    border-color: var(--plum, #7a2748);
+    background: color-mix(in srgb, var(--rose-soft, #f8dce6) 70%, white);
+    outline: 3px solid color-mix(in srgb, var(--plum, #7a2748) 22%, transparent);
+    outline-offset: 2px;
+  }
+
+  .card-carousel-button:disabled {
+    cursor: default;
+    opacity: 0.34;
+    box-shadow: none;
+  }
+
+  .card-carousel-meta {
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    min-width: 0;
+    color: var(--text-muted, #725f68);
+    text-align: center;
+  }
+
+  .card-carousel-status {
+    margin: 0;
+    color: var(--text, #2f1a24);
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .card-carousel-hint {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
+  .card-carousel-visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  html[data-theme="dark"] .card-carousel-button {
+    border-color: rgba(232, 134, 171, 0.46);
+    background: rgba(35, 22, 29, 0.96);
+    color: #f1a2c1;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.24);
+  }
+
+  html[data-theme="dark"] .card-carousel-button:hover,
+  html[data-theme="dark"] .card-carousel-button:focus-visible {
+    border-color: #f1a2c1;
+    background: rgba(86, 32, 58, 0.86);
+    outline-color: rgba(241, 162, 193, 0.24);
+  }
+
+  html[data-theme="dark"] .card-carousel-status {
+    color: #fff6fa;
+  }
+
+  html[data-theme="dark"] .card-carousel-meta {
+    color: #d8c8cf;
+  }
+}
+
+@keyframes card-carousel-reveal {
+  from {
+    opacity: 0.72;
+    transform: translateX(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .release-v24 [data-mobile-card-carousel="true"] > .card-carousel-slide--active {
+    animation: none;
+  }
+}
