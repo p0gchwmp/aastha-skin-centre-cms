@@ -1,0 +1,72 @@
+name: Verify future editor production
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install verification dependency
+        run: python -m pip install requests
+
+      - name: Wait for merged editor release
+        env:
+          EXPECTED_RELEASE: 75f3ee9915ab43a53a121fd1fdc7f5f007fd52f6
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import requests
+
+          expected = os.environ["EXPECTED_RELEASE"]
+          health_url = "https://www.aasthaskincentre.in/healthz/"
+          for attempt in range(120):
+              try:
+                  response = requests.get(health_url, timeout=30)
+                  response.raise_for_status()
+                  payload = response.json()
+                  release = payload.get("release", "")
+                  print(f"Attempt {attempt + 1}: {release or 'not-ready'}")
+                  if payload.get("status") == "ok" and release == expected:
+                      break
+              except Exception as error:
+                  print(f"Attempt {attempt + 1}: {error}")
+              time.sleep(5)
+          else:
+              raise SystemExit(f"Canonical domain did not reach {expected}")
+          PY
+
+      - name: Verify public and editor entry points
+        run: |
+          python - <<'PY'
+          import requests
+
+          checks = {
+              "homepage": "https://www.aasthaskincentre.in/",
+              "clinical page": "https://www.aasthaskincentre.in/treatments/acne-treatment/",
+              "Wagtail login": "https://www.aasthaskincentre.in/admin/login/",
+          }
+          for label, url in checks.items():
+              response = requests.get(url, timeout=30)
+              print(label, response.status_code, len(response.content))
+              response.raise_for_status()
+              if label == "Wagtail login" and "wagtail" not in response.text.lower():
+                  raise SystemExit("Wagtail admin login did not render")
+
+          homepage = requests.get(checks["homepage"], timeout=30).text
+          if "Future-proof visual editor components" not in homepage:
+              raise SystemExit("Inline future-editor component layer is missing")
+          if "future-editor.css" in homepage:
+              raise SystemExit("Superseded extra stylesheet request is still present")
+          PY
