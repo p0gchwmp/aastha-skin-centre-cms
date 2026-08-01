@@ -2,17 +2,21 @@ from django.core.exceptions import ValidationError
 from django.template.loader import get_template
 from django.test import SimpleTestCase
 
-from home import blocks as registered_blocks
 from home.admin_extensions import extract_anchor_options
 from home.editor_extensions import (
     EnhancedCardGridBlock,
+    ExtendedPageAdditionStreamBlock,
+    ExtendedPageBodyStreamBlock,
     TestimonialItemBlock,
 )
+from home.editor_runtime import configure_extended_editor_streams
+from home.models import HomePage, ReusableSection
 
 
 class ExtendedEditorBlockTests(SimpleTestCase):
     def test_full_builder_exposes_extended_structural_blocks(self):
-        stream = registered_blocks.PageBodyStreamBlock()
+        stream = HomePage._meta.get_field("body").stream_block
+        self.assertIsInstance(stream, ExtendedPageBodyStreamBlock)
         self.assertTrue(
             {
                 "columns",
@@ -25,7 +29,8 @@ class ExtendedEditorBlockTests(SimpleTestCase):
         self.assertIsInstance(stream.child_blocks["card_grid"], EnhancedCardGridBlock)
 
     def test_exact_design_additions_expose_same_extended_blocks(self):
-        stream = registered_blocks.PageAdditionStreamBlock()
+        stream = HomePage._meta.get_field("layout_additions").stream_block
+        self.assertIsInstance(stream, ExtendedPageAdditionStreamBlock)
         self.assertTrue(
             {
                 "columns",
@@ -35,6 +40,16 @@ class ExtendedEditorBlockTests(SimpleTestCase):
                 "card_grid",
             }.issubset(stream.child_blocks)
         )
+
+    def test_reusable_sections_receive_the_complete_builder(self):
+        stream = ReusableSection._meta.get_field("body").stream_block
+        self.assertIsInstance(stream, ExtendedPageBodyStreamBlock)
+        self.assertIn("testimonials", stream.child_blocks)
+
+    def test_runtime_configuration_is_idempotent(self):
+        before = HomePage._meta.get_field("body").stream_block
+        configure_extended_editor_streams()
+        self.assertIs(HomePage._meta.get_field("body").stream_block, before)
 
     def test_extended_templates_are_loadable(self):
         for template_name in (
