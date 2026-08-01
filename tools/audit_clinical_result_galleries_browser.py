@@ -2,9 +2,9 @@
 """Exercise every route-specific clinical gallery in a real browser.
 
 This audit is intentionally separate from legacy screenshot parity. It verifies
-that all Drive-backed photographs render for an anonymous visitor, that only
-multi-image folders become carousels, and that controls remain usable without
-horizontal overflow on a phone-sized dark-mode viewport.
+that all locally materialised photographs render for an anonymous visitor, that
+only multi-image folders become carousels, and that controls remain usable
+without horizontal overflow on a phone-sized dark-mode viewport.
 """
 
 from __future__ import annotations
@@ -87,6 +87,8 @@ def audit_route(page: Page, base: str, route: str, expected: int, timeout_ms: in
         )
 
         section = page.locator("section.clinical-results")
+        section.scroll_into_view_if_needed(timeout=timeout_ms)
+        page.wait_for_timeout(100)
         slides = section.locator("[data-clinical-slide]")
         result.rendered_images = slides.count()
         result.carousel_present = section.get_attribute("data-clinical-carousel") is not None
@@ -159,14 +161,12 @@ def audit_route(page: Page, base: str, route: str, expected: int, timeout_ms: in
                 if hidden is not None:
                     result.errors.append(f"slide {index + 1} stayed hidden when selected")
 
-            # No autoplay: the selected final slide must remain selected.
             final_value = expected
             page.wait_for_timeout(850)
             current_value = section.locator("[data-clinical-current]").inner_text()
             if current_value.strip() != str(final_value):
                 result.errors.append("carousel advanced without user input")
 
-            # Keyboard contract on every carousel.
             section.press("Home")
             page.wait_for_function(
                 """
@@ -191,7 +191,7 @@ def audit_route(page: Page, base: str, route: str, expected: int, timeout_ms: in
             result.errors.extend(f"page error: {message}" for message in page_errors)
     except PlaywrightTimeoutError as error:
         result.errors.append(f"browser timeout: {error}")
-    except Exception as error:  # Keep evidence for all routes instead of aborting early.
+    except Exception as error:
         result.errors.append(str(error))
     return result
 
