@@ -1,0 +1,15 @@
+{% load wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-process-section cms-process--{{ value.display }} cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.eyebrow %}<span class="quiet-label">{{ value.eyebrow }}</span>{% endif %}
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <ol class="cms-process-list">
+    {% for step in value.steps %}
+      <li>
+        <span class="cms-step-number" aria-hidden="true">{{ forloop.counter }}</span>
+        {% if step.image %}<div class="cms-step-image">{% image step.image fill-520x340-c100 loading="lazy" decoding="async" %}</div>{% endif %}
+        <div><h3>{{ step.heading }}</h3>{% if step.text %}<p>{{ step.text }}</p>{% endif %}{% if step.link %}<a class="plain-link" href="{{ step.link.url }}"{% if step.link.new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ step.link.label }} →</a>{% endif %}</div>
+      </li>
+    {% endfor %}
+  </ol>
+</section>
