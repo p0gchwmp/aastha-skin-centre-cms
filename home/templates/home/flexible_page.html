@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags exact_pages %}
+{% load wagtailcore_tags exact_pages clinical_results %}
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
-{{ exact_main }}
+{% exact_page_with_clinical_results exact_main %}
 {% else %}
 <main id="main-content">
   {% include "home/partials/page_hero.html" %}
   <section class="section"><div class="container {% if page.show_consultation_sidebar %}content-layout{% endif %}">
     <article class="prose article-stack">
       {% include_block page.body %}
+      {% clinical_result_gallery %}
       {% if page.show_clinic_choices %}{% include "home/partials/clinic_choices.html" %}{% endif %}
       {% if page.show_medical_disclaimer %}
         <p class="medical-disclaimer"><strong>Medical disclaimer:</strong> {{ settings.home.SiteSettings.medical_disclaimer }}</p>
