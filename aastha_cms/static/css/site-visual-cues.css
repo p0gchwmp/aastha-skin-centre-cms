@@ -1,42 +1,31 @@
 /* =====================================================================
-   Aastha production pastel-clay visual system
+   Aastha semantic visual cues
 
-   Ten independently cached transparent WebP icons replace the inline vector
-   sprite. JavaScript injects responsive srcset markup only into compact
-   placeholders and helper cards; treatment, condition, doctor, gallery and
-   editorial imagery remains reserved for real photography.
+   Clay artwork replaces only an icon placeholder already present in the
+   verified static layout. It never inserts a new box, changes a card display
+   mode, equalises card heights or moves actions. The surrounding page keeps
+   the exact spacing and grid geometry defined by the core design system.
    ===================================================================== */
 
 :root {
-  --clay-shadow:
-    drop-shadow(0 7px 8px rgba(73, 29, 47, .10))
-    drop-shadow(0 14px 18px rgba(73, 29, 47, .13));
-  --clay-shadow-hover:
-    drop-shadow(0 9px 9px rgba(73, 29, 47, .12))
-    drop-shadow(0 19px 22px rgba(73, 29, 47, .18));
+  --visual-cue-shadow:
+    drop-shadow(0 4px 5px rgba(73, 29, 47, .10))
+    drop-shadow(0 8px 10px rgba(73, 29, 47, .11));
+  --visual-cue-shadow-hover:
+    drop-shadow(0 5px 6px rgba(73, 29, 47, .12))
+    drop-shadow(0 11px 13px rgba(73, 29, 47, .15));
 }
 
 .message-visual,
 .release-v24 .message-visual {
-  position: relative;
-  display: block;
+  box-sizing: border-box;
   flex: 0 0 auto;
-  width: 90px;
-  height: 90px;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
   color: transparent !important;
   font-size: 0 !important;
   line-height: 0 !important;
-  filter: var(--clay-shadow);
+  text-indent: 0 !important;
+  overflow: hidden;
   isolation: isolate;
-  overflow: visible;
-  transform: translateZ(0);
-  transition: transform .24s ease, filter .24s ease, opacity .24s ease;
 }
 
 .message-visual::before,
@@ -51,443 +40,97 @@
   display: block;
   width: 100%;
   height: 100%;
-  max-width: none;
+  max-width: 100%;
   object-fit: contain;
   object-position: center;
   image-rendering: auto;
+  filter: var(--visual-cue-shadow);
   pointer-events: none;
   user-select: none;
+  transform: translateZ(0);
+  transition: transform .2s ease, filter .2s ease;
 }
 
-/* Hide the old glyph immediately, before deferred JavaScript installs clay. */
-.release-v24 .concern-card:nth-child(-n + 3) .icon-bubble,
-.release-v24 .trust-item .trust-icon {
-  color: transparent !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
-  text-indent: -9999px;
+/* Preserve the exact desktop/mobile slot sizes from the static design. */
+.release-v24 .concern-card .icon-bubble.message-visual {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  max-width: 54px !important;
+  padding: 4px !important;
 }
 
-/* Homepage concern cards use a larger scene so the treatment message reads
-   clearly instead of behaving like a tiny decorative icon. */
-.release-v24 .concern-card .icon-bubble.message-visual,
-.release-v24 .concern-card:nth-child(1) .icon-bubble,
-.release-v24 .concern-card:nth-child(2) .icon-bubble,
-.release-v24 .concern-card:nth-child(3) .icon-bubble {
-  width: 116px !important;
-  height: 116px !important;
-  min-width: 116px !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  filter: var(--clay-shadow) !important;
-  overflow: visible !important;
-  text-indent: 0;
+.release-v24 .trust-item .trust-icon.message-visual {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 3px !important;
 }
 
-/* The five credibility claims retain their own distinct scenes, including a
-   text-free medical shield for experience so no malformed number can appear. */
-.release-v24 .trust-item .trust-icon.message-visual,
-.release-v24 .trust-item .trust-icon {
-  width: 94px !important;
-  height: 94px !important;
-  min-width: 94px !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  filter: var(--clay-shadow) !important;
-  overflow: visible !important;
-  text-indent: 0;
+.release-v24 .hub-icon.message-visual {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  max-width: 54px !important;
+  padding: 4px !important;
 }
 
-/* Compact navigation and helper cards receive cues only when they do not
-   already contain a meaningful photo, illustration or video. */
-.visual-cue-card {
-  position: relative;
+.release-v24 :where(
+  .feature-icon,
+  .benefit-icon,
+  .process-icon,
+  .step-icon,
+  .care-icon,
+  .location-icon,
+  .plan-icon,
+  .why-icon,
+  .info-icon,
+  .mini-icon,
+  .card-icon,
+  [data-visual-cue]
+).message-visual {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  display: grid;
+  place-items: center;
+  padding: 3px;
 }
 
-.visual-cue-card > .message-visual:first-child,
-.visual-cue-card > a > .message-visual:first-child {
-  margin: 0 0 14px;
+.concern-card:hover .message-visual__img,
+.trust-item:hover .message-visual__img,
+.hub-category:hover .message-visual__img,
+.feature-card:hover .message-visual__img,
+.benefit-card:hover .message-visual__img,
+.process-step:hover .message-visual__img {
+  transform: translateY(-1px) scale(1.025);
+  filter: var(--visual-cue-shadow-hover);
 }
 
-.directory-link.visual-cue-card,
-.category-card.visual-cue-card,
-.feature-card.visual-cue-card,
-.benefit-card.visual-cue-card,
-.process-card.visual-cue-card,
-.step-card.visual-cue-card,
-.why-card.visual-cue-card,
-.contact-card.visual-cue-card,
-.info-card.visual-cue-card,
-.cms-card.visual-cue-card,
-.service-card.visual-cue-card,
-.guide-card.visual-cue-card,
-.support-card.visual-cue-card,
-.appointment-card.visual-cue-card,
-.clinic-card.visual-cue-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.directory-link.visual-cue-card .message-visual,
-.category-card.visual-cue-card .message-visual,
-.feature-card.visual-cue-card .message-visual,
-.benefit-card.visual-cue-card .message-visual,
-.process-card.visual-cue-card .message-visual,
-.step-card.visual-cue-card .message-visual,
-.why-card.visual-cue-card .message-visual,
-.contact-card.visual-cue-card .message-visual,
-.info-card.visual-cue-card .message-visual,
-.cms-card.visual-cue-card .message-visual,
-.service-card.visual-cue-card .message-visual,
-.guide-card.visual-cue-card .message-visual,
-.support-card.visual-cue-card .message-visual,
-.appointment-card.visual-cue-card .message-visual,
-.clinic-card.visual-cue-card .message-visual {
-  width: 96px;
-  height: 96px;
-}
-
-.visual-cue-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.visual-cue-inline > .message-visual {
-  width: 76px;
-  height: 76px;
-}
-
-.concern-card:hover .message-visual,
-.trust-item:hover .message-visual,
-.visual-cue-card:hover > .message-visual,
-.visual-cue-card:hover > a > .message-visual {
-  transform: translateY(-3px) scale(1.025);
-  filter: var(--clay-shadow-hover) !important;
-}
-
-/* Keep the pastel material luminous on plum cards without recolouring it. */
-html[data-theme="dark"] .message-visual,
-html[data-theme="dark"] .release-v24 .concern-card .icon-bubble,
-html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
+html[data-theme="dark"] .message-visual__img {
   filter:
-    brightness(.90)
-    saturate(.90)
+    brightness(.92)
+    saturate(.92)
     contrast(1.02)
-    drop-shadow(0 8px 10px rgba(0, 0, 0, .28))
-    drop-shadow(0 17px 20px rgba(0, 0, 0, .38)) !important;
-}
-
-/* Decorative placeholders have no readable glyph, but the computed colour
-   remains contrast-safe for the existing automated dark-mode audit. */
-html[data-theme="dark"] .release-v24 .trust-item .trust-icon {
-  color: #fffaf7 !important;
-}
-
-html[data-theme="dark"] .concern-card:hover .message-visual,
-html[data-theme="dark"] .trust-item:hover .message-visual,
-html[data-theme="dark"] .visual-cue-card:hover > .message-visual,
-html[data-theme="dark"] .visual-cue-card:hover > a > .message-visual {
-  filter:
-    brightness(.94)
-    saturate(.94)
-    contrast(1.025)
-    drop-shadow(0 10px 10px rgba(0, 0, 0, .32))
-    drop-shadow(0 22px 24px rgba(0, 0, 0, .46)) !important;
-}
-
-/* Never replace the larger real-image areas reserved for clinical content. */
-.treatment-card .message-visual,
-.condition-card .message-visual,
-.doctor-card .message-visual,
-.doctor-profile .message-visual,
-.doctor-feature .message-visual,
-.doctor-visual .message-visual,
-.page-hero-art .message-visual,
-.gallery .message-visual,
-.image-gallery .message-visual,
-.blog-card .message-visual,
-.blog-teaser .message-visual,
-[class*="treatment-image"] .message-visual,
-[class*="condition-image"] .message-visual,
-[class*="doctor-image"] .message-visual {
-  display: none !important;
-}
-
-@media (max-width: 960px) {
-  .release-v24 .trust-item .trust-icon {
-    width: 88px !important;
-    height: 88px !important;
-    min-width: 88px !important;
-  }
+    drop-shadow(0 5px 6px rgba(0, 0, 0, .28))
+    drop-shadow(0 10px 12px rgba(0, 0, 0, .34));
 }
 
 @media (max-width: 700px) {
-  .message-visual,
-  .release-v24 .trust-item .trust-icon {
-    width: 92px !important;
-    height: 92px !important;
-    min-width: 92px !important;
-  }
-
-  .release-v24 .concern-card .icon-bubble {
-    width: 112px !important;
-    height: 112px !important;
-    min-width: 112px !important;
-  }
-
-  .visual-cue-card > .message-visual:first-child,
-  .visual-cue-card > a > .message-visual:first-child {
-    margin-bottom: 12px;
+  .release-v24 .hub-icon.message-visual {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+    padding: 3px !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .message-visual {
+  .message-visual__img {
     transition: none;
-    transform: none;
-  }
-}
-
-/* =====================================================================
-   Visual-cue layout corrections
-
-   Integrated into the existing clay stylesheet to preserve the CSS/JS request
-   budget while preventing overlap and restoring desktop clinic symmetry.
-   ===================================================================== */
-
-.release-v24 .message-visual--failed,
-.release-v24 .message-visual[hidden] {
-  display: none !important;
-}
-
-.release-v24 .visual-cue-card--managed {
-  min-width: 0;
-  isolation: isolate;
-}
-
-.release-v24 :where(
-  .process-step,
-  .value-card,
-  .about-story-card,
-  .clinic-location-card,
-  .location-contact-card,
-  .hours-card,
-  .category-card,
-  .feature-card,
-  .benefit-card,
-  .why-card,
-  .service-card,
-  .guide-card,
-  .support-card,
-  .appointment-card,
-  .clinic-card,
-  .cms-card,
-  .contact-action-card,
-  .care-path-card,
-  .step-card,
-  .process-card,
-  .info-card
-).visual-cue-card--managed {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  gap: 0 !important;
-}
-
-.release-v24 :where(
-  .process-step,
-  .value-card,
-  .about-story-card,
-  .clinic-location-card,
-  .location-contact-card,
-  .hours-card,
-  .category-card,
-  .feature-card,
-  .benefit-card,
-  .why-card,
-  .service-card,
-  .guide-card,
-  .support-card,
-  .appointment-card,
-  .clinic-card,
-  .cms-card,
-  .contact-action-card,
-  .care-path-card,
-  .step-card,
-  .process-card,
-  .info-card
-).visual-cue-card--managed > .message-visual:first-child {
-  position: relative !important;
-  inset: auto !important;
-  top: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  left: auto !important;
-  float: none !important;
-  clear: both !important;
-  align-self: flex-start !important;
-  flex: 0 0 auto !important;
-  width: 92px !important;
-  height: 92px !important;
-  min-width: 92px !important;
-  margin: 0 0 16px !important;
-  padding: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  z-index: 1 !important;
-}
-
-.release-v24 .process-step.visual-cue-card--managed > .message-visual:first-child {
-  width: 84px !important;
-  height: 84px !important;
-  min-width: 84px !important;
-  margin-bottom: 12px !important;
-}
-
-.release-v24 .visual-cue-card--managed > :not(.message-visual) {
-  position: relative;
-  min-width: 0;
-  max-width: 100%;
-  z-index: 2;
-}
-
-.release-v24 .hub-category-heading--clay {
-  grid-template-columns: 96px minmax(0, 1fr) !important;
-  gap: 18px !important;
-  align-items: start !important;
-}
-
-.release-v24 .hub-category-heading--clay > .message-visual:first-child {
-  position: relative !important;
-  inset: auto !important;
-  float: none !important;
-  width: 96px !important;
-  height: 96px !important;
-  min-width: 96px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.release-v24 .hub-category-heading--clay > :not(.message-visual) {
-  min-width: 0;
-}
-
-@media (min-width: 721px) {
-  .release-v24 :where(
-    .about-story-grid,
-    .clinic-location-grid,
-    .location-contact-grid,
-    .hours-grid,
-    .location-pro-grid,
-    .clinic-choice-grid
-  ) {
-    align-items: stretch !important;
-    grid-auto-rows: 1fr;
-  }
-
-  .release-v24 :where(
-    .about-story-card,
-    .clinic-location-card,
-    .location-contact-card,
-    .hours-card,
-    .location-pro-card,
-    .clinic-choice-grid > article
-  ) {
-    box-sizing: border-box;
-    height: 100% !important;
-    min-height: 100%;
-  }
-
-  .release-v24 :where(
-    .about-story-card,
-    .clinic-location-card,
-    .location-contact-card,
-    .location-pro-card,
-    .clinic-choice-grid > article
-  ) {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  .release-v24 :where(
-    .about-story-card,
-    .clinic-location-card,
-    .location-contact-card,
-    .location-pro-card,
-    .clinic-choice-grid > article
-  ) > :where(.inline-actions, .location-actions, .card-actions, .hero-actions),
-  .release-v24 :where(
-    .about-story-card,
-    .clinic-location-card,
-    .location-contact-card,
-    .location-pro-card,
-    .clinic-choice-grid > article
-  ) > :last-child:has(.button) {
-    margin-top: auto !important;
-    padding-top: 18px;
-  }
-}
-
-@media (max-width: 720px) {
-  .release-v24 .hub-category-heading--clay {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 12px !important;
-  }
-
-  .release-v24 .hub-category-heading--clay > .message-visual:first-child {
-    width: 88px !important;
-    height: 88px !important;
-    min-width: 88px !important;
-  }
-
-  .release-v24 :where(
-    .process-step,
-    .value-card,
-    .about-story-card,
-    .clinic-location-card,
-    .location-contact-card,
-    .hours-card,
-    .category-card,
-    .feature-card,
-    .benefit-card,
-    .why-card,
-    .service-card,
-    .guide-card,
-    .support-card,
-    .appointment-card,
-    .clinic-card,
-    .cms-card,
-    .contact-action-card,
-    .care-path-card,
-    .step-card,
-    .process-card,
-    .info-card
-  ).visual-cue-card--managed > .message-visual:first-child {
-    width: 84px !important;
-    height: 84px !important;
-    min-width: 84px !important;
-    margin-bottom: 14px !important;
-  }
-
-  .release-v24 :where(
-    .about-story-card,
-    .clinic-location-card,
-    .location-contact-card,
-    .hours-card,
-    .location-pro-card,
-    .clinic-choice-grid > article
-  ) {
-    height: auto !important;
-    min-height: 0 !important;
+    transform: none !important;
   }
 }
