@@ -98,6 +98,7 @@
   <link rel="stylesheet" href="{% static 'css/layout-balance.css' %}">
   <link rel="stylesheet" href="{% static 'css/mobile-layout-qa.css' %}">
   <link rel="stylesheet" href="{% static 'css/site-visual-cues.css' %}">
+  {% include "home/partials/accessibility_contrast_styles.html" %}
   {% block extra_head %}{% endblock %}
 </head>
 <body
@@ -146,7 +147,7 @@
   {% block extra_js %}{% endblock %}
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.home.SiteSettings.analytics_id }}"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","{{ settings.home.SiteSettings.analytics_id }}",{send_page_view:true});</script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){window.dataLayer.push(arguments)}gtag("js",new Date());gtag("config","{{ settings.home.SiteSettings.analytics_id }}",{send_page_view:true});</script>
   {% endif %}
 </body>
 </html>
