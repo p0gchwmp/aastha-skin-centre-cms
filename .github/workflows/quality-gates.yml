@@ -55,6 +55,7 @@ jobs:
         run: |
           node --check tools/audit_accessibility.mjs
           node --check lighthouserc.cjs
+          python -m py_compile tools/summarize_lighthouse.py
           python manage.py check
 
       - name: Build production-like local CMS
@@ -102,6 +103,14 @@ jobs:
         env:
           LHCI_FORM_FACTOR: desktop
         run: npx lhci autorun --config=lighthouserc.cjs
+
+      - name: Publish Lighthouse scorecard
+        if: always()
+        run: |
+          python tools/summarize_lighthouse.py \
+            --root audit-artifacts \
+            --output audit-artifacts/lighthouse-summary.md
+          cat audit-artifacts/lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Include local server log
         if: always()
