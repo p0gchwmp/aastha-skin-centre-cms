@@ -1,0 +1,7 @@
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-stats-section cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <dl class="cms-stats-grid">
+    {% for item in value.items %}<div><dt>{{ item.value }}</dt><dd><strong>{{ item.label }}</strong>{% if item.context %}<span>{{ item.context }}</span>{% endif %}</dd></div>{% endfor %}
+  </dl>
+</section>
