@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from django.contrib.staticfiles import finders
 from django.test import SimpleTestCase
 
 
@@ -12,25 +11,33 @@ class MobileCardCarouselTests(SimpleTestCase):
         cls.base = (
             cls.root / "aastha_cms" / "templates" / "base.html"
         ).read_text(encoding="utf-8")
+        partials = (
+            cls.root / "home" / "templates" / "home" / "partials"
+        )
+        cls.css = (partials / "mobile_card_carousel_styles.html").read_text(
+            encoding="utf-8"
+        )
+        cls.script = (partials / "mobile_card_carousel_script.html").read_text(
+            encoding="utf-8"
+        )
 
-        css_path = finders.find("css/mobile-card-carousels.css")
-        js_path = finders.find("js/mobile-card-carousels.js")
-        cls.assertIsNotNone(cls, css_path)
-        cls.assertIsNotNone(cls, js_path)
-        cls.css = Path(css_path).read_text(encoding="utf-8")
-        cls.script = Path(js_path).read_text(encoding="utf-8")
-
-    def test_assets_are_loaded_once_and_after_mobile_safety_css(self):
-        self.assertEqual(self.base.count("css/mobile-card-carousels.css"), 1)
-        self.assertEqual(self.base.count("js/mobile-card-carousels.js"), 1)
+    def test_inline_partials_are_loaded_once_without_extra_requests(self):
+        style_partial = "home/partials/mobile_card_carousel_styles.html"
+        script_partial = "home/partials/mobile_card_carousel_script.html"
+        self.assertEqual(self.base.count(style_partial), 1)
+        self.assertEqual(self.base.count(script_partial), 1)
+        self.assertNotIn("css/mobile-card-carousels.css", self.base)
+        self.assertNotIn("js/mobile-card-carousels.js", self.base)
         self.assertLess(
             self.base.index("css/mobile-layout-qa.css"),
-            self.base.index("css/mobile-card-carousels.css"),
+            self.base.index(style_partial),
         )
         self.assertLess(
             self.base.index("js/site-visual-cues.js"),
-            self.base.index("js/mobile-card-carousels.js"),
+            self.base.index(script_partial),
         )
+        self.assertIn('<style id="mobile-card-carousel-styles">', self.css)
+        self.assertIn('<script id="mobile-card-carousel-script">', self.script)
 
     def test_only_promotional_and_editorial_grids_are_targeted(self):
         for selector in (
