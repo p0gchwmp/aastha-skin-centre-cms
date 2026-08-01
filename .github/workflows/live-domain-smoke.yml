@@ -67,6 +67,31 @@ jobs:
           echo "Canonical domain did not reach $GITHUB_SHA in time"
           exit 1
 
+      - name: Wait for merged icon-layout release
+        if: github.event_name == 'pull_request' && github.head_ref == 'agent/verify-icon-layout-release'
+        run: |
+          expected_release="4275cff40a17b739900599396797f3b158baa95b"
+          for attempt in $(seq 1 120); do
+            release="$(python - <<'PY'
+          import requests
+          try:
+              payload = requests.get(
+                  "https://www.aasthaskincentre.in/healthz/", timeout=30
+              ).json()
+              print(payload.get("release", ""))
+          except Exception:
+              print("")
+          PY
+          )"
+            echo "Canonical release: ${release:-not-ready}"
+            if [ "$release" = "$expected_release" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Canonical domain did not reach $expected_release in time"
+          exit 1
+
       - name: Verify canonical and Render release parity
         run: |
           canonical_release="$(python - <<'PY'
