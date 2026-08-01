@@ -8,6 +8,13 @@ on:
       - tools/audit_content_list_quality.py
       - seed_data/exact-pages.json.gz.b64
       - .github/workflows/content-list-quality-audit.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - tools/audit_content_list_quality.py
+      - seed_data/exact-pages.json.gz.b64
+      - .github/workflows/content-list-quality-audit.yml
   workflow_dispatch:
 
 jobs:
