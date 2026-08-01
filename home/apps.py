@@ -6,6 +6,7 @@ class HomeConfig(AppConfig):
     name = "home"
 
     def ready(self):
-        # Register snippet-to-page automation only after Django has loaded all
-        # models. Importing here avoids circular imports during migrations.
-        from . import signals  # noqa: F401
+        # Register model automation and editor-only hook extensions after Django
+        # has loaded all models. Importing here avoids circular imports during
+        # migrations while keeping the hook modules explicit and testable.
+        from . import admin_extensions, signals  # noqa: F401
