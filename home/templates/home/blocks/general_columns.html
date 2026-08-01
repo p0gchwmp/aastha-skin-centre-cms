@@ -1,0 +1,19 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-columns-section cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.eyebrow %}<span class="quiet-label">{{ value.eyebrow }}</span>{% endif %}
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <div class="cms-general-columns cms-columns-{{ value.columns }}{% if value.equal_height %} cms-equal-height{% endif %}">
+    {% for item in value.items %}
+      <article class="cms-column-item cms-column-align-{{ item.content_alignment }}">
+        {% if item.image %}<div class="cms-column-media">{% image item.image width-900 loading="lazy" decoding="async" alt=item.image_alt_text %}</div>{% endif %}
+        <div class="cms-column-copy">
+          {% if item.eyebrow %}<span class="quiet-label">{{ item.eyebrow }}</span>{% endif %}
+          {% if item.heading %}<h3>{{ item.heading }}</h3>{% endif %}
+          {% if item.body %}<div class="cms-rich-text">{{ item.body|richtext }}</div>{% endif %}
+          {% if item.buttons %}<div class="cms-inline-actions">{% for button in item.buttons %}<a class="cms-button cms-button-{{ button.style }}" href="{{ button.link.url }}"{% if button.link.new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ button.link.label }}</a>{% endfor %}</div>{% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>

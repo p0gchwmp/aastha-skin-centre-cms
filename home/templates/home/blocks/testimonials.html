@@ -1,0 +1,21 @@
+{% load wagtailimages_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-testimonials cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}">
+  {% if value.eyebrow %}<span class="quiet-label">{{ value.eyebrow }}</span>{% endif %}
+  {% if value.heading %}<h2>{{ value.heading }}</h2>{% endif %}
+  {% if value.introduction %}<p class="lead">{{ value.introduction }}</p>{% endif %}
+  <div class="cms-testimonial-grid cms-columns-{{ value.columns }}">
+    {% for item in value.items %}
+      <figure class="cms-testimonial-card">
+        <blockquote><p>{{ item.quote }}</p></blockquote>
+        <figcaption>
+          {% if item.photo %}<span class="cms-testimonial-photo">{% image item.photo fill-128x128-c100 loading="lazy" decoding="async" alt="" %}</span>{% endif %}
+          <span>
+            {% if item.person_name %}<strong>{{ item.person_name }}</strong>{% endif %}
+            {% if item.role_or_context %}<small>{{ item.role_or_context }}</small>{% endif %}
+          </span>
+        </figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+  {% if value.disclaimer %}<p class="cms-testimonial-disclaimer">{{ value.disclaimer }}</p>{% endif %}
+</section>
