@@ -77,6 +77,32 @@ class GlobalBrandAssetTests(TestCase):
             html=True,
         )
 
+    def test_conventional_favicon_path_redirects_to_selected_asset(self):
+        favicon = self._image("browser-favicon", size=(128, 128))
+        self.site_settings.favicon = favicon
+        self.site_settings.save(update_fields=["favicon"])
+
+        response = self.client.get(
+            "/favicon.ico",
+            HTTP_HOST=self.site.hostname,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, favicon.file.url)
+        self.assertEqual(response["Cache-Control"], "no-cache")
+
+    def test_conventional_favicon_path_is_successful_without_selected_asset(self):
+        self.site_settings.favicon = None
+        self.site_settings.save(update_fields=["favicon"])
+
+        response = self.client.get(
+            "/favicon.ico",
+            HTTP_HOST=self.site.hostname,
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response["Cache-Control"], "no-cache")
+
     def test_empty_logo_keeps_the_existing_placeholder_fallback(self):
         self.site_settings.logo = None
         self.site_settings.save(update_fields=["logo"])
