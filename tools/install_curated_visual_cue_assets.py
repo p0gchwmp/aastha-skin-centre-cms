@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Install curated transparent artwork into the responsive visual-cue set.
 
-The base generator remains the deterministic fallback for every cue. This
-second pass replaces the patient-facing specialist categories with approved
+The base generator restores the original approved core icons. This second pass
+replaces only the newer patient-facing specialist categories with curated
 miniature dermatology artwork, while retaining the same filenames, responsive
 sizes and transparent dark-mode-safe output contract.
 """
@@ -19,10 +19,11 @@ SOURCE_DIR = ROOT / "home" / "static" / "images" / "visual-cue-sources"
 OUTPUT_DIR = ROOT / "home" / "static" / "images" / "visual-cues"
 SIZES = (128, 256, 512)
 
+# Hair deliberately remains in the original approved core set. The curated
+# hair source produced the black/glitched artwork reported on iPhone Safari.
 CURATED_CUES = {
     "acne": "acne-care",
     "pigmentation": "pigmentation-care",
-    "hair": "hair-scalp-care",
     "infection": "fungal-infection-care",
     "allergy": "allergy-inflammatory-rashes",
     "growths": "moles-growths-nails",
