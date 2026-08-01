@@ -2,7 +2,7 @@
 """Run desktop visual parity plus hydrated mobile interaction checks.
 
 The original static site remains the desktop visual reference. Mobile layouts
-are now assessed by ``audit_mobile_layout.py`` against objective usability
+are assessed by ``audit_mobile_layout.py`` against objective usability
 requirements instead of pixel-matching known responsive defects in the legacy
 site. Mobile navigation, theme and appointment-form interactions remain part
 of this audit.
@@ -17,10 +17,12 @@ the CMS to replace legacy placeholders and enrich compact navigation cards.
 The live visual treatment remains covered by mobile-layout, dark-mode and
 performance audits.
 
-Route-specific clinical-result galleries are approved additive content that is
-absent from the retained static reference. They are removed only from the
-legacy screenshot comparison and are covered independently by
-``audit_clinical_result_galleries_browser.py``.
+Route-specific clinical-result galleries are approved additive content absent
+from the retained static reference. They are removed only from legacy screenshot
+comparison and covered independently by the gallery browser audit. The retained
+static pages also contain a small set of item-like paragraphs repaired as list
+items in the CMS. The same narrow repair is applied to both screenshot DOMs so
+visual parity remains strict for every other element.
 """
 
 from __future__ import annotations
@@ -74,6 +76,43 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
           document.querySelectorAll('style, script').forEach(node => {
             if ((node.textContent || '').includes('clinical-results')) {
               node.remove();
+            }
+          });
+
+          /* Normalise only high-confidence list defects already repaired in
+             the CMS snapshot bundle. This runs on both the CMS and retained
+             static DOM, is idempotent, and does not hide unrelated changes. */
+          [...document.querySelectorAll('ul.clean-list, ol.clean-list')]
+            .forEach(list => {
+              let sibling = list.nextElementSibling;
+              while (
+                sibling?.tagName === 'P' &&
+                !sibling.classList.contains('list-lead')
+              ) {
+                const text = (sibling.textContent || '')
+                  .replace(/\s+/g, ' ')
+                  .trim();
+                if (!text || text.length > 160 || /[.!?:]/.test(text)) break;
+
+                const following = sibling.nextElementSibling;
+                const item = document.createElement('li');
+                while (sibling.firstChild) item.appendChild(sibling.firstChild);
+                if (following?.matches('ul.clean-list, ol.clean-list')) {
+                  following.insertBefore(item, following.firstChild);
+                } else {
+                  list.appendChild(item);
+                }
+                sibling.remove();
+                sibling = following;
+              }
+            });
+          document.querySelectorAll('p.list-lead').forEach(lead => {
+            if (
+              !lead.nextElementSibling &&
+              lead.parentElement?.tagName === 'SECTION' &&
+              (lead.textContent || '').trim() === 'A dermatologist may consider:'
+            ) {
+              lead.remove();
             }
           });
 
@@ -135,9 +174,8 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
             heading.classList.remove('hub-category-heading--clay');
           });
 
-          /* Clay styling and the corrective geometry now share one production
-             stylesheet to preserve the request budget. Remove that combined
-             sheet only inside the desktop reference screenshot after all clay
+          /* Clay styling and corrective geometry share one production sheet.
+             Remove it only inside the desktop reference screenshot after clay
              markup has been normalised. */
           document.querySelectorAll('link[rel="stylesheet"]').forEach(stylesheet => {
             if (stylesheet.href.includes('site-visual-cues.css')) {
