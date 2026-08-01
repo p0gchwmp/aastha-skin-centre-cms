@@ -49,6 +49,7 @@ jobs:
           python -m py_compile tools/audit_clinical_result_images.py
           python -m py_compile tools/audit_clinical_result_galleries_browser.py
           python -m py_compile tools/audit_deployed_sites_with_extensions.py
+          python -m py_compile tools/audit_browser_parity_brand_normalized.py
           python manage.py makemigrations --check --dry-run
           python manage.py check
           python manage.py test
@@ -84,7 +85,7 @@ jobs:
 
       - name: Run desktop, mobile and interaction audit
         run: |
-          python tools/audit_browser_parity_hydrated.py \
+          python tools/audit_browser_parity_brand_normalized.py \
             --cms http://127.0.0.1:8000 \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/local-browser
@@ -160,7 +161,7 @@ jobs:
 
       - name: Run deployed desktop, mobile and interaction audit
         run: |
-          python tools/audit_browser_parity_hydrated.py \
+          python tools/audit_browser_parity_brand_normalized.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --static https://aastha-skin-centre-staging.onrender.com \
             --output audit-artifacts/deployed-browser

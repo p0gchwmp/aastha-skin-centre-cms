@@ -96,7 +96,13 @@ class AppointmentFrontendContractTests(SimpleTestCase):
             self.base_template,
         )
         self.assertIn(
-            condition + "\n    <script async",
+            condition + "\n    <script>\n      (() => {",
+            self.base_template,
+        )
+        self.assertIn("document.createElement(\"script\")", self.base_template)
+        self.assertIn("window.setTimeout(loadAnalytics, 4000)", self.base_template)
+        self.assertNotIn(
+            '<script async src="https://www.googletagmanager.com/gtag/js',
             self.base_template,
         )
         self.assertIn('body.dataset.analyticsEnabled !== "true"', self.analytics)

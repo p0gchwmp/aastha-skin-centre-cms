@@ -12,6 +12,7 @@ from home import views as home_views
 
 urlpatterns = [
     path("healthz/", home_views.healthz, name="healthz"),
+    path("favicon.ico", home_views.favicon, name="favicon"),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),

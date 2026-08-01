@@ -48,7 +48,7 @@
     }
     .brand-footer .brand-mark.brand-mark--image {
       max-width: 170px;
-      height: 58px;
+      height: 44px;
     }
     @media (max-width: 700px) {
       .brand .brand-mark.brand-mark--image {
@@ -98,6 +98,7 @@
   <link rel="stylesheet" href="{% static 'css/layout-balance.css' %}">
   <link rel="stylesheet" href="{% static 'css/mobile-layout-qa.css' %}">
   <link rel="stylesheet" href="{% static 'css/site-visual-cues.css' %}">
+  {% include "home/partials/accessibility_contrast_styles.html" %}
   {% block extra_head %}{% endblock %}
 </head>
 <body
@@ -145,8 +146,41 @@
   <script src="{% static 'js/appointment-form-controller.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.home.SiteSettings.analytics_id }}"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","{{ settings.home.SiteSettings.analytics_id }}",{send_page_view:true});</script>
+    <script>
+      (() => {
+        const measurementId = "{{ settings.home.SiteSettings.analytics_id|escapejs }}";
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag("js", new Date());
+        window.gtag("config", measurementId, { send_page_view: true });
+
+        let loaded = false;
+        let scheduled;
+        const loadAnalytics = () => {
+          if (loaded) return;
+          loaded = true;
+          if (scheduled) window.clearTimeout(scheduled);
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+          document.head.appendChild(script);
+        };
+        const scheduleAnalytics = () => {
+          scheduled = window.setTimeout(loadAnalytics, 4000);
+        };
+
+        if (document.readyState === "complete") scheduleAnalytics();
+        else window.addEventListener("load", scheduleAnalytics, { once: true });
+        ["pointerdown", "touchstart", "keydown"].forEach((eventName) => {
+          window.addEventListener(eventName, loadAnalytics, {
+            once: true,
+            passive: true,
+          });
+        });
+      })();
+    </script>
   {% endif %}
 </body>
 </html>

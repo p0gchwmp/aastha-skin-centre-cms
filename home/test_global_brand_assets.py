@@ -57,6 +57,21 @@ class GlobalBrandAssetTests(TestCase):
         self.assertContains(response, f'data-logo-width="{expected.width}"')
         self.assertContains(response, f'data-logo-height="{expected.height}"')
 
+    def test_selected_logo_keeps_footer_geometry_stable(self):
+        logo = self._image("stable-footer-logo")
+        self.site_settings.logo = logo
+        self.site_settings.save(update_fields=["logo"])
+
+        response = self._homepage()
+        html = response.content.decode("utf-8")
+        footer_rule = html.split(
+            ".brand-footer .brand-mark.brand-mark--image {",
+            1,
+        )[1].split("}", 1)[0]
+
+        self.assertIn("height: 44px;", footer_rule)
+        self.assertNotIn("height: 58px;", footer_rule)
+
     def test_selected_favicon_is_rendered_in_document_head(self):
         favicon = self._image("updated-favicon", size=(128, 128))
         self.site_settings.favicon = favicon
@@ -76,6 +91,32 @@ class GlobalBrandAssetTests(TestCase):
             f'<link rel="apple-touch-icon" href="{expected.url}">',
             html=True,
         )
+
+    def test_conventional_favicon_path_redirects_to_selected_asset(self):
+        favicon = self._image("browser-favicon", size=(128, 128))
+        self.site_settings.favicon = favicon
+        self.site_settings.save(update_fields=["favicon"])
+
+        response = self.client.get(
+            "/favicon.ico",
+            HTTP_HOST=self.site.hostname,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, favicon.file.url)
+        self.assertEqual(response["Cache-Control"], "no-cache")
+
+    def test_conventional_favicon_path_is_successful_without_selected_asset(self):
+        self.site_settings.favicon = None
+        self.site_settings.save(update_fields=["favicon"])
+
+        response = self.client.get(
+            "/favicon.ico",
+            HTTP_HOST=self.site.hostname,
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response["Cache-Control"], "no-cache")
 
     def test_empty_logo_keeps_the_existing_placeholder_fallback(self):
         self.site_settings.logo = None
