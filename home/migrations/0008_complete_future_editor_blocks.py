@@ -1,6 +1,6 @@
 # Generated manually for the completed future-proof editor block library.
 
-import home.blocks
+import home.editor_extensions
 import wagtail.fields
 from django.db import migrations
 
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 model_name=model_name,
                 name="layout_additions",
                 field=wagtail.fields.StreamField(
-                    home.blocks.PageAdditionStreamBlock(),
+                    home.editor_extensions.ExtendedPageAdditionStreamBlock(),
                     blank=True,
                     help_text=(
                         "Sections added here appear inside the current exact "
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 model_name=model_name,
                 name="body",
                 field=wagtail.fields.StreamField(
-                    home.blocks.PageBodyStreamBlock(),
+                    home.editor_extensions.ExtendedPageBodyStreamBlock(),
                     blank=True,
                     help_text=(
                         "Complete replacement layout used when Rendering mode "
@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
             model_name="reusablesection",
             name="body",
             field=wagtail.fields.StreamField(
-                home.blocks.PageBodyStreamBlock(),
+                home.editor_extensions.ExtendedPageBodyStreamBlock(),
                 blank=True,
                 use_json_field=True,
             ),
