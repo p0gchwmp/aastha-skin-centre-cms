@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 from urllib.parse import urljoin
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Page, sync_playwright
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -69,9 +69,8 @@ def public_paths() -> list[str]:
     compressed = base64.b64decode(SNAPSHOT_BUNDLE.read_text("ascii"))
     bundle = json.loads(gzip.decompress(compressed).decode("utf-8"))
     paths = sorted(bundle.get("pages", {}))
-    for extra in ("/locations/",):
-        if extra not in paths:
-            paths.append(extra)
+    if "/locations/" not in paths:
+        paths.append("/locations/")
     return paths
 
 
@@ -80,19 +79,146 @@ def safe_name(path: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 
+def prime_visual_images(page: Page) -> None:
+    """Let the site upgrade placeholders, then load its lazy icon images.
+
+    Lazy images below the first viewport are valid production behaviour. The
+    audit explicitly primes them before checking naturalWidth so it can still
+    detect a real 404 without reporting untouched below-the-fold images.
+    """
+    page.wait_for_timeout(350)
+    page.evaluate(
+        r"""async () => {
+          const images = [...document.querySelectorAll('img.message-visual__img')];
+          for (const image of images) image.loading = 'eager';
+          await Promise.all(images.map(image => {
+            if (image.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              const finish = () => resolve();
+              image.addEventListener('load', finish, {once: true});
+              image.addEventListener('error', finish, {once: true});
+              setTimeout(finish, 1800);
+            });
+          }));
+        }"""
+    )
+    page.wait_for_timeout(100)
+
+
+def collect_findings(page: Page) -> dict:
+    return page.evaluate(
+        r"""config => {
+          const visible = element => {
+            const style = getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return style.display !== 'none' &&
+              style.visibility !== 'hidden' &&
+              rect.width > 1 && rect.height > 1;
+          };
+          const viewport = document.documentElement.clientWidth;
+          const errors = [];
+          const overflow = document.documentElement.scrollWidth - viewport;
+          if (overflow > 2) {
+            errors.push(`document overflows viewport by ${Math.round(overflow)}px`);
+          }
+
+          for (const selector of config.gridSelectors) {
+            document.querySelectorAll(selector).forEach((grid, index) => {
+              if (!visible(grid)) return;
+              const rect = grid.getBoundingClientRect();
+              const style = getComputedStyle(grid);
+              if (rect.left < -2 || rect.right > viewport + 2) {
+                errors.push(`${selector}[${index}] crosses viewport (${Math.round(rect.left)}..${Math.round(rect.right)})`);
+              }
+
+              let ancestor = grid.parentElement;
+              let comparisonWidth = ancestor?.getBoundingClientRect().width || rect.width;
+              while (ancestor && ancestor !== document.body) {
+                const width = ancestor.getBoundingClientRect().width;
+                if (width > rect.width + 18 && width <= viewport + 4) {
+                  comparisonWidth = width;
+                  break;
+                }
+                ancestor = ancestor.parentElement;
+              }
+              if (comparisonWidth > 0 && rect.width < comparisonWidth * 0.78) {
+                errors.push(`${selector}[${index}] uses only ${Math.round(rect.width)}px of ${Math.round(comparisonWidth)}px available`);
+              }
+
+              if (style.display === 'grid') {
+                const columns = style.gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length;
+                if (viewport <= 540 && columns > 1) {
+                  errors.push(`${selector}[${index}] retains ${columns} columns on a phone`);
+                }
+              }
+
+              [...grid.children].filter(visible).forEach((child, childIndex) => {
+                const childRect = child.getBoundingClientRect();
+                if (childRect.left < -2 || childRect.right > viewport + 2) {
+                  errors.push(`${selector}[${index}] child ${childIndex} crosses viewport`);
+                }
+                if (rect.width > 0 && childRect.width < rect.width * 0.78) {
+                  errors.push(`${selector}[${index}] child ${childIndex} is only ${Math.round(childRect.width)}px within a ${Math.round(rect.width)}px grid`);
+                }
+              });
+            });
+          }
+
+          for (const check of config.textChecks) {
+            document.querySelectorAll(check.selector).forEach((element, index) => {
+              if (!visible(element)) return;
+              const rect = element.getBoundingClientRect();
+              const style = getComputedStyle(element);
+              const fontSize = Number.parseFloat(style.fontSize);
+              const range = document.createRange();
+              range.selectNodeContents(element);
+              const textRect = range.getBoundingClientRect();
+              if (fontSize > check.max_px + .5) {
+                errors.push(`${check.selector}[${index}] inflated to ${fontSize.toFixed(1)}px`);
+              }
+              if (rect.left < -2 || rect.right > viewport + 2) {
+                errors.push(`${check.selector}[${index}] box crosses viewport`);
+              }
+              if (textRect.left < -2 || textRect.right > viewport + 2) {
+                errors.push(`${check.selector}[${index}] text crosses viewport`);
+              }
+              if (element.scrollWidth > element.clientWidth + 2) {
+                errors.push(`${check.selector}[${index}] clips ${element.scrollWidth - element.clientWidth}px of text`);
+              }
+            });
+          }
+
+          document.querySelectorAll('.message-visual').forEach((element, index) => {
+            if (!visible(element)) return;
+            const style = getComputedStyle(element);
+            if (style.filter !== 'none') {
+              errors.push(`.message-visual[${index}] has container filter ${style.filter}`);
+            }
+            const image = element.querySelector('img.message-visual__img');
+            if (image && (!image.complete || image.naturalWidth < 1)) {
+              errors.push(`.message-visual[${index}] image did not load`);
+            }
+          });
+
+          return {
+            viewport,
+            documentWidth: document.documentElement.scrollWidth,
+            errors: [...new Set(errors)]
+          };
+        }""",
+        {"gridSelectors": GRID_SELECTORS, "textChecks": TEXT_CHECKS},
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--site", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
-        "--engine",
-        choices=("chromium", "webkit"),
-        default="chromium",
+        "--engine", choices=("chromium", "webkit"), default="chromium"
     )
     parser.add_argument(
-        "--color-scheme",
-        choices=("light", "dark"),
-        default="light",
+        "--color-scheme", choices=("light", "dark"), default="light"
     )
     args = parser.parse_args()
 
@@ -131,113 +257,8 @@ def main() -> int:
                             "transition:none!important;scroll-behavior:auto!important}"
                         )
                     )
-                    page.wait_for_timeout(300)
-                    findings = page.evaluate(
-                        """config => {
-                          const visible = element => {
-                            const style = getComputedStyle(element);
-                            const rect = element.getBoundingClientRect();
-                            return style.display !== 'none' &&
-                              style.visibility !== 'hidden' &&
-                              rect.width > 1 && rect.height > 1;
-                          };
-                          const viewport = document.documentElement.clientWidth;
-                          const errors = [];
-                          const overflow = document.documentElement.scrollWidth - viewport;
-                          if (overflow > 2) {
-                            errors.push(`document overflows viewport by ${Math.round(overflow)}px`);
-                          }
-
-                          for (const selector of config.gridSelectors) {
-                            document.querySelectorAll(selector).forEach((grid, index) => {
-                              if (!visible(grid)) return;
-                              const rect = grid.getBoundingClientRect();
-                              const style = getComputedStyle(grid);
-                              if (rect.left < -2 || rect.right > viewport + 2) {
-                                errors.push(`${selector}[${index}] crosses viewport (${Math.round(rect.left)}..${Math.round(rect.right)})`);
-                              }
-
-                              let ancestor = grid.parentElement;
-                              let comparisonWidth = ancestor?.getBoundingClientRect().width || rect.width;
-                              while (ancestor && ancestor !== document.body) {
-                                const width = ancestor.getBoundingClientRect().width;
-                                if (width > rect.width + 18 && width <= viewport + 4) {
-                                  comparisonWidth = width;
-                                  break;
-                                }
-                                ancestor = ancestor.parentElement;
-                              }
-                              if (comparisonWidth > 0 && rect.width < comparisonWidth * 0.78) {
-                                errors.push(`${selector}[${index}] uses only ${Math.round(rect.width)}px of ${Math.round(comparisonWidth)}px available`);
-                              }
-
-                              if (style.display === 'grid') {
-                                const columns = style.gridTemplateColumns
-                                  .trim().split(/\s+/).filter(Boolean).length;
-                                if (viewport <= 540 && columns > 1) {
-                                  errors.push(`${selector}[${index}] retains ${columns} columns on a phone`);
-                                }
-                              }
-
-                              [...grid.children].filter(visible).forEach((child, childIndex) => {
-                                const childRect = child.getBoundingClientRect();
-                                if (childRect.left < -2 || childRect.right > viewport + 2) {
-                                  errors.push(`${selector}[${index}] child ${childIndex} crosses viewport`);
-                                }
-                                if (rect.width > 0 && childRect.width < rect.width * 0.78) {
-                                  errors.push(`${selector}[${index}] child ${childIndex} is only ${Math.round(childRect.width)}px within a ${Math.round(rect.width)}px grid`);
-                                }
-                              });
-                            });
-                          }
-
-                          for (const check of config.textChecks) {
-                            document.querySelectorAll(check.selector).forEach((element, index) => {
-                              if (!visible(element)) return;
-                              const rect = element.getBoundingClientRect();
-                              const style = getComputedStyle(element);
-                              const fontSize = Number.parseFloat(style.fontSize);
-                              const range = document.createRange();
-                              range.selectNodeContents(element);
-                              const textRect = range.getBoundingClientRect();
-                              if (fontSize > check.max_px + .5) {
-                                errors.push(`${check.selector}[${index}] inflated to ${fontSize.toFixed(1)}px`);
-                              }
-                              if (rect.left < -2 || rect.right > viewport + 2) {
-                                errors.push(`${check.selector}[${index}] box crosses viewport`);
-                              }
-                              if (textRect.left < -2 || textRect.right > viewport + 2) {
-                                errors.push(`${check.selector}[${index}] text crosses viewport`);
-                              }
-                              if (element.scrollWidth > element.clientWidth + 2) {
-                                errors.push(`${check.selector}[${index}] clips ${element.scrollWidth - element.clientWidth}px of text`);
-                              }
-                            });
-                          }
-
-                          document.querySelectorAll('.message-visual').forEach((element, index) => {
-                            if (!visible(element)) return;
-                            const style = getComputedStyle(element);
-                            if (style.filter !== 'none') {
-                              errors.push(`.message-visual[${index}] has container filter ${style.filter}`);
-                            }
-                            const image = element.querySelector('img.message-visual__img');
-                            if (image && (!image.complete || image.naturalWidth < 1)) {
-                              errors.push(`.message-visual[${index}] image did not load`);
-                            }
-                          });
-
-                          return {
-                            viewport,
-                            documentWidth: document.documentElement.scrollWidth,
-                            errors: [...new Set(errors)]
-                          };
-                        }""",
-                        {
-                            "gridSelectors": GRID_SELECTORS,
-                            "textChecks": TEXT_CHECKS,
-                        },
-                    )
+                    prime_visual_images(page)
+                    findings = collect_findings(page)
                     page_result.update(
                         {
                             "viewport_width": findings["viewport"],
@@ -272,8 +293,7 @@ def main() -> int:
         "results": results,
     }
     (args.output / "mobile-layout-report.json").write_text(
-        json.dumps(report, indent=2),
-        encoding="utf-8",
+        json.dumps(report, indent=2), encoding="utf-8"
     )
 
     if total_errors:
