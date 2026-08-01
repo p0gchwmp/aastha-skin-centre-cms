@@ -1,0 +1,42 @@
+name: Materialise orphaned list repairs
+
+on:
+  push:
+    branches:
+      - agent/fix-list-quality
+    paths:
+      - tools/materialise_orphaned_list_repairs.py
+      - .github/workflows/materialise-orphaned-list-repairs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-list-quality
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Repair orphaned list items
+        run: python tools/materialise_orphaned_list_repairs.py
+
+      - name: Commit repaired snapshot bundle
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add seed_data/exact-pages.json.gz.b64
+          if git diff --cached --quiet; then
+            echo "All orphaned list items are already repaired."
+            exit 0
+          fi
+          git commit -m "Repair orphaned list items across exact pages"
+          git push origin HEAD:agent/fix-list-quality
