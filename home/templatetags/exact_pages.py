@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from html import escape
+from html import escape, unescape
 import re
 from urllib.parse import urlsplit
 
@@ -19,6 +19,18 @@ DECODING_ATTR = re.compile(r"\sdecoding\s*=\s*([\"']).*?\1", re.IGNORECASE)
 FETCHPRIORITY_ATTR = re.compile(
     r"\sfetchpriority\s*=\s*([\"']).*?\1", re.IGNORECASE
 )
+LIST_THEN_PARAGRAPH = re.compile(
+    r'(?P<list><(?P<tag>ul|ol)\b[^>]*\bclass=(?P<quote>["\'])'
+    r'[^"\']*\bclean-list\b[^"\']*(?P=quote)[^>]*>.*?</(?P=tag)>)'
+    r'(?P<gap>\s*)<p(?P<attrs>[^>]*)>(?P<text>[^<]+)</p>',
+    re.IGNORECASE | re.DOTALL,
+)
+NEXT_CLEAN_LIST = re.compile(
+    r'(?P<gap>\s*)(?P<open><(?:ul|ol)\b[^>]*\bclass=(?:["\'])'
+    r'[^"\']*\bclean-list\b[^"\']*(?:["\'])[^>]*>)',
+    re.IGNORECASE,
+)
+DANGLING_LIST_LEAD = '<p class="list-lead">A dermatologist may consider:</p>'
 
 
 def normalise_path(value: str) -> str:
@@ -39,6 +51,63 @@ def _append_img_attributes(tag: str, attributes: str) -> str:
     if tag.endswith("/>"):
         return f"{tag[:-2]}{attributes} />"
     return f"{tag[:-1]}{attributes}>"
+
+
+def _looks_like_list_item(value: str) -> bool:
+    text = re.sub(r"\s+", " ", unescape(value)).strip()
+    return bool(text) and len(text) <= 160 and not re.search(r"[.!?:]", text)
+
+
+def repair_orphaned_list_items(source: str) -> str:
+    """Repair high-confidence list items left as adjacent paragraphs.
+
+    The original snapshots contained a small set of short, punctuation-free
+    phrases immediately after ``.clean-list`` elements. They are visually and
+    semantically list items, but the persistent production database may still
+    contain the older paragraph markup. This narrow, idempotent rewrite keeps
+    ordinary prose untouched while repairing both fresh and existing installs.
+    """
+
+    output = source
+    while True:
+        match = LIST_THEN_PARAGRAPH.search(output)
+        changed = False
+        while match:
+            attrs = match.group("attrs") or ""
+            text_html = match.group("text")
+            if "list-lead" not in attrs and _looks_like_list_item(text_html):
+                remainder = output[match.end():]
+                next_list = NEXT_CLEAN_LIST.match(remainder)
+                item = f"<li>{text_html}</li>"
+                if next_list:
+                    replacement = (
+                        match.group("list")
+                        + match.group("gap")
+                        + next_list.group("gap")
+                        + next_list.group("open")
+                        + item
+                    )
+                    output = (
+                        output[:match.start()]
+                        + replacement
+                        + output[match.end() + next_list.end():]
+                    )
+                else:
+                    list_html = match.group("list")
+                    closing = f"</{match.group('tag')}>"
+                    replacement = list_html[:-len(closing)] + item + closing
+                    output = (
+                        output[:match.start()]
+                        + replacement
+                        + output[match.end():]
+                    )
+                changed = True
+                break
+            match = LIST_THEN_PARAGRAPH.search(output, match.end())
+        if not changed:
+            break
+
+    return output.replace(DANGLING_LIST_LEAD, "", 1)
 
 
 def optimise_image_delivery(source: str) -> str:
@@ -116,7 +185,7 @@ def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
         ("within 10 days", f"within {follow_up_days} days"),
         ("10-day period", f"{follow_up_days}-day period"),
     ]
-    output = source
+    output = repair_orphaned_list_items(source)
     for current, replacement in replacements:
         output = output.replace(current, _safe(replacement))
     return optimise_image_delivery(output)
