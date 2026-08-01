@@ -3,7 +3,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 
-from home.clinical_results import gallery_markup
+from home.clinical_results_local import gallery_markup
 
 register = template.Library()
 
