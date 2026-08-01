@@ -12,28 +12,44 @@
     'complete',
     'plan',
     'laser',
-    'clinical'
+    'clinical',
+    'allergy',
+    'growths',
+    'scars',
+    'children',
+    'dermatosurgery',
+    'ageing',
+    'infection'
   ]);
 
-  /* These labels are deliberately matched from the nearest heading only.
-     Never inspect an entire category or card collection: child links such as
-     "Laser hair reduction" must not turn the parent "Hair and scalp" icon
-     into the laser artwork. */
+  /* Match only the nearest heading. Child links must never change the meaning
+     of a parent section. */
   const EXACT_LABEL_CUES = new Map([
     ['medical dermatology', 'clinical'],
     ['procedural and aesthetic care', 'laser'],
-    ['acne scars and resurfacing', 'acne'],
+    ['acne scars and resurfacing', 'scars'],
     ['pigmentation and laser treatments', 'pigmentation'],
     ['hair and scalp treatments', 'hair'],
-    ['aesthetic and anti ageing', 'complete'],
-    ['minor procedures and dermatosurgery', 'diagnosis'],
+    ['aesthetic and anti ageing', 'ageing'],
+    ['aesthetic and anti aging', 'ageing'],
+    ['minor procedures and dermatosurgery', 'dermatosurgery'],
+    ['minor procedures and dermato surgery', 'dermatosurgery'],
     ['doctor led care', 'plan'],
     ['diagnosis first', 'diagnosis'],
-    ['fungal and recurrent infections', 'clinical'],
-    ['allergy eczema and itching', 'complete'],
+    ['fungal and recurrent infections', 'infection'],
+    ['allergy eczema and itching', 'allergy'],
+    ['itching allergy and inflammatory rashes', 'allergy'],
+    ['moles growths nails and minor procedures', 'growths'],
+    ['scars texture and skin quality', 'scars'],
+    ['childrens dermatology', 'children'],
+    ['skin quality and ageing', 'ageing'],
+    ['skin quality and aging', 'ageing'],
+    ['acne pimples and scars', 'acne'],
     ['acne pimples and breakouts', 'acne'],
+    ['pigmentation and uneven tone', 'pigmentation'],
     ['pigmentation and colour changes', 'pigmentation'],
     ['pigmentation and color changes', 'pigmentation'],
+    ['hair fall and scalp concerns', 'hair'],
     ['hair scalp and unwanted hair', 'hair'],
     ['advanced laser care', 'laser'],
     ['visit our clinics in jammu', 'locations'],
@@ -46,8 +62,61 @@
 
   const LABEL_RULES = [
     {
+      cue: 'allergy',
+      terms: [
+        'allergy', 'allergic rash', 'inflammatory rash', 'itching',
+        'eczema', 'contact dermatitis', 'urticaria', 'hives'
+      ]
+    },
+    {
+      cue: 'growths',
+      terms: [
+        'moles growths', 'skin growth', 'nail concern', 'nail problem',
+        'corn removal', 'skin tag', 'sebaceous cyst', 'xanthelasma'
+      ]
+    },
+    {
+      cue: 'scars',
+      terms: [
+        'scar', 'scars', 'texture', 'resurfacing', 'keloid',
+        'chickenpox scar', 'raised scar'
+      ]
+    },
+    {
+      cue: 'children',
+      terms: [
+        'childrens dermatology', 'children dermatology',
+        'paediatric dermatology', 'pediatric dermatology',
+        'skin care for children'
+      ]
+    },
+    {
+      cue: 'dermatosurgery',
+      terms: [
+        'dermatosurgery', 'dermato surgery', 'minor procedure',
+        'mole removal', 'wart removal', 'skin tag removal', 'nail surgery'
+      ]
+    },
+    {
+      cue: 'ageing',
+      terms: [
+        'skin quality and ageing', 'skin quality and aging', 'anti ageing',
+        'anti aging', 'fine lines', 'facial volume', 'firmness',
+        'botulinum toxin', 'dermal fillers', 'hydrafacial', 'medifacial'
+      ]
+    },
+    {
+      cue: 'infection',
+      terms: [
+        'fungal infection', 'skin infection', 'recurrent infection',
+        'ringworm', 'jock itch', 'athletes foot', 'nail fungus'
+      ]
+    },
+    {
       cue: 'acne',
-      terms: ['acne', 'pimple', 'breakout', 'blackhead', 'whitehead', 'comedone', 'acne scar']
+      terms: [
+        'acne', 'pimple', 'breakout', 'blackhead', 'whitehead', 'comedone'
+      ]
     },
     {
       cue: 'pigmentation',
@@ -67,42 +136,43 @@
     {
       cue: 'laser',
       terms: [
-        'laser hair reduction', 'laser treatment', 'q switched', 'fractional co2',
-        'ipl', 'photofacial', 'tattoo removal', 'mnrf', 'radiofrequency',
-        'rf tightening', 'hifu', 'energy based', 'procedural and aesthetic'
+        'laser hair reduction', 'laser treatment', 'q switched',
+        'fractional co2', 'ipl', 'photofacial', 'tattoo removal',
+        'mnrf', 'radiofrequency', 'rf tightening', 'hifu',
+        'energy based', 'procedural and aesthetic'
       ]
     },
     {
       cue: 'clinical',
       terms: [
-        'medical dermatology', 'fungal infection', 'skin infection', 'eczema',
-        'dermatitis', 'skin allergy', 'psoriasis', 'vitiligo', 'urticaria',
-        'hives', 'rosacea', 'scabies', 'paediatric dermatology',
-        'pediatric dermatology', 'clinical skin care'
+        'medical dermatology', 'psoriasis', 'vitiligo', 'rosacea',
+        'scabies', 'clinical skin care'
       ]
     },
     {
       cue: 'diagnosis',
       terms: [
-        'diagnosis', 'medical assessment', 'clinical assessment', 'skin check',
-        'consultation', 'dermatoscopy', 'minor procedures', 'dermatosurgery'
+        'diagnosis', 'medical assessment', 'clinical assessment',
+        'skin check', 'consultation', 'dermatoscopy'
       ]
     },
     {
       cue: 'experience',
-      terms: ['20 years', 'years of experience', 'experience in medicine', 'clinical experience']
+      terms: [
+        '20 years', 'years of experience', 'experience in medicine',
+        'clinical experience'
+      ]
     },
     {
       cue: 'locations',
-      terms: ['two clinics', 'clinic location', 'branches', 'karan nagar', 'paloura', 'directions']
+      terms: [
+        'two clinics', 'clinic location', 'branches',
+        'karan nagar', 'paloura', 'directions'
+      ]
     },
     {
       cue: 'complete',
-      terms: [
-        'complete care', 'comprehensive care', 'aesthetic and anti ageing',
-        'aesthetic and anti aging', 'medical and aesthetic', 'botulinum toxin',
-        'dermal fillers', 'hydrafacial', 'medifacial'
-      ]
+      terms: ['complete care', 'comprehensive care', 'medical and aesthetic']
     },
     {
       cue: 'plan',
@@ -167,7 +237,9 @@
     }
   };
 
-  const isExcluded = element => Boolean(!element || element.closest(EXCLUDED_SELECTOR));
+  const isExcluded = element => Boolean(
+    !element || element.closest(EXCLUDED_SELECTOR)
+  );
 
   const headingLabel = element => {
     const explicit = normalise(element.dataset.visualCue || '');
@@ -199,7 +271,9 @@
     ].join(','));
 
     const heading = headingScope?.querySelector('h1, h2, h3, h4, strong');
-    return normalise(heading?.textContent || element.getAttribute('aria-label') || '');
+    return normalise(
+      heading?.textContent || element.getAttribute('aria-label') || ''
+    );
   };
 
   const cueForLabel = label => {
@@ -210,7 +284,9 @@
     const exact = EXACT_LABEL_CUES.get(text);
     if (exact) return exact;
 
-    const match = LABEL_RULES.find(rule => rule.terms.some(term => text.includes(term)));
+    const match = LABEL_RULES.find(
+      rule => rule.terms.some(term => text.includes(term))
+    );
     return match?.cue || '';
   };
 
@@ -250,14 +326,18 @@
 
   const displaySizeFor = element => {
     if (element.matches('.trust-icon')) return '42px';
-    if (element.matches('.hub-icon')) return '(max-width: 700px) 46px, 54px';
+    if (element.matches('.hub-icon')) {
+      return '(max-width: 700px) 46px, 54px';
+    }
     if (element.matches('.icon-bubble')) return '54px';
     return '48px';
   };
 
   const buildImage = (element, cue, assets) => {
     const asset = assets[cue];
-    if (!asset?.['128'] || !asset?.['256'] || !asset?.['512']) return null;
+    if (!asset?.['128'] || !asset?.['256'] || !asset?.['512']) {
+      return null;
+    }
 
     const image = document.createElement('img');
     image.className = 'message-visual__img';
@@ -280,7 +360,9 @@
   };
 
   const applyCue = (element, cue, assets) => {
-    if (!element || !CUE_NAMES.has(cue) || isExcluded(element)) return false;
+    if (!element || !CUE_NAMES.has(cue) || isExcluded(element)) {
+      return false;
+    }
 
     const image = buildImage(element, cue, assets);
     if (!image) return false;
@@ -296,12 +378,22 @@
     element.setAttribute('role', 'presentation');
     element.replaceChildren(image);
 
-    image.addEventListener('error', () => restoreOriginal(element), { once: true });
+    image.addEventListener(
+      'error',
+      () => restoreOriginal(element),
+      { once: true }
+    );
     return true;
   };
 
   const installTrustRibbon = assets => {
-    const cues = ['diagnosis', 'experience', 'locations', 'complete', 'plan'];
+    const cues = [
+      'diagnosis',
+      'experience',
+      'locations',
+      'complete',
+      'plan'
+    ];
     document.querySelectorAll('.trust-item .trust-icon').forEach((icon, index) => {
       const cue = cues[index];
       if (cue) applyCue(icon, cue, assets);
@@ -310,7 +402,12 @@
 
   const installExistingPlaceholders = assets => {
     document.querySelectorAll(PLACEHOLDER_SELECTOR).forEach(element => {
-      if (element.classList.contains('message-visual') || isExcluded(element)) return;
+      if (
+        element.classList.contains('message-visual') ||
+        isExcluded(element)
+      ) {
+        return;
+      }
       if (element.matches('.trust-item .trust-icon')) return;
 
       const requested = normalise(element.dataset.visualCue || '');
