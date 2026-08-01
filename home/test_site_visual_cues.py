@@ -66,6 +66,9 @@ class SiteVisualCueTests(SimpleTestCase):
         self.generator = (
             self.root / "tools" / "build_visual_cue_assets.py"
         ).read_text(encoding="utf-8")
+        self.dark_mode_audit = (
+            self.root / "tools" / "audit_dark_mode_readability.py"
+        ).read_text(encoding="utf-8")
 
     def test_global_template_loads_one_visual_system(self):
         self.assertEqual(
@@ -205,6 +208,21 @@ class SiteVisualCueTests(SimpleTestCase):
         self.assertIn("height: auto", self.stylesheet)
         self.assertIn("text-align: left", self.stylesheet)
         self.assertIn("padding: 15px 17px", self.stylesheet)
+
+    def test_dark_mode_audit_validates_decorative_images_not_text_contrast(self):
+        self.assertIn("DECORATIVE_ICON_CHECKS", self.dark_mode_audit)
+        self.assertIn(
+            '".trust-ribbon .trust-icon.message-visual"',
+            self.dark_mode_audit,
+        )
+        self.assertIn('"aria-hidden"', self.dark_mode_audit)
+        self.assertIn('"presentation role"', self.dark_mode_audit)
+        self.assertIn('"transparent background"', self.dark_mode_audit)
+        self.assertIn('"image loaded"', self.dark_mode_audit)
+        self.assertNotIn(
+            '("/", ".trust-ribbon .trust-icon", 4.5)',
+            self.dark_mode_audit,
+        )
 
     def test_visual_css_keeps_slot_sizes_without_card_reflow(self):
         for size in ("54px", "42px", "46px"):
