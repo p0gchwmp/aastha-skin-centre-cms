@@ -1,4 +1,4 @@
-"""Safe automation for newly published clinic and doctor records."""
+"""Safe automation for published clinic and doctor records."""
 
 from __future__ import annotations
 
@@ -31,11 +31,14 @@ def _parent_for(index_kind: str):
     return index or HomePage.objects.first()
 
 
-def _unique_child_slug(parent, preferred: str) -> str:
+def _unique_child_slug(parent, preferred: str, *, exclude_page=None) -> str:
     base = slugify(preferred)[:220] or "profile"
     candidate = base
     suffix = 2
-    while parent.get_children().filter(slug=candidate).exists():
+    siblings = parent.get_children()
+    if exclude_page is not None:
+        siblings = siblings.exclude(pk=exclude_page.pk)
+    while siblings.filter(slug=candidate).exists():
         candidate = f"{base[:210]}-{suffix}"
         suffix += 1
     return candidate
@@ -48,12 +51,57 @@ def _site_tree_is_initialized() -> bool:
     return bool(home and home.get_children().exists())
 
 
+def _record_introduction(instance) -> str:
+    if isinstance(instance, Doctor):
+        return instance.short_bio
+    return instance.address
+
+
+def _record_image(instance):
+    if isinstance(instance, Doctor):
+        return instance.photo
+    return instance.hero_image
+
+
+def _sync_linked_pages(instance) -> bool:
+    """Synchronise pages that explicitly remain connected to their record.
+
+    Published page URLs stay stable. A draft page may follow a corrected record
+    slug because it has not yet accumulated public links or search history.
+    """
+
+    linked_pages = list(getattr(instance, "pages").all().specific())
+    if not linked_pages:
+        return False
+
+    for page in linked_pages:
+        if not getattr(page, "auto_sync_from_record", False):
+            continue
+        page.title = instance.name
+        page.draft_title = instance.name
+        page.introduction = _record_introduction(instance)
+        image = _record_image(instance)
+        if image is not None:
+            page.hero_image = image
+        if not page.live:
+            parent = page.get_parent()
+            page.slug = _unique_child_slug(
+                parent,
+                instance.slug or instance.name,
+                exclude_page=page,
+            )
+        revision = page.save_revision()
+        if page.live:
+            revision.publish()
+    return True
+
+
 def _create_profile_page(*, instance, page_model, relation_name, index_kind):
-    if not instance.live or not instance.create_public_page:
+    if not instance.live:
         return
-    if getattr(instance, "pages").exists():
+    if _sync_linked_pages(instance):
         return
-    if not _site_tree_is_initialized():
+    if not instance.create_public_page or not _site_tree_is_initialized():
         return
 
     parent = _parent_for(index_kind)
@@ -66,6 +114,12 @@ def _create_profile_page(*, instance, page_model, relation_name, index_kind):
     matching = page_model.objects.child_of(parent).filter(slug=instance.slug).first()
     if matching is not None and getattr(matching, relation_name + "_id") is None:
         setattr(matching, relation_name, instance)
+        matching.title = instance.name
+        matching.draft_title = instance.name
+        matching.introduction = _record_introduction(instance)
+        image = _record_image(instance)
+        if image is not None:
+            matching.hero_image = image
         revision = matching.save_revision()
         if instance.publish_public_page_automatically:
             revision.publish()
@@ -74,18 +128,15 @@ def _create_profile_page(*, instance, page_model, relation_name, index_kind):
     page = page_model(
         title=instance.name,
         slug=_unique_child_slug(parent, instance.slug or instance.name),
-        introduction=(
-            instance.short_bio if isinstance(instance, Doctor) else instance.address
-        ),
+        introduction=_record_introduction(instance),
         layout_mode="builder",
         live=False,
         has_unpublished_changes=True,
     )
     setattr(page, relation_name, instance)
-    if getattr(instance, "hero_image", None):
-        page.hero_image = instance.hero_image
-    elif getattr(instance, "photo", None):
-        page.hero_image = instance.photo
+    image = _record_image(instance)
+    if image is not None:
+        page.hero_image = image
 
     parent.add_child(instance=page)
     revision = page.save_revision()
