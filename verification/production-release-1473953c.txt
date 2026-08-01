@@ -1,0 +1,6 @@
+Disposable production verification marker.
+
+Expected release:
+1473953c886e6bcc6ca5401959f04bff1c7eec92
+
+This branch exists only to trigger the live-domain smoke workflow and must be closed without merging.
