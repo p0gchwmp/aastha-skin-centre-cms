@@ -19,86 +19,76 @@ class VisualLayoutRegressionTests(SimpleTestCase):
             root / "tools" / "audit_browser_parity_hydrated.py"
         ).read_text(encoding="utf-8")
 
-    def test_corrections_use_existing_asset_requests(self):
+    def test_rebuild_uses_the_existing_css_and_js_request_budget(self):
         self.assertEqual(self.base_template.count("css/site-visual-cues.css"), 1)
         self.assertEqual(self.base_template.count("js/site-visual-cues.js"), 1)
-        self.assertNotIn("visual_layout_fixes_css.html", self.base_template)
-        self.assertNotIn("visual_layout_fixes_js.html", self.base_template)
         self.assertNotIn("site-visual-layout-fixes", self.base_template)
-        self.assertNotIn("css/site-visual-layout-fixes.css", self.base_template)
-        self.assertNotIn("js/site-visual-layout-fixes.js", self.base_template)
-        self.assertIn("Visual-cue layout corrections", self.stylesheet)
-        self.assertIn("Semantic correction pass", self.script)
+        self.assertIn("Aastha semantic visual cues", self.stylesheet)
+        self.assertIn("EXACT_LABEL_CUES", self.script)
 
-    def test_repetitive_examples_receive_distinct_semantic_cues(self):
+    def test_known_repetitive_sections_receive_distinct_relevant_cues(self):
         expected_pairs = {
+            "medical dermatology": "clinical",
+            "procedural and aesthetic care": "laser",
+            "hair and scalp treatments": "hair",
+            "aesthetic and anti ageing": "complete",
+            "acne scars and resurfacing": "acne",
+            "pigmentation and laser treatments": "pigmentation",
             "doctor led care": "plan",
             "diagnosis first": "diagnosis",
             "fungal and recurrent infections": "clinical",
             "allergy eczema and itching": "complete",
-            "acne pimples and breakouts": "acne",
-            "pigmentation and colour changes": "pigmentation",
-            "hair scalp and unwanted hair": "hair",
         }
         for phrase, cue in expected_pairs.items():
             with self.subTest(phrase=phrase, cue=cue):
-                self.assertIn(f"'{phrase}'", self.script)
-                self.assertIn(f"cue: '{cue}'", self.script)
+                self.assertIn(f"['{phrase}', '{cue}']", self.script)
 
-        self.assertIn(
-            "const PROCESS_FALLBACKS = ['plan', 'diagnosis', 'complete', 'experience']",
-            self.script,
-        )
-        self.assertIn("visuals.slice(1)", self.script)
+    def test_heading_only_matching_prevents_child_links_from_hijacking_parent_icon(self):
+        self.assertIn("const headingLabel", self.script)
+        self.assertIn(".hub-category-heading", self.script)
+        self.assertIn("querySelector('h1, h2, h3, h4, strong')", self.script)
+        self.assertNotIn("owner.textContent", self.script)
+        self.assertNotIn("context.textContent", self.script)
 
-    def test_hyphenated_headings_are_normalised_before_matching(self):
-        self.assertIn(".replace(/[^a-z0-9\\s]/g, ' ')", self.script)
-        self.assertIn("'doctor led care'", self.script)
-
-    def test_hub_icons_reserve_space_and_stack_on_mobile(self):
-        self.assertIn(".hub-category-heading--clay", self.stylesheet)
-        self.assertIn(
-            "grid-template-columns: 96px minmax(0, 1fr) !important",
-            self.stylesheet,
-        )
-        self.assertIn("@media (max-width: 720px)", self.stylesheet)
-        self.assertIn(
-            "grid-template-columns: minmax(0, 1fr) !important",
-            self.stylesheet,
-        )
-        self.assertIn("hubHeading.insertBefore", self.script)
-
-    def test_managed_cards_never_use_overlay_positioning(self):
-        for marker in (
-            "position: relative !important",
-            "inset: auto !important",
-            "float: none !important",
-            "align-self: flex-start !important",
-            "background: transparent !important",
+    def test_icons_never_create_or_reposition_layout_nodes(self):
+        for forbidden in (
+            "createElement('span')",
+            "insertBefore",
+            "visual-cue-card--managed",
+            "hub-category-heading--clay",
+            "owner.classList.add",
         ):
-            self.assertIn(marker, self.stylesheet)
-        self.assertIn("owner.insertBefore(host, owner.firstElementChild)", self.script)
+            self.assertNotIn(forbidden, self.script)
 
-    def test_failed_assets_disappear_instead_of_leaving_blank_boxes(self):
-        self.assertIn("message-visual--failed", self.script)
-        self.assertIn("host.setAttribute('hidden', '')", self.script)
-        self.assertIn(".message-visual[hidden]", self.stylesheet)
+    def test_hub_icons_keep_the_static_54px_desktop_and_46px_mobile_slot(self):
+        self.assertIn(".hub-icon.message-visual", self.stylesheet)
+        self.assertIn("width: 54px !important", self.stylesheet)
+        self.assertIn("height: 54px !important", self.stylesheet)
+        self.assertIn("@media (max-width: 700px)", self.stylesheet)
+        self.assertIn("width: 46px !important", self.stylesheet)
+        self.assertNotIn("grid-template-columns: 96px", self.stylesheet)
 
-    def test_desktop_about_and_clinic_panels_are_equal_height(self):
-        for selector in (
+    def test_visual_layer_does_not_change_card_or_clinic_geometry(self):
+        for forbidden in (
             ".about-story-grid",
             ".clinic-location-grid",
             ".location-contact-grid",
             ".hours-grid",
             ".location-pro-grid",
             ".clinic-choice-grid",
+            "grid-auto-rows",
+            "height: 100% !important",
+            "margin-top: auto !important",
+            "display: flex !important",
         ):
-            self.assertIn(selector, self.stylesheet)
-        self.assertIn("grid-auto-rows: 1fr", self.stylesheet)
-        self.assertIn("height: 100% !important", self.stylesheet)
-        self.assertIn("margin-top: auto !important", self.stylesheet)
+            self.assertNotIn(forbidden, self.stylesheet)
 
-    def test_parity_audit_removes_combined_clay_stylesheet(self):
+    def test_failed_asset_restores_the_original_glyph(self):
+        self.assertIn("const restoreOriginal", self.script)
+        self.assertIn("image.addEventListener('error'", self.script)
+        self.assertNotIn("setAttribute('hidden'", self.script)
+
+    def test_parity_audit_restores_original_markup_and_removes_visual_stylesheet(self):
+        self.assertIn("data-visual-original-html", self.parity_audit)
         self.assertIn("site-visual-cues.css", self.parity_audit)
-        self.assertIn("visual-cue-card--managed", self.parity_audit)
-        self.assertIn("hub-category-heading--clay", self.parity_audit)
+        self.assertIn("icon.innerHTML = originalHtml", self.parity_audit)
