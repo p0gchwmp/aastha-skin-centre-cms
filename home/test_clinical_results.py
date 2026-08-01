@@ -90,3 +90,25 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             template,
         )
         self.assertIn("{% clinical_result_gallery %}", template)
+
+    def test_legacy_parity_wrapper_is_narrow_and_remains_strict(self):
+        wrapper = (
+            Path(__file__).resolve().parents[1]
+            / "tools"
+            / "audit_deployed_sites_with_extensions.py"
+        ).read_text(encoding="utf-8")
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github"
+            / "workflows"
+            / "prelaunch-parity.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('clone.select(".clinical-results")', wrapper)
+        self.assertIn('clone.find_all(["style", "script"])', wrapper)
+        self.assertIn('if "clinical-results" in source', wrapper)
+        self.assertIn("parity.normalise_main = normalise_main", wrapper)
+        self.assertIn("parity.headings = headings", wrapper)
+        self.assertNotIn("allow_main_differences", wrapper)
+        self.assertIn("audit_deployed_sites_with_extensions.py", workflow)
+        self.assertNotIn("--allow-main-differences", workflow)
