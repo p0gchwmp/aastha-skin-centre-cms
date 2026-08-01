@@ -16,6 +16,11 @@ keeps parity focused on layout, typography, spacing and controls while allowing
 the CMS to replace legacy placeholders and enrich compact navigation cards.
 The live visual treatment remains covered by mobile-layout, dark-mode and
 performance audits.
+
+Route-specific clinical-result galleries are approved additive content that is
+absent from the retained static reference. They are removed only from the
+legacy screenshot comparison and are covered independently by
+``audit_clinical_result_galleries_browser.py``.
 """
 
 from __future__ import annotations
@@ -58,6 +63,19 @@ def hydrated_screenshot(page: Page, path: Path) -> tuple[int, int]:
               setTimeout(resolve, 5000);
             });
           }));
+
+          /* Clinical galleries are intentional additive page content. Remove
+             only this named extension from the inherited-layout screenshot;
+             its images, controls, dark mode and responsive behaviour are
+             exercised by the dedicated gallery browser audit. */
+          document.querySelectorAll('.clinical-results').forEach(section => {
+            section.remove();
+          });
+          document.querySelectorAll('style, script').forEach(node => {
+            if ((node.textContent || '').includes('clinical-results')) {
+              node.remove();
+            }
+          });
 
           /* Navigation helpers injected only for the enhanced CMS are removed
              completely before pixel comparison. */
