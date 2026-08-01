@@ -1,0 +1,9 @@
+{% load wagtailcore_tags %}
+<section{% if value.layout.anchor_id %} id="{{ value.layout.anchor_id }}"{% endif %} class="cms-block cms-notice cms-notice-{{ value.tone }} cms-theme-{{ value.layout.theme }} cms-width-{{ value.layout.width }} cms-align-{{ value.layout.text_alignment }} cms-space-top-{{ value.layout.top_spacing }} cms-space-bottom-{{ value.layout.bottom_spacing }}{% if value.layout.hide_on_mobile %} cms-hide-mobile{% endif %}{% if value.layout.hide_on_desktop %} cms-hide-desktop{% endif %}"{% if value.tone == "warning" %} role="alert"{% else %} role="note"{% endif %}>
+  {% if value.show_icon %}<span class="cms-notice-icon" aria-hidden="true">{% if value.tone == "warning" %}!{% elif value.tone == "medical" %}+{% elif value.tone == "update" %}↗{% else %}i{% endif %}</span>{% endif %}
+  <div class="cms-notice-copy">
+    <h2>{{ value.heading }}</h2>
+    {% if value.body %}<div class="cms-rich-text">{{ value.body|richtext }}</div>{% endif %}
+    {% if value.buttons %}<div class="cms-inline-actions">{% for button in value.buttons %}<a class="cms-button cms-button-{{ button.style }}" href="{{ button.link.url }}"{% if button.link.new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ button.link.label }}</a>{% endfor %}</div>{% endif %}
+  </div>
+</section>
