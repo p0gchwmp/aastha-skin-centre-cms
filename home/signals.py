@@ -41,10 +41,19 @@ def _unique_child_slug(parent, preferred: str) -> str:
     return candidate
 
 
+def _site_tree_is_initialized() -> bool:
+    """Avoid creating profile pages while the starter site is being imported."""
+
+    home = HomePage.objects.first()
+    return bool(home and home.get_children().exists())
+
+
 def _create_profile_page(*, instance, page_model, relation_name, index_kind):
     if not instance.live or not instance.create_public_page:
         return
     if getattr(instance, "pages").exists():
+        return
+    if not _site_tree_is_initialized():
         return
 
     parent = _parent_for(index_kind)
@@ -57,13 +66,17 @@ def _create_profile_page(*, instance, page_model, relation_name, index_kind):
     matching = page_model.objects.child_of(parent).filter(slug=instance.slug).first()
     if matching is not None and getattr(matching, relation_name + "_id") is None:
         setattr(matching, relation_name, instance)
-        matching.save_revision().publish() if instance.publish_public_page_automatically else matching.save_revision()
+        revision = matching.save_revision()
+        if instance.publish_public_page_automatically:
+            revision.publish()
         return
 
     page = page_model(
         title=instance.name,
         slug=_unique_child_slug(parent, instance.slug or instance.name),
-        introduction=instance.short_bio if isinstance(instance, Doctor) else instance.address,
+        introduction=(
+            instance.short_bio if isinstance(instance, Doctor) else instance.address
+        ),
         layout_mode="builder",
         live=False,
         has_unpublished_changes=True,
