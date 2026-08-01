@@ -38,7 +38,7 @@ class GoogleMeasurementReadinessTests(SimpleTestCase):
           <body data-analytics-enabled="true">
             <script src="/static/js/analytics-events.abc123.js" defer></script>
             <script>
-              const measurementId = "G-ABC1234567";
+              const measurementId = "G\\u002DABC1234567";
               const script = document.createElement("script");
               script.src = `https://www.googletagmanager.com/gtag/js?id=${{measurementId}}`;
               window.setTimeout(loadAnalytics, 4000);
@@ -58,6 +58,14 @@ class GoogleMeasurementReadinessTests(SimpleTestCase):
             bundle_url,
             f"{BASE}/static/js/analytics-events.abc123.js",
         )
+
+    def test_django_escapejs_measurement_id_is_decoded(self):
+        ids, configured = measurement_audit.extract_measurement_ids(
+            'const measurementId = "G\\u002DG5DQPDJ53P";'
+        )
+
+        self.assertEqual(ids, ["G-G5DQPDJ53P"])
+        self.assertEqual(configured, ["G-G5DQPDJ53P"])
 
     def test_homepage_rejects_missing_token_and_eager_gtag(self):
         source = self.valid_homepage().replace(
