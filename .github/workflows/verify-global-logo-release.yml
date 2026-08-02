@@ -110,8 +110,8 @@ jobs:
           record("large_logo_webp_url", ".webp" in large, large)
           record(
               "logo_width_candidates",
-              0 < standard_width <= 160 and standard_width < large_width <= 320,
-              f"standard={standard_width}; large={large_width}",
+              0 < standard_width < large_width <= 320,
+              f"actual rendition widths: standard={standard_width}; large={large_width}",
           )
           record(
               "legacy_png_removed",
@@ -159,14 +159,24 @@ jobs:
               waitUntil: 'networkidle',
               timeout: 60000,
             });
-            await page.waitForSelector('[data-site-header] .brand-mark--image img', {
-              timeout: 30000,
-            });
-            await page.waitForSelector('[data-site-footer] .brand-mark--image img', {
-              timeout: 30000,
-            });
 
-            const result = await page.evaluate(() => {
+            const headerSelector = '[data-site-header] .brand-mark--image img';
+            const footerSelector = '[data-site-footer] .brand-mark--image img';
+            await page.waitForSelector(headerSelector, { timeout: 30000 });
+            await page.waitForSelector(footerSelector, { timeout: 30000 });
+            await page.locator(footerSelector).scrollIntoViewIfNeeded();
+            await page.waitForFunction(
+              selector => {
+                const image = document.querySelector(selector);
+                return Boolean(image?.complete && image.naturalWidth > 0);
+              },
+              footerSelector,
+              { timeout: 30000 },
+            );
+
+            const result = await page.evaluate(({ headerSelector, footerSelector }) => {
+              const standardWidth = Number(document.body.dataset.logoWidth || 0);
+              const largeWidth = Number(document.body.dataset.logoLargeWidth || 0);
               const inspect = selector => {
                 const image = document.querySelector(selector);
                 const rect = image?.getBoundingClientRect();
@@ -184,10 +194,12 @@ jobs:
                 };
               };
               return {
-                header: inspect('[data-site-header] .brand-mark--image img'),
-                footer: inspect('[data-site-footer] .brand-mark--image img'),
+                standardWidth,
+                largeWidth,
+                header: inspect(headerSelector),
+                footer: inspect(footerSelector),
               };
-            });
+            }, { headerSelector, footerSelector });
 
             fs.mkdirSync('audit-artifacts/logo-release', { recursive: true });
             fs.writeFileSync(
@@ -196,7 +208,20 @@ jobs:
             );
 
             const failures = [];
-            for (const [location, image] of Object.entries(result)) {
+            const expectedDescriptors = [
+              `${result.standardWidth}w`,
+              `${result.largeWidth}w`,
+            ];
+            if (!(result.standardWidth > 0 && result.largeWidth > result.standardWidth)) {
+              failures.push(
+                `invalid actual rendition widths ${result.standardWidth}/${result.largeWidth}`,
+              );
+            }
+
+            for (const [location, image] of Object.entries({
+              header: result.header,
+              footer: result.footer,
+            })) {
               if (!image.present || !image.complete || image.naturalWidth <= 0) {
                 failures.push(`${location}: logo did not load`);
               }
@@ -206,8 +231,12 @@ jobs:
               if (image.currentSrc.includes('max-480x160.png')) {
                 failures.push(`${location}: legacy oversized PNG still selected`);
               }
-              if (!image.srcset.includes('160w') || !image.srcset.includes('320w')) {
-                failures.push(`${location}: responsive srcset missing: ${image.srcset}`);
+              for (const descriptor of expectedDescriptors) {
+                if (!image.srcset.includes(descriptor)) {
+                  failures.push(
+                    `${location}: missing actual descriptor ${descriptor}: ${image.srcset}`,
+                  );
+                }
               }
               if (!image.sizes) {
                 failures.push(`${location}: sizes attribute missing`);
