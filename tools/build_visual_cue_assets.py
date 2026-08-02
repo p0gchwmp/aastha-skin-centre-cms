@@ -18,7 +18,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT / "home" / "static_src" / "visual-cues"
 OUTPUT_DIR = ROOT / "home" / "static" / "images" / "visual-cues"
-SIZES = (128, 256, 512)
+SIZES = (64, 128, 256, 512)
 
 STANDALONE_SOURCES = {
     "acne-care": "acne-care-256.webp",
