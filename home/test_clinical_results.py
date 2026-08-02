@@ -54,17 +54,13 @@ class ClinicalResultGalleryTests(SimpleTestCase):
 
     def test_responsive_candidate_paths_are_deterministic(self):
         route = "/treatments/acne-scar-treatment/"
-        self.assertEqual(RESPONSIVE_WIDTHS, (480, 768))
-        self.assertEqual(
-            responsive_asset_path(route, 1, 480),
-            "images/clinical-results/acne-scar-treatment/"
-            "acne-scar-treatment-01-480w.webp",
-        )
-        self.assertEqual(
-            responsive_asset_path(route, 1, 768),
-            "images/clinical-results/acne-scar-treatment/"
-            "acne-scar-treatment-01-768w.webp",
-        )
+        self.assertEqual(RESPONSIVE_WIDTHS, (384, 640, 768))
+        for width in RESPONSIVE_WIDTHS:
+            self.assertEqual(
+                responsive_asset_path(route, 1, width),
+                "images/clinical-results/acne-scar-treatment/"
+                f"acne-scar-treatment-01-{width}w.webp",
+            )
         self.assertEqual(
             responsive_asset_path(route, 1, 1200),
             local_asset_path(route, 1),
@@ -92,8 +88,11 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             image.get("src"),
             "/assets/images/clinical-results/acne-treatment/acne-treatment-01.webp",
         )
-        self.assertIn("acne-treatment-01-480w.webp 480w", image.get("srcset"))
-        self.assertIn("acne-treatment-01-768w.webp 768w", image.get("srcset"))
+        for width in RESPONSIVE_WIDTHS:
+            self.assertIn(
+                f"acne-treatment-01-{width}w.webp {width}w",
+                image.get("srcset"),
+            )
         self.assertIn("acne-treatment-01.webp 1200w", image.get("srcset"))
         self.assertTrue(image.get("sizes"))
 
@@ -152,19 +151,17 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             "/assets/images/clinical-results/acne-scar-treatment/"
             "acne-scar-treatment-01.webp",
         )
-        self.assertIn(
-            "acne-scar-treatment-01-480w.webp 480w",
-            first_image.get("srcset"),
-        )
-        self.assertIn(
-            "acne-scar-treatment-01-768w.webp 768w",
-            first_image.get("srcset"),
-        )
+        for width in RESPONSIVE_WIDTHS:
+            self.assertIn(
+                f"acne-scar-treatment-01-{width}w.webp {width}w",
+                first_image.get("srcset"),
+            )
         self.assertIn(
             "acne-scar-treatment-01.webp 1200w",
             first_image.get("srcset"),
         )
         self.assertIn("max-width: 760px", first_image.get("sizes"))
+        self.assertIn("382px", first_image.get("sizes"))
         self.assertEqual(
             len(gallery.select("[data-clinical-slide] img[data-src]")),
             3,
