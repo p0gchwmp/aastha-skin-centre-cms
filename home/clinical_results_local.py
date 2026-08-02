@@ -19,6 +19,18 @@ from home.clinical_results import (
 )
 
 
+RESPONSIVE_WIDTHS = (384, 640, 768)
+ORIGINAL_MAX_WIDTH = 1200
+HERO_IMAGE_SIZES = (
+    "(max-width: 760px) calc(100vw - 48px), "
+    "(max-width: 980px) calc(100vw - 72px), 382px"
+)
+SECTION_IMAGE_SIZES = (
+    "(max-width: 760px) calc(100vw - 48px), "
+    "(max-width: 1200px) calc(100vw - 72px), 1056px"
+)
+
+
 CLINICAL_RESULTS_LOCAL_STYLE = r"""
 <style>
 .clinical-results__load-error[hidden],
@@ -191,6 +203,14 @@ CLINICAL_RESULTS_LOCAL_SCRIPT = r"""
       const image = slide?.querySelector('img');
       if (!image) return;
       bindImage(image);
+      if (image.dataset.sizes) {
+        image.sizes = image.dataset.sizes;
+        image.removeAttribute('data-sizes');
+      }
+      if (image.dataset.srcset) {
+        image.srcset = image.dataset.srcset;
+        image.removeAttribute('data-srcset');
+      }
       if (image.dataset.src) {
         image.src = image.dataset.src;
         image.removeAttribute('data-src');
@@ -261,6 +281,32 @@ def local_asset_path(path: str, index: int) -> str:
     return f"images/clinical-results/{slug}/{slug}-{index:02d}.webp"
 
 
+def responsive_asset_path(path: str, index: int, width: int) -> str:
+    """Return one build-generated responsive candidate path."""
+    original = local_asset_path(path, index)
+    if width == ORIGINAL_MAX_WIDTH:
+        return original
+    return original.removesuffix(".webp") + f"-{width}w.webp"
+
+
+def _responsive_srcset(path: str, index: int) -> str:
+    widths = (*RESPONSIVE_WIDTHS, ORIGINAL_MAX_WIDTH)
+    return ", ".join(
+        f"{static(responsive_asset_path(path, index, width))} {width}w"
+        for width in widths
+    )
+
+
+def _local_dimensions(image: dict) -> tuple[int, int]:
+    width = int(image["width"])
+    height = int(image["height"])
+    longest = max(width, height)
+    if longest <= ORIGINAL_MAX_WIDTH:
+        return width, height
+    scale = ORIGINAL_MAX_WIDTH / longest
+    return max(1, round(width * scale)), max(1, round(height * scale))
+
+
 def _figure_markup(
     normalised: str,
     images: list[dict],
@@ -268,13 +314,21 @@ def _figure_markup(
     hero: bool,
 ) -> str:
     figures: list[str] = []
+    sizes = HERO_IMAGE_SIZES if hero else SECTION_IMAGE_SIZES
+    escaped_sizes = escape(sizes, quote=True)
+
     for index, image in enumerate(images, start=1):
         image_url = escape(static(local_asset_path(normalised, index)), quote=True)
+        srcset = escape(_responsive_srcset(normalised, index), quote=True)
         alt = escape(image["alt"], quote=True)
+        width, height = _local_dimensions(image)
         source_attr = (
-            f' src="{image_url}"'
+            f' src="{image_url}" srcset="{srcset}" sizes="{escaped_sizes}"'
             if index == 1
-            else f' data-src="{image_url}"'
+            else (
+                f' data-src="{image_url}" data-srcset="{srcset}" '
+                f'data-sizes="{escaped_sizes}"'
+            )
         )
         hidden_attr = "" if index == 1 else " hidden"
         loading = (
@@ -286,7 +340,7 @@ def _figure_markup(
             f'<figure class="clinical-results__slide" '
             f'data-clinical-slide data-slide-index="{index - 1}"{hidden_attr}>'
             f'<img{source_attr} alt="{alt}" '
-            f'width="{image["width"]}" height="{image["height"]}" '
+            f'width="{width}" height="{height}" '
             f'{loading}>'
             "</figure>"
         )

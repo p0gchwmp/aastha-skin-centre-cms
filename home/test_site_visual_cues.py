@@ -27,7 +27,7 @@ class SiteVisualCueTests(SimpleTestCase):
         "ageing": "skin-quality-ageing",
         "infection": "fungal-infection-care",
     }
-    SIZES = (128, 256, 512)
+    SIZES = (64, 128, 256, 512)
 
     @classmethod
     def setUpClass(cls):
@@ -143,6 +143,7 @@ class SiteVisualCueTests(SimpleTestCase):
     def test_script_uses_responsive_images_and_fallbacks(self):
         self.assertIn("message-visual__img", self.script)
         self.assertIn("image.srcset", self.script)
+        self.assertIn("64w", self.script)
         self.assertIn("128w", self.script)
         self.assertIn("256w", self.script)
         self.assertIn("512w", self.script)

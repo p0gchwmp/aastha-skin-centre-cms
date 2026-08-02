@@ -7,9 +7,11 @@ from django.test import SimpleTestCase
 
 from home.clinical_results import CLINICAL_RESULT_GALLERIES
 from home.clinical_results_local import (
+    RESPONSIVE_WIDTHS,
     gallery_markup,
     hero_gallery_markup,
     local_asset_path,
+    responsive_asset_path,
 )
 from home.templatetags.clinical_results import (
     exact_page_with_clinical_results,
@@ -50,6 +52,20 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             self.assertTrue(path.endswith(".webp"))
             self.assertIsNotNone(finders.find(path), path)
 
+    def test_responsive_candidate_paths_are_deterministic(self):
+        route = "/treatments/acne-scar-treatment/"
+        self.assertEqual(RESPONSIVE_WIDTHS, (384, 640, 768))
+        for width in RESPONSIVE_WIDTHS:
+            self.assertEqual(
+                responsive_asset_path(route, 1, width),
+                "images/clinical-results/acne-scar-treatment/"
+                f"acne-scar-treatment-01-{width}w.webp",
+            )
+        self.assertEqual(
+            responsive_asset_path(route, 1, 1200),
+            local_asset_path(route, 1),
+        )
+
     def test_runtime_markup_never_calls_google_drive(self):
         for route in CLINICAL_RESULT_GALLERIES:
             for html in (gallery_markup(route), hero_gallery_markup(route)):
@@ -72,6 +88,13 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             image.get("src"),
             "/assets/images/clinical-results/acne-treatment/acne-treatment-01.webp",
         )
+        for width in RESPONSIVE_WIDTHS:
+            self.assertIn(
+                f"acne-treatment-01-{width}w.webp {width}w",
+                image.get("srcset"),
+            )
+        self.assertIn("acne-treatment-01.webp 1200w", image.get("srcset"))
+        self.assertTrue(image.get("sizes"))
 
     def test_multiple_images_use_accessible_non_autoplay_carousel(self):
         html = gallery_markup("/treatments/acne-scar-treatment/")
@@ -99,11 +122,21 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertEqual(sum(slide.has_attr("hidden") for slide in slides), 5)
         self.assertEqual(len(soup.select("[data-clinical-slide] img[data-src]")), 5)
         self.assertEqual(
+            len(soup.select("[data-clinical-slide] img[data-srcset]")),
+            5,
+        )
+        self.assertEqual(
+            len(soup.select("[data-clinical-slide] img[data-sizes]")),
+            5,
+        )
+        self.assertEqual(
             len(soup.select('[data-clinical-slide] img[loading="lazy"]')),
             6,
         )
+        self.assertIn("image.dataset.sizes", html)
+        self.assertIn("image.dataset.srcset", html)
 
-    def test_hero_gallery_uses_real_photograph_and_compact_controls(self):
+    def test_hero_gallery_uses_real_responsive_photograph_and_compact_controls(self):
         html = hero_gallery_markup("/treatments/acne-scar-treatment/")
         soup = BeautifulSoup(html, "html.parser")
         gallery = soup.select_one("section.clinical-results--hero")
@@ -118,8 +151,23 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             "/assets/images/clinical-results/acne-scar-treatment/"
             "acne-scar-treatment-01.webp",
         )
+        for width in RESPONSIVE_WIDTHS:
+            self.assertIn(
+                f"acne-scar-treatment-01-{width}w.webp {width}w",
+                first_image.get("srcset"),
+            )
+        self.assertIn(
+            "acne-scar-treatment-01.webp 1200w",
+            first_image.get("srcset"),
+        )
+        self.assertIn("max-width: 760px", first_image.get("sizes"))
+        self.assertIn("382px", first_image.get("sizes"))
         self.assertEqual(
             len(gallery.select("[data-clinical-slide] img[data-src]")),
+            3,
+        )
+        self.assertEqual(
+            len(gallery.select("[data-clinical-slide] img[data-srcset]")),
             3,
         )
         self.assertEqual(
@@ -134,6 +182,14 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             ),
             "→",
         )
+
+    def test_local_dimensions_match_materialised_source_bound(self):
+        html = hero_gallery_markup("/treatments/hair-fall-treatment/")
+        soup = BeautifulSoup(html, "html.parser")
+        first_image = soup.select_one("[data-clinical-slide] img")
+
+        self.assertEqual(first_image.get("width"), "1200")
+        self.assertEqual(first_image.get("height"), "1200")
 
     def test_deferred_images_do_not_trigger_false_load_error(self):
         html = hero_gallery_markup("/treatments/acne-scar-treatment/")
