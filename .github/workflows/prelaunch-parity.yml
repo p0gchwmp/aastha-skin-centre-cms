@@ -51,6 +51,7 @@ jobs:
           python -m py_compile tools/audit_clinical_result_galleries_browser.py
           python -m py_compile tools/audit_deployed_sites_with_extensions.py
           python -m py_compile tools/audit_browser_parity_brand_normalized.py
+          python -m py_compile tools/audit_content_rhythm.py
           python tools/generate_responsive_clinical_images.py
           python tools/audit_clinical_result_images.py
           python manage.py makemigrations --check --dry-run
@@ -103,6 +104,12 @@ jobs:
           python tools/audit_dark_mode_readability.py \
             --cms http://127.0.0.1:8000 \
             --output audit-artifacts/local-dark-readability
+
+      - name: Audit editorial content rhythm
+        run: |
+          python tools/audit_content_rhythm.py \
+            --cms http://127.0.0.1:8000 \
+            --output audit-artifacts/local-content-rhythm
 
       - name: Audit frontend performance budgets
         run: |
@@ -181,6 +188,13 @@ jobs:
           python tools/audit_dark_mode_readability.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --output audit-artifacts/deployed-dark-readability
+
+      - name: Audit deployed editorial content rhythm
+        if: github.event_name != 'pull_request'
+        run: |
+          python tools/audit_content_rhythm.py \
+            --cms https://aastha-skin-centre-cms.onrender.com \
+            --output audit-artifacts/deployed-content-rhythm
 
       - name: Audit deployed frontend performance budgets
         if: github.event_name != 'pull_request'
