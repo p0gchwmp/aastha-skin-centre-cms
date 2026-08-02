@@ -335,21 +335,27 @@
 
   const buildImage = (element, cue, assets) => {
     const asset = assets[cue];
-    if (!asset?.['128'] || !asset?.['256'] || !asset?.['512']) {
+    if (
+      !asset?.['64'] ||
+      !asset?.['128'] ||
+      !asset?.['256'] ||
+      !asset?.['512']
+    ) {
       return null;
     }
 
     const image = document.createElement('img');
     image.className = 'message-visual__img';
-    image.src = asset['128'];
+    image.src = asset['64'];
     image.srcset = [
+      `${asset['64']} 64w`,
       `${asset['128']} 128w`,
       `${asset['256']} 256w`,
       `${asset['512']} 512w`
     ].join(', ');
     image.sizes = displaySizeFor(element);
-    image.width = 512;
-    image.height = 512;
+    image.width = 64;
+    image.height = 64;
     image.alt = '';
     image.loading = 'lazy';
     image.fetchPriority = 'low';
