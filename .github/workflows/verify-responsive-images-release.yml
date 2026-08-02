@@ -1,0 +1,189 @@
+name: Verify responsive image release
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EXPECTED_RELEASE: 4533eb373c664923e8e89cf8c75298599ef6ed68
+      CANONICAL_BASE: https://www.aasthaskincentre.in
+      RENDER_BASE: https://aastha-skin-centre-cms.onrender.com
+      LHCI_BASE_URL: https://www.aasthaskincentre.in
+      LHCI_FORM_FACTOR: mobile
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install verification tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 lxml
+          npm install --no-save --no-package-lock \
+            @lhci/cli@0.15.1 \
+            playwright@1.62.0
+          npx playwright install --with-deps chromium
+          node -e "const {chromium}=require('playwright'); console.log('CHROME_PATH='+chromium.executablePath())" >> "$GITHUB_ENV"
+
+      - name: Wait for exact release on both live domains
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import requests
+
+          expected = os.environ["EXPECTED_RELEASE"]
+          urls = [
+              os.environ["CANONICAL_BASE"] + "/healthz/",
+              os.environ["RENDER_BASE"] + "/healthz/",
+          ]
+          deadline = time.time() + 15 * 60
+          last = {}
+          while time.time() < deadline:
+              releases = {}
+              for url in urls:
+                  try:
+                      response = requests.get(url, timeout=30)
+                      payload = response.json()
+                      releases[url] = payload.get("release", "")
+                  except Exception as exc:
+                      releases[url] = f"error:{exc}"
+              last = releases
+              print(releases, flush=True)
+              if all(value == expected for value in releases.values()):
+                  raise SystemExit(0)
+              time.sleep(10)
+          raise SystemExit(
+              f"Production did not reach {expected}; last observed={last!r}"
+          )
+          PY
+
+      - name: Verify responsive markup and generated assets
+        run: |
+          mkdir -p audit-artifacts/responsive-release
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from urllib.parse import urljoin
+
+          import requests
+          from bs4 import BeautifulSoup
+
+          base = os.environ["CANONICAL_BASE"].rstrip("/")
+          session = requests.Session()
+          session.headers["User-Agent"] = "AasthaResponsiveReleaseVerifier/1.0"
+          checks = []
+
+          def record(name, passed, detail):
+              checks.append({"name": name, "passed": bool(passed), "detail": detail})
+              if not passed:
+                  print(f"FAIL {name}: {detail}")
+
+          treatment_url = base + "/treatments/acne-scar-treatment/"
+          treatment = session.get(treatment_url, timeout=30)
+          record("treatment_http", treatment.status_code == 200, f"HTTP {treatment.status_code}")
+          soup = BeautifulSoup(treatment.text, "lxml")
+          image = soup.select_one(".clinical-results--hero [data-clinical-slide] img")
+          record("hero_image_present", image is not None, "clinical hero image located")
+
+          srcset = image.get("srcset", "") if image else ""
+          sizes = image.get("sizes", "") if image else ""
+          for descriptor in ("384w", "640w", "768w", "1200w"):
+              record(
+                  f"clinical_srcset_{descriptor}",
+                  descriptor in srcset,
+                  f"srcset={srcset}",
+              )
+          record("clinical_sizes_truthful", "382px" in sizes, f"sizes={sizes}")
+          record(
+              "clinical_priority",
+              bool(image and image.get("loading") == "eager" and image.get("fetchpriority") == "high"),
+              f"loading={image.get('loading') if image else None}; fetchpriority={image.get('fetchpriority') if image else None}",
+          )
+
+          candidates = {}
+          for entry in srcset.split(","):
+              parts = entry.strip().split()
+              if len(parts) == 2:
+                  candidates[parts[1]] = urljoin(treatment_url, parts[0])
+          for descriptor in ("384w", "640w", "768w"):
+              url = candidates.get(descriptor, "")
+              response = session.get(url, timeout=30) if url else None
+              record(
+                  f"clinical_asset_{descriptor}_http",
+                  bool(response and response.status_code == 200),
+                  f"url={url}; status={response.status_code if response else 'missing'}",
+              )
+              if response:
+                  record(
+                      f"clinical_asset_{descriptor}_webp",
+                      response.headers.get("Content-Type", "").startswith("image/webp"),
+                      response.headers.get("Content-Type", ""),
+                  )
+
+          homepage = session.get(base + "/", timeout=30)
+          record("homepage_http", homepage.status_code == 200, f"HTTP {homepage.status_code}")
+          home_soup = BeautifulSoup(homepage.text, "lxml")
+          manifest_node = home_soup.select_one("#visual-cue-assets")
+          record("visual_manifest_present", manifest_node is not None, "visual cue manifest located")
+          manifest = json.loads(manifest_node.string or "{}") if manifest_node else {}
+          icon_url = manifest.get("acne", {}).get("64", "")
+          record("visual_64_candidate", bool(icon_url), f"url={icon_url}")
+          icon_response = session.get(urljoin(base + "/", icon_url), timeout=30) if icon_url else None
+          record(
+              "visual_64_asset_http",
+              bool(icon_response and icon_response.status_code == 200),
+              f"status={icon_response.status_code if icon_response else 'missing'}",
+          )
+          if icon_response:
+              record(
+                  "visual_64_asset_webp",
+                  icon_response.headers.get("Content-Type", "").startswith("image/webp"),
+                  icon_response.headers.get("Content-Type", ""),
+              )
+
+          output = Path("audit-artifacts/responsive-release/live-assets.json")
+          output.write_text(json.dumps({"checks": checks}, indent=2), encoding="utf-8")
+          failed = [check for check in checks if not check["passed"]]
+          print(f"Responsive release checks: {len(checks) - len(failed)}/{len(checks)} pass.")
+          if failed:
+              raise SystemExit(1)
+          PY
+
+      - name: Run strict live mobile Lighthouse gate
+        run: npx lhci autorun --config=lighthouserc.cjs
+
+      - name: Publish live Lighthouse scorecard
+        if: always()
+        run: |
+          python tools/summarize_lighthouse.py \
+            --root audit-artifacts \
+            --output audit-artifacts/responsive-release/lighthouse-summary.md
+          cat audit-artifacts/responsive-release/lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: responsive-release-verification-${{ github.sha }}
+          path: audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
