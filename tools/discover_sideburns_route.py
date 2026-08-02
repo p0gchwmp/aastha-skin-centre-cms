@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Find and inspect the live route containing the Sideburns-to-Toes component.
+"""Inspect the live Sideburns-to-Toes component without guessing selectors.
 
-Routes come from the repository's canonical 75-page snapshot bundle. The scan
-uses live HTML first, then saves the exact server-rendered markup and ancestor
-chain around Sideburns so spacing fixes target real wrappers rather than guessed
-selectors.
+The known laser-hair-reduction route is checked first. A canonical 75-route
+fallback remains in place only for future route changes. Exact server-rendered
+markup and ancestor chains are saved for evidence-driven spacing fixes.
 """
 
 from __future__ import annotations
@@ -25,6 +24,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "seed_data" / "exact-pages.json.gz.b64"
+KNOWN_ROUTE = "/treatments/laser-hair-reduction/"
 TOKENS = (
     "Sideburns",
     "Jawline",
@@ -79,6 +79,31 @@ def fetch(url: str, retries: int = 3) -> tuple[int, str]:
 def normalise_source(source: str) -> str:
     text = TAG.sub(" ", source)
     return SPACE.sub(" ", text).strip()
+
+
+def analyse_route(base: str, route: str) -> tuple[dict[str, object], str]:
+    url = urljoin(base.rstrip("/") + "/", route.lstrip("/"))
+    status, source = fetch(url)
+    source_folded = source.casefold()
+    visible = normalise_source(source)
+    visible_folded = visible.casefold()
+    matches = [
+        token
+        for token in TOKENS
+        if token.casefold() in source_folded or token.casefold() in visible_folded
+    ]
+    return (
+        {
+            "route": route,
+            "url": url,
+            "status": status,
+            "score": len(matches),
+            "matches": matches,
+            "source_contains_sideburns": "sideburns" in source_folded,
+            "visible_contains_sideburns": "sideburns" in visible_folded,
+        },
+        source,
+    )
 
 
 def describe_tag(tag: Tag) -> dict[str, object]:
@@ -178,45 +203,48 @@ def main() -> int:
     ranked: list[dict[str, object]] = []
     exact_source: str | None = None
     exact_route: str | None = None
-    for index, route in enumerate(load_routes(), start=1):
-        url = urljoin(args.base.rstrip("/") + "/", route.lstrip("/"))
-        try:
-            status, source = fetch(url)
-            source_folded = source.casefold()
-            visible = normalise_source(source)
-            visible_folded = visible.casefold()
-            matches = [
-                token
-                for token in TOKENS
-                if token.casefold() in source_folded or token.casefold() in visible_folded
-            ]
-            score = len(matches)
-            ranked.append(
-                {
-                    "route": route,
-                    "url": url,
-                    "status": status,
-                    "score": score,
-                    "matches": matches,
-                    "source_contains_sideburns": "sideburns" in source_folded,
-                    "visible_contains_sideburns": "sideburns" in visible_folded,
-                }
-            )
-            if score == len(TOKENS) and exact_source is None:
-                exact_source = source
-                exact_route = route
-        except Exception as exc:
-            ranked.append(
-                {
-                    "route": route,
-                    "url": url,
-                    "status": None,
-                    "score": 0,
-                    "matches": [],
-                    "error": str(exc),
-                }
-            )
-        print(f"[{index:02d}/75] {route}", flush=True)
+
+    try:
+        known_result, known_source = analyse_route(args.base, KNOWN_ROUTE)
+        ranked.append(known_result)
+        print(f"Checked known route {KNOWN_ROUTE}: {known_result['score']}/16", flush=True)
+        if int(known_result["score"]) == len(TOKENS):
+            exact_source = known_source
+            exact_route = KNOWN_ROUTE
+    except Exception as exc:
+        ranked.append(
+            {
+                "route": KNOWN_ROUTE,
+                "status": None,
+                "score": 0,
+                "matches": [],
+                "error": str(exc),
+            }
+        )
+
+    if exact_source is None:
+        for index, route in enumerate(load_routes(), start=1):
+            if route == KNOWN_ROUTE:
+                continue
+            try:
+                result, source = analyse_route(args.base, route)
+                ranked.append(result)
+                if int(result["score"]) == len(TOKENS) and exact_source is None:
+                    exact_source = source
+                    exact_route = route
+            except Exception as exc:
+                ranked.append(
+                    {
+                        "route": route,
+                        "status": None,
+                        "score": 0,
+                        "matches": [],
+                        "error": str(exc),
+                    }
+                )
+            print(f"Fallback [{index:02d}/75] {route}", flush=True)
+            if exact_source is not None:
+                break
 
     ranked.sort(key=lambda item: (-int(item["score"]), str(item["route"])))
     markup = (
@@ -234,8 +262,8 @@ def main() -> int:
     args.output.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
 
-    if not ranked or int(ranked[0]["score"]) == 0:
-        raise SystemExit("No live route contained any reported label.")
+    if exact_source is None:
+        raise SystemExit("No live route contained all reported labels.")
     return 0
 
 
