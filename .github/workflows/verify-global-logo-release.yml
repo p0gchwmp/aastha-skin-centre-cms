@@ -1,0 +1,253 @@
+name: Verify responsive logo release
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EXPECTED_RELEASE: ce56824e02f9af50c80e071b5cc78204ab91a72c
+      CANONICAL_BASE: https://www.aasthaskincentre.in
+      RENDER_BASE: https://aastha-skin-centre-cms.onrender.com
+      LHCI_BASE_URL: https://www.aasthaskincentre.in
+      LHCI_FORM_FACTOR: mobile
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install verification tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 lxml
+          npm install --no-save --no-package-lock \
+            @lhci/cli@0.15.1 \
+            playwright@1.62.0
+          npx playwright install --with-deps chromium
+          node -e "const {chromium}=require('playwright'); console.log('CHROME_PATH='+chromium.executablePath())" >> "$GITHUB_ENV"
+
+      - name: Wait for exact release on both live domains
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import requests
+
+          expected = os.environ["EXPECTED_RELEASE"]
+          urls = [
+              os.environ["CANONICAL_BASE"] + "/healthz/",
+              os.environ["RENDER_BASE"] + "/healthz/",
+          ]
+          deadline = time.time() + 15 * 60
+          last = {}
+          while time.time() < deadline:
+              releases = {}
+              for url in urls:
+                  try:
+                      response = requests.get(url, timeout=30)
+                      payload = response.json()
+                      releases[url] = payload.get("release", "")
+                  except Exception as exc:
+                      releases[url] = f"error:{exc}"
+              last = releases
+              print(releases, flush=True)
+              if all(value == expected for value in releases.values()):
+                  raise SystemExit(0)
+              time.sleep(10)
+          raise SystemExit(
+              f"Production did not reach {expected}; last observed={last!r}"
+          )
+          PY
+
+      - name: Verify responsive logo source assets
+        run: |
+          mkdir -p audit-artifacts/logo-release
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from urllib.parse import urljoin
+
+          import requests
+          from bs4 import BeautifulSoup
+
+          base = os.environ["CANONICAL_BASE"].rstrip("/")
+          session = requests.Session()
+          session.headers["User-Agent"] = "AasthaLogoReleaseVerifier/1.0"
+          homepage = session.get(base + "/", timeout=30)
+          checks = []
+
+          def record(name, passed, detail):
+              checks.append({"name": name, "passed": bool(passed), "detail": detail})
+              if not passed:
+                  print(f"FAIL {name}: {detail}")
+
+          record("homepage_http", homepage.status_code == 200, f"HTTP {homepage.status_code}")
+          soup = BeautifulSoup(homepage.text, "lxml")
+          body = soup.find("body")
+          standard = str(body.get("data-logo-url", "")) if body else ""
+          large = str(body.get("data-logo-large-url", "")) if body else ""
+          standard_width = int(body.get("data-logo-width", 0) or 0) if body else 0
+          large_width = int(body.get("data-logo-large-width", 0) or 0) if body else 0
+
+          record("standard_logo_webp_url", ".webp" in standard, standard)
+          record("large_logo_webp_url", ".webp" in large, large)
+          record(
+              "logo_width_candidates",
+              0 < standard_width <= 160 and standard_width < large_width <= 320,
+              f"standard={standard_width}; large={large_width}",
+          )
+          record(
+              "legacy_png_removed",
+              "max-480x160.png" not in homepage.text,
+              "legacy max-480x160 PNG absent from homepage source",
+          )
+
+          for label, relative in (("standard", standard), ("large", large)):
+              url = urljoin(base + "/", relative)
+              response = session.get(url, timeout=30) if relative else None
+              record(
+                  f"{label}_logo_http",
+                  bool(response and response.status_code == 200),
+                  f"url={url}; status={response.status_code if response else 'missing'}",
+              )
+              if response:
+                  record(
+                      f"{label}_logo_content_type",
+                      response.headers.get("Content-Type", "").startswith("image/webp"),
+                      response.headers.get("Content-Type", ""),
+                  )
+
+          output = Path("audit-artifacts/logo-release/source-assets.json")
+          output.write_text(json.dumps({"checks": checks}, indent=2), encoding="utf-8")
+          failed = [check for check in checks if not check["passed"]]
+          print(f"Logo source checks: {len(checks) - len(failed)}/{len(checks)} pass.")
+          if failed:
+              raise SystemExit(1)
+          PY
+
+      - name: Verify hydrated header and footer logo
+        run: |
+          node - <<'JS'
+          const fs = require('fs');
+          const { chromium } = require('playwright');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({
+              viewport: { width: 390, height: 844 },
+              deviceScaleFactor: 1,
+              colorScheme: 'light',
+            });
+            await page.goto(process.env.CANONICAL_BASE + '/', {
+              waitUntil: 'networkidle',
+              timeout: 60000,
+            });
+            await page.waitForSelector('[data-site-header] .brand-mark--image img', {
+              timeout: 30000,
+            });
+            await page.waitForSelector('[data-site-footer] .brand-mark--image img', {
+              timeout: 30000,
+            });
+
+            const result = await page.evaluate(() => {
+              const inspect = selector => {
+                const image = document.querySelector(selector);
+                const rect = image?.getBoundingClientRect();
+                return {
+                  present: Boolean(image),
+                  src: image?.getAttribute('src') || '',
+                  srcset: image?.getAttribute('srcset') || '',
+                  sizes: image?.getAttribute('sizes') || '',
+                  currentSrc: image?.currentSrc || '',
+                  naturalWidth: image?.naturalWidth || 0,
+                  naturalHeight: image?.naturalHeight || 0,
+                  renderedWidth: rect?.width || 0,
+                  renderedHeight: rect?.height || 0,
+                  complete: image?.complete || false,
+                };
+              };
+              return {
+                header: inspect('[data-site-header] .brand-mark--image img'),
+                footer: inspect('[data-site-footer] .brand-mark--image img'),
+              };
+            });
+
+            fs.mkdirSync('audit-artifacts/logo-release', { recursive: true });
+            fs.writeFileSync(
+              'audit-artifacts/logo-release/hydrated-logo.json',
+              JSON.stringify(result, null, 2),
+            );
+
+            const failures = [];
+            for (const [location, image] of Object.entries(result)) {
+              if (!image.present || !image.complete || image.naturalWidth <= 0) {
+                failures.push(`${location}: logo did not load`);
+              }
+              if (!image.currentSrc.includes('.webp')) {
+                failures.push(`${location}: currentSrc is not WebP: ${image.currentSrc}`);
+              }
+              if (image.currentSrc.includes('max-480x160.png')) {
+                failures.push(`${location}: legacy oversized PNG still selected`);
+              }
+              if (!image.srcset.includes('160w') || !image.srcset.includes('320w')) {
+                failures.push(`${location}: responsive srcset missing: ${image.srcset}`);
+              }
+              if (!image.sizes) {
+                failures.push(`${location}: sizes attribute missing`);
+              }
+              if (image.renderedWidth <= 0 || image.renderedWidth > 170) {
+                failures.push(`${location}: unexpected rendered width ${image.renderedWidth}`);
+              }
+              if (image.renderedHeight <= 0 || image.renderedHeight > 54) {
+                failures.push(`${location}: unexpected rendered height ${image.renderedHeight}`);
+              }
+            }
+
+            console.log(JSON.stringify(result, null, 2));
+            await browser.close();
+            if (failures.length) {
+              failures.forEach(failure => console.error(`FAIL ${failure}`));
+              process.exit(1);
+            }
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          JS
+
+      - name: Run strict live mobile Lighthouse gate
+        run: npx lhci autorun --config=lighthouserc.cjs
+
+      - name: Publish live Lighthouse scorecard
+        if: always()
+        run: |
+          python tools/summarize_lighthouse.py \
+            --root audit-artifacts \
+            --output audit-artifacts/logo-release/lighthouse-summary.md
+          cat audit-artifacts/logo-release/lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logo-release-verification-${{ github.sha }}
+          path: audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
