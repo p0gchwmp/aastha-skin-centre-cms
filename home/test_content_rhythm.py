@@ -27,6 +27,18 @@ class ContentRhythmTests(SimpleTestCase):
         self.assertIn("@media (max-width: 700px)", self.stylesheet)
         self.assertIn("grid-template-columns: minmax(0, 1fr);", self.stylesheet)
 
+    def test_adjacent_mobile_clean_lists_have_no_group_margin_gap(self):
+        self.assertIn(
+            ".article-section > .clean-list:not(.clean-list--three)\n"
+            "    + .clean-list:not(.clean-list--three)",
+            self.stylesheet,
+        )
+        self.assertIn("margin-top: 0;", self.stylesheet)
+        self.assertIn(
+            ".article-section > .clean-list:not(.clean-list--three) + p",
+            self.stylesheet,
+        )
+
     def test_three_column_cards_are_excluded_from_editorial_columns(self):
         self.assertIn(".clean-list:not(.clean-list--three)", self.stylesheet)
 
@@ -39,3 +51,13 @@ class ContentRhythmTests(SimpleTestCase):
         self.assertIn("color: #f0e4e9 !important;", self.stylesheet)
         self.assertIn("opacity: 1 !important;", self.stylesheet)
         self.assertIn("background: transparent !important;", self.stylesheet)
+
+    def test_direct_homepage_faq_paragraph_receives_answer_contrast(self):
+        self.assertIn(
+            ".faq-pro-list details[open] > p",
+            self.stylesheet,
+        )
+        self.assertIn(
+            ".faq-clean-list details[open] > p",
+            self.stylesheet,
+        )
