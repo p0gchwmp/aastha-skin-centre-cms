@@ -19,11 +19,11 @@ from home.clinical_results import (
 )
 
 
-RESPONSIVE_WIDTHS = (480, 768)
+RESPONSIVE_WIDTHS = (384, 640, 768)
 ORIGINAL_MAX_WIDTH = 1200
 HERO_IMAGE_SIZES = (
     "(max-width: 760px) calc(100vw - 48px), "
-    "(max-width: 1200px) 42vw, 540px"
+    "(max-width: 980px) calc(100vw - 72px), 382px"
 )
 SECTION_IMAGE_SIZES = (
     "(max-width: 760px) calc(100vw - 48px), "
