@@ -69,6 +69,23 @@
   .release-v24 article.prose ul > li {
     margin-bottom: .5rem;
   }
+
+  /* Some medical sections intentionally split one logical list into adjacent
+     category lists. Treat those siblings as one continuous mobile list so the
+     group boundaries do not add large blank bands between otherwise identical
+     bullet rows. */
+  .release-v24 .article-section > .clean-list:not(.clean-list--three) {
+    margin-block: .65rem 0;
+  }
+
+  .release-v24 .article-section > .clean-list:not(.clean-list--three)
+    + .clean-list:not(.clean-list--three) {
+    margin-top: 0;
+  }
+
+  .release-v24 .article-section > .clean-list:not(.clean-list--three) + p {
+    margin-top: 1.35rem;
+  }
 }
 
 /* FAQ geometry and interaction states. */
@@ -108,7 +125,9 @@
   padding-top: .1rem;
 }
 
-.release-v24 .faq-answer :where(p, li) {
+.release-v24 .faq-answer :where(p, li),
+.release-v24 .faq-pro-list details > p,
+.release-v24 .faq-clean-list details > p {
   line-height: 1.72;
   text-wrap: pretty;
 }
@@ -183,8 +202,13 @@ html[data-theme="dark"] .release-v24 .faq-clean-list details[open] summary::afte
   color: #f4d57a !important;
 }
 
+/* FAQ answers exist in two retained markup forms: rich `.faq-answer` wrappers
+   and direct paragraphs under `<details>`. Both must receive the same readable
+   dark-mode foreground instead of allowing a legacy muted-text rule to win. */
 html[data-theme="dark"] .release-v24 .faq-answer,
-html[data-theme="dark"] .release-v24 .faq-answer :where(p, li, span, strong) {
+html[data-theme="dark"] .release-v24 .faq-answer :where(p, li, span, strong),
+html[data-theme="dark"] .release-v24 .faq-pro-list details[open] > p,
+html[data-theme="dark"] .release-v24 .faq-clean-list details[open] > p {
   color: #f0e4e9 !important;
   background: transparent !important;
   opacity: 1 !important;

@@ -41,6 +41,7 @@ jobs:
       - name: Check mobile audit source
         run: |
           python -m py_compile tools/audit_mobile_layout.py
+          python -m py_compile tools/audit_reported_mobile_regressions.py
           python -m py_compile tools/generate_responsive_clinical_images.py
 
       - name: Build and start local CMS
@@ -75,6 +76,12 @@ jobs:
             --engine webkit \
             --color-scheme dark \
             --output audit-artifacts/mobile-layout-local-webkit
+
+      - name: Audit exact reported iPhone regressions
+        run: |
+          python tools/audit_reported_mobile_regressions.py \
+            --site http://127.0.0.1:8000 \
+            --output audit-artifacts/reported-mobile-regressions-local
 
       - name: Upload mobile evidence
         if: always()
@@ -137,6 +144,12 @@ jobs:
             --engine webkit \
             --color-scheme dark \
             --output audit-artifacts/mobile-layout-live-webkit
+
+      - name: Audit exact reported production regressions
+        run: |
+          python tools/audit_reported_mobile_regressions.py \
+            --site https://www.aasthaskincentre.in \
+            --output audit-artifacts/reported-mobile-regressions-live
 
       - name: Upload live mobile evidence
         if: always()
