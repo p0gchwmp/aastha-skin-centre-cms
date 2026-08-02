@@ -28,16 +28,33 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         install_curated = workflow.index(
             "python tools/install_curated_visual_cue_assets.py"
         )
+        responsive_clinical = workflow.index(
+            "python tools/generate_responsive_clinical_images.py"
+        )
+        audit_clinical = workflow.index(
+            "python tools/audit_clinical_result_images.py"
+        )
         verify_snapshots = workflow.index(
             "python tools/verify_exact_page_snapshots.py"
         )
         collectstatic = workflow.index("python manage.py collectstatic --no-input")
 
         self.assertLess(build_visuals, install_curated)
-        self.assertLess(install_curated, verify_snapshots)
+        self.assertLess(install_curated, responsive_clinical)
+        self.assertLess(responsive_clinical, audit_clinical)
+        self.assertLess(audit_clinical, verify_snapshots)
         self.assertLess(verify_snapshots, collectstatic)
         self.assertIn("DJANGO_SETTINGS_MODULE: aastha_cms.settings.quality", workflow)
         self.assertIn("gunicorn aastha_cms.wsgi:application", workflow)
+
+    def test_production_build_generates_responsive_clinical_assets(self):
+        build = self.read("build.sh")
+        responsive_clinical = build.index(
+            "python tools/generate_responsive_clinical_images.py"
+        )
+        collectstatic = build.index("python manage.py collectstatic --no-input")
+
+        self.assertLess(responsive_clinical, collectstatic)
 
     def test_lighthouse_config_covers_representative_pages_and_strict_targets(self):
         config = self.read("lighthouserc.cjs")
@@ -56,7 +73,11 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn('"categories:accessibility": ["error", { minScore: 1 }]', config)
         self.assertIn('"categories:best-practices": ["error", { minScore: 1 }]', config)
         self.assertIn('"categories:seo": ["error", { minScore: 1 }]', config)
-        self.assertIn('"largest-contentful-paint"', config)
+        self.assertIn(
+            '"largest-contentful-paint": ["error", { maxNumericValue: 2500 }]',
+            config,
+        )
+        self.assertIn('"uses-responsive-images": "error"', config)
         self.assertIn('"cumulative-layout-shift"', config)
         self.assertIn('"total-blocking-time"', config)
 
