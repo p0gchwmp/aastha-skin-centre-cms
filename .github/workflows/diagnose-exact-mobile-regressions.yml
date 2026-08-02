@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "tools/diagnose_exact_mobile_regressions.py"
+      - "tools/discover_sideburns_route.py"
       - ".github/workflows/diagnose-exact-mobile-regressions.yml"
   workflow_dispatch:
 
@@ -14,7 +15,7 @@ permissions:
 jobs:
   diagnose-live-production:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -30,6 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install playwright
           python -m playwright install --with-deps webkit
+
+      - name: Discover exact Sideburns-to-Toes route
+        run: |
+          python tools/discover_sideburns_route.py \
+            --base https://www.aasthaskincentre.in \
+            --output audit-artifacts/exact-mobile-diagnostic/sideburns-route.json
 
       - name: Diagnose exact reported components
         run: |
