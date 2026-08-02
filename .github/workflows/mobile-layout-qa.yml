@@ -39,11 +39,15 @@ jobs:
           python -m playwright install --with-deps chromium webkit
 
       - name: Check mobile audit source
-        run: python -m py_compile tools/audit_mobile_layout.py
+        run: |
+          python -m py_compile tools/audit_mobile_layout.py
+          python -m py_compile tools/generate_responsive_clinical_images.py
 
       - name: Build and start local CMS
         run: |
           rm -f db.sqlite3
+          python tools/generate_responsive_clinical_images.py
+          python tools/audit_clinical_result_images.py
           python manage.py migrate --no-input
           python manage.py initialize_cms
           nohup python manage.py runserver 127.0.0.1:8000 --noreload > /tmp/aastha-mobile.log 2>&1 &
