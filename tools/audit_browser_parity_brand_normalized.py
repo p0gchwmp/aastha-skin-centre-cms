@@ -27,9 +27,19 @@ from playwright.sync_api import Page
 
 _hydrated_screenshot = hydrated.audit.screenshot
 _PROJECT_ROOT = Path(__file__).resolve().parents[1]
-_CONTENT_RHYTHM = (
-    _PROJECT_ROOT / "aastha_cms" / "static" / "css" / "content-rhythm.css"
+_CONTENT_RHYTHM_TEMPLATE = (
+    _PROJECT_ROOT
+    / "home"
+    / "templates"
+    / "home"
+    / "partials"
+    / "content_rhythm_styles.html"
 ).read_text(encoding="utf-8")
+_CONTENT_RHYTHM = (
+    _CONTENT_RHYTHM_TEMPLATE.replace("<style>", "", 1)
+    .rsplit("</style>", 1)[0]
+    .strip()
+)
 
 
 def presentation_normalized_screenshot(page: Page, path: Path) -> tuple[int, int]:
