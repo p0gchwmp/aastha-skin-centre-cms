@@ -9,6 +9,18 @@
 
     const logoWidth = Number(document.body.dataset.logoWidth || 0);
     const logoHeight = Number(document.body.dataset.logoHeight || 0);
+    const logoLargeUrl = document.body.dataset.logoLargeUrl || "";
+    const logoLargeWidth = Number(document.body.dataset.logoLargeWidth || 0);
+
+    const responsiveCandidates = [
+      [logoUrl, logoWidth],
+      [logoLargeUrl, logoLargeWidth],
+    ].filter(
+      ([url, width], index, values) =>
+        url &&
+        width > 0 &&
+        values.findIndex(([candidateUrl]) => candidateUrl === url) === index,
+    );
 
     const applyLogo = (root) => {
       const marks = [...root.querySelectorAll(".brand-mark")].filter(
@@ -20,6 +32,14 @@
         const fallback = (mark.textContent || "A").trim() || "A";
         const image = new Image();
         image.src = logoUrl;
+        if (responsiveCandidates.length > 1) {
+          image.srcset = responsiveCandidates
+            .map(([url, width]) => `${url} ${width}w`)
+            .join(", ");
+          image.sizes = root.matches("[data-site-footer]")
+            ? "150px"
+            : "(max-width: 700px) 105px, 150px";
+        }
         image.alt = "";
         image.decoding = "async";
         image.loading = root.matches("[data-site-footer]") ? "lazy" : "eager";
