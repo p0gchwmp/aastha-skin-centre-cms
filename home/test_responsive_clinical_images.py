@@ -34,7 +34,8 @@ class ResponsiveClinicalImageGenerationTests(SimpleTestCase):
             source_bytes = source.stat().st_size
 
             records = []
-            for width, expected_height in ((480, 360), (768, 576)):
+            expected = ((384, 288), (640, 480), (768, 576))
+            for width, expected_height in expected:
                 destination = root / f"source-{width}w.webp"
                 record = responsive_images.generate_variant(
                     source,
@@ -49,13 +50,16 @@ class ResponsiveClinicalImageGenerationTests(SimpleTestCase):
                     self.assertEqual(generated.format, "WEBP")
                     self.assertEqual(generated.size, (width, expected_height))
 
-            self.assertEqual([record["width"] for record in records], [480, 768])
+            self.assertEqual(
+                [record["width"] for record in records],
+                [384, 640, 768],
+            )
 
     def test_variant_path_preserves_source_and_adds_width_suffix(self):
         source = Path("clinical/acne-scar-treatment-01.webp")
         self.assertEqual(
-            responsive_images.variant_asset_path(source, 480),
-            Path("clinical/acne-scar-treatment-01-480w.webp"),
+            responsive_images.variant_asset_path(source, 384),
+            Path("clinical/acne-scar-treatment-01-384w.webp"),
         )
 
     def test_rejects_upscaling_and_invalid_widths(self):
@@ -68,7 +72,7 @@ class ResponsiveClinicalImageGenerationTests(SimpleTestCase):
                 responsive_images.generate_variant(
                     source,
                     root / "invalid.webp",
-                    480,
+                    384,
                 )
             with self.assertRaises(ValueError):
                 responsive_images.generate_variant(
