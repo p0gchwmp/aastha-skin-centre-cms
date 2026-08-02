@@ -1,14 +1,21 @@
 from pathlib import Path
 
-from django.contrib.staticfiles import finders
+from django.conf import settings
 from django.test import SimpleTestCase
 
 
 class ContentRhythmTests(SimpleTestCase):
     def setUp(self):
-        asset = finders.find("css/content-rhythm.css")
-        self.assertIsNotNone(asset)
-        self.stylesheet = Path(asset).read_text(encoding="utf-8")
+        template = (
+            Path(settings.BASE_DIR)
+            / "home"
+            / "templates"
+            / "home"
+            / "partials"
+            / "content_rhythm_styles.html"
+        )
+        self.assertTrue(template.exists())
+        self.stylesheet = template.read_text(encoding="utf-8")
 
     def test_long_bullet_lists_use_balanced_columns(self):
         self.assertIn("columns: 2;", self.stylesheet)
