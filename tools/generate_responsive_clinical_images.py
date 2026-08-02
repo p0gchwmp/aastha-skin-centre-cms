@@ -25,8 +25,8 @@ from home.clinical_results import CLINICAL_RESULT_GALLERIES
 
 STATIC_ROOT = ROOT / "home" / "static"
 OUTPUT = ROOT / "audit-artifacts" / "responsive-clinical-images.json"
-TARGET_WIDTHS = (480, 768)
-QUALITY_BY_WIDTH = {480: 76, 768: 80}
+TARGET_WIDTHS = (384, 640, 768)
+QUALITY_BY_WIDTH = {384: 74, 640: 78, 768: 80}
 
 
 def original_asset_path(route: str, index: int) -> Path:
