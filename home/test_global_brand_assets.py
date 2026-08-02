@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from io import BytesIO
+from pathlib import Path
 import shutil
 import tempfile
 
@@ -44,18 +45,50 @@ class GlobalBrandAssetTests(TestCase):
             follow=True,
         )
 
-    def test_selected_logo_is_exposed_as_an_optimized_public_asset(self):
+    def test_selected_logo_exposes_standard_and_high_density_webp_assets(self):
         logo = self._image("updated-clinic-logo")
         self.site_settings.logo = logo
         self.site_settings.save(update_fields=["logo"])
 
         response = self._homepage()
-        expected = logo.get_rendition("max-480x160")
+        standard = logo.get_rendition("max-160x54|format-webp")
+        high_density = logo.get_rendition("max-320x108|format-webp")
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'data-logo-url="{expected.url}"')
-        self.assertContains(response, f'data-logo-width="{expected.width}"')
-        self.assertContains(response, f'data-logo-height="{expected.height}"')
+        self.assertContains(response, f'data-logo-url="{standard.url}"')
+        self.assertContains(response, f'data-logo-width="{standard.width}"')
+        self.assertContains(response, f'data-logo-height="{standard.height}"')
+        self.assertContains(
+            response,
+            f'data-logo-large-url="{high_density.url}"',
+        )
+        self.assertContains(
+            response,
+            f'data-logo-large-width="{high_density.width}"',
+        )
+        self.assertContains(
+            response,
+            f'data-logo-large-height="{high_density.height}"',
+        )
+        self.assertTrue(standard.url.endswith(".webp"))
+        self.assertTrue(high_density.url.endswith(".webp"))
+        self.assertLess(standard.width, high_density.width)
+
+    def test_logo_hydrator_builds_truthful_responsive_markup(self):
+        script = (
+            Path(__file__).resolve().parents[1]
+            / "aastha_cms"
+            / "static"
+            / "js"
+            / "aastha_cms.js"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("dataset.logoLargeUrl", script)
+        self.assertIn("dataset.logoLargeWidth", script)
+        self.assertIn("image.srcset = responsiveCandidates", script)
+        self.assertIn('"(max-width: 700px) 105px, 150px"', script)
+        self.assertIn('? "150px"', script)
+        self.assertIn("image.src = logoUrl", script)
 
     def test_selected_logo_keeps_footer_geometry_stable(self):
         logo = self._image("stable-footer-logo")
@@ -126,3 +159,4 @@ class GlobalBrandAssetTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'data-logo-url=""')
+        self.assertContains(response, 'data-logo-large-url=""')

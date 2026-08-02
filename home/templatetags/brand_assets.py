@@ -7,11 +7,14 @@ from django import template
 register = template.Library()
 
 
+EMPTY_ASSET = {"url": "", "width": 0, "height": 0}
+
+
 def _asset(image, rendition_spec: str) -> dict[str, object]:
     """Return a browser-ready rendition while tolerating legacy image files."""
 
     if not image:
-        return {"url": "", "width": 0, "height": 0}
+        return EMPTY_ASSET.copy()
 
     try:
         rendition = image.get_rendition(rendition_spec)
@@ -33,15 +36,22 @@ def _asset(image, rendition_spec: str) -> dict[str, object]:
 
 @register.simple_tag
 def global_brand_assets(site_settings):
-    """Resolve the current logo and favicon selected in Wagtail Settings."""
+    """Resolve responsive logo renditions and the selected favicon."""
 
     if not site_settings:
         return {
-            "logo": {"url": "", "width": 0, "height": 0},
-            "favicon": {"url": "", "width": 0, "height": 0},
+            "logo": EMPTY_ASSET.copy(),
+            "logo_large": EMPTY_ASSET.copy(),
+            "favicon": EMPTY_ASSET.copy(),
         }
 
     return {
-        "logo": _asset(site_settings.logo, "max-480x160"),
+        # The logo occupies at most ~150 CSS pixels. A 160px candidate serves
+        # standard-density displays while 320px covers high-density screens.
+        "logo": _asset(site_settings.logo, "max-160x54|format-webp"),
+        "logo_large": _asset(
+            site_settings.logo,
+            "max-320x108|format-webp",
+        ),
         "favicon": _asset(site_settings.favicon, "fill-64x64"),
     }
