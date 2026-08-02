@@ -26,7 +26,7 @@ class ResponsiveClinicalImageGenerationTests(SimpleTestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "source.webp"
-            Image.new("RGB", (1200, 900), (125, 46, 76)).save(
+            Image.effect_noise((1200, 900), 64).convert("RGB").save(
                 source,
                 "WEBP",
                 quality=95,
