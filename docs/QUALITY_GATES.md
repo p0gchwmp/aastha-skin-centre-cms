@@ -49,16 +49,38 @@ a blocking release floor:
 | Best Practices category | 100 |
 | SEO category | 100 |
 | First Contentful Paint | <= 2.5 s |
-| Largest Contentful Paint | <= 3.0 s |
+| Largest Contentful Paint | <= 2.5 s |
 | Cumulative Layout Shift | <= 0.10 |
 | Total Blocking Time | <= 300 ms |
+| Responsive image delivery | Required |
 
-The remaining performance ratchet is to bring every representative mobile LCP
-to 2.5 seconds or faster. The current 3.0-second release guard prevents material
-regression while the photograph-heavy treatment hero is optimised further.
+The photograph-heavy treatment route is intentionally part of this gate. Its
+first clinical photograph must use width candidates and a truthful `sizes`
+attribute so a mobile browser does not download the 1200-pixel source for a
+roughly 360-pixel display slot.
 
 Do not lower a blocking threshold merely to make a pull request green. Fix the
 regression or document why a metric is currently unstable.
+
+## Responsive clinical photographs
+
+The 44 approved 1200-pixel WebP files remain the committed, durable source
+assets. During every production and quality build,
+`tools/generate_responsive_clinical_images.py` creates 480-pixel and 768-pixel
+WebP candidates beside them before `collectstatic` runs.
+
+Public markup then provides:
+
+- `srcset` candidates at 480, 768 and 1200 pixels;
+- route-appropriate `sizes` values;
+- eager, high-priority loading only for the visible hero photograph;
+- `data-src`, `data-srcset` and `data-sizes` for hidden carousel slides so they
+  remain unfetched until selected.
+
+`tools/audit_clinical_result_images.py` validates all 44 sources and 88 generated
+variants. It fails when a candidate is missing, has the wrong width, is not a
+valid WebP or is not smaller than its source. Generated candidates are build
+artifacts and are not edited manually.
 
 ## Evidence
 
@@ -69,6 +91,7 @@ Every workflow run uploads for 30 days:
 - a Markdown Lighthouse scorecard;
 - axe JSON results;
 - axe Markdown summary;
+- responsive clinical-image generation and validation reports;
 - screenshots for pages with blocking accessibility violations;
 - local server log.
 
@@ -92,6 +115,8 @@ Run the same production-like asset build before auditing:
 ```bash
 python tools/build_visual_cue_assets.py
 python tools/install_curated_visual_cue_assets.py
+python tools/generate_responsive_clinical_images.py
+python tools/audit_clinical_result_images.py
 python tools/verify_exact_page_snapshots.py
 python manage.py collectstatic --no-input
 ```
