@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Diagnose the exact mobile regressions shown by the clinic owner.
 
-This intentionally targets text from the supplied screenshots instead of broad
-component classes. It records the live DOM, computed styles, contrast, item
-geometry and WebKit screenshots for:
+The checks target visible text from the supplied screenshots rather than broad
+component classes. They record live DOM, computed styles, contrast and geometry
+for:
 
 * Homepage FAQ: "How much does a consultation cost?"
 * Acne-scar FAQ reference: "Can acne scars be removed completely?"
-* Laser-hair list: Sideburns through Toes
+* Laser-hair component: Sideburns through Toes
 """
 
 from __future__ import annotations
@@ -46,6 +46,10 @@ LASER_TOKENS = (
 
 def normalise(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
+
+
+def write_report(path: Path, report: dict[str, Any]) -> None:
+    path.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
 
 def prepare_page(browser: Browser) -> Page:
@@ -101,7 +105,7 @@ def inspect_faq(page: Page, question: str, screenshot_path: Path) -> dict[str, A
 
     result = details.evaluate(
         """
-        (details) => {
+        details => {
           const parseRgb = value => {
             const match = value.match(/rgba?\\(([^)]+)\\)/i);
             if (!match) return null;
@@ -125,12 +129,21 @@ def inspect_faq(page: Page, question: str, screenshot_path: Path) -> dict[str, A
             while (current) {
               const parsed = parseRgb(getComputedStyle(current).backgroundColor);
               if (parsed && parsed.a >= 0.98) {
-                return { color: parsed, css: getComputedStyle(current).backgroundColor,
-                  tag: current.tagName.toLowerCase(), className: current.className || '' };
+                return {
+                  color: parsed,
+                  css: getComputedStyle(current).backgroundColor,
+                  tag: current.tagName.toLowerCase(),
+                  className: current.className || '',
+                };
               }
               current = current.parentElement;
             }
-            return { color: { r: 0, g: 0, b: 0, a: 1 }, css: 'rgb(0, 0, 0)', tag: 'fallback', className: '' };
+            return {
+              color: { r: 0, g: 0, b: 0, a: 1 },
+              css: 'rgb(0, 0, 0)',
+              tag: 'fallback',
+              className: '',
+            };
           };
           const effectiveOpacity = node => {
             let opacity = 1;
@@ -149,6 +162,7 @@ def inspect_faq(page: Page, question: str, screenshot_path: Path) -> dict[str, A
             return {
               tag: node.tagName.toLowerCase(),
               className: node.className || '',
+              id: node.id || '',
               text: (node.innerText || '').replace(/\\s+/g, ' ').trim(),
               color: style.color,
               opacity: style.opacity,
@@ -164,7 +178,9 @@ def inspect_faq(page: Page, question: str, screenshot_path: Path) -> dict[str, A
               rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
             };
           };
-          const directAnswerChildren = Array.from(details.children).filter(node => node.tagName !== 'SUMMARY');
+          const directAnswerChildren = Array.from(details.children).filter(
+            node => node.tagName !== 'SUMMARY'
+          );
           const textNodes = directAnswerChildren.flatMap(root => {
             const nodes = [root, ...root.querySelectorAll('p, li, span, strong, div')];
             return nodes.filter(node => (node.innerText || '').trim().length > 0);
@@ -172,15 +188,8 @@ def inspect_faq(page: Page, question: str, screenshot_path: Path) -> dict[str, A
           const uniqueTextNodes = Array.from(new Set(textNodes));
           const ancestry = [];
           let current = directAnswerChildren[0] || null;
-          while (current && ancestry.length < 7) {
-            const style = getComputedStyle(current);
-            ancestry.push({
-              tag: current.tagName.toLowerCase(),
-              className: current.className || '',
-              color: style.color,
-              opacity: style.opacity,
-              backgroundColor: style.backgroundColor,
-            });
+          while (current && ancestry.length < 9) {
+            ancestry.push(describe(current));
             current = current.parentElement;
           }
           return {
@@ -198,42 +207,29 @@ def inspect_faq(page: Page, question: str, screenshot_path: Path) -> dict[str, A
     return result
 
 
-def find_laser_list(page: Page) -> Locator:
-    candidates = page.locator("ul, ol, [role='list']")
-    best_index = -1
-    best_score = -1
-    diagnostics: list[dict[str, Any]] = []
-    for index in range(candidates.count()):
-        candidate = candidates.nth(index)
-        direct_texts = candidate.locator(":scope > li, :scope > [role='listitem']").all_inner_texts()
-        texts = [normalise(value) for value in direct_texts]
-        score = sum(any(token.casefold() == text.casefold() for text in texts) for token in LASER_TOKENS)
-        diagnostics.append({"index": index, "score": score, "texts": texts[:30]})
-        if score > best_score:
-            best_score = score
-            best_index = index
-    if best_index < 0 or best_score < 12:
-        raise RuntimeError(f"Could not identify Sideburns-to-Toes list; candidates={diagnostics!r}")
-    return candidates.nth(best_index)
-
-
-def inspect_laser_list(page: Page, screenshot_path: Path) -> dict[str, Any]:
-    target = find_laser_list(page)
-    target.scroll_into_view_if_needed()
-    page.wait_for_timeout(250)
-    result = target.evaluate(
+def inspect_laser_component(page: Page, screenshot_path: Path) -> dict[str, Any]:
+    result = page.evaluate(
         """
-        list => {
-          const describeStyle = node => {
+        tokens => {
+          const normalise = value => (value || '').replace(/\\s+/g, ' ').trim();
+          const visible = element => {
+            const rect = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+              style.visibility !== 'hidden';
+          };
+          const describe = node => {
             const style = getComputedStyle(node);
             const rect = node.getBoundingClientRect();
             return {
               tag: node.tagName.toLowerCase(),
               className: node.className || '',
-              text: (node.innerText || '').replace(/\\s+/g, ' ').trim(),
+              id: node.id || '',
+              text: normalise(node.innerText),
               display: style.display,
               position: style.position,
               gridTemplateColumns: style.gridTemplateColumns,
+              gridTemplateRows: style.gridTemplateRows,
               gridAutoRows: style.gridAutoRows,
               rowGap: style.rowGap,
               columnGap: style.columnGap,
@@ -248,97 +244,207 @@ def inspect_laser_list(page: Page, screenshot_path: Path) -> dict[str, Any]:
               paddingTop: style.paddingTop,
               paddingBottom: style.paddingBottom,
               breakInside: style.breakInside,
-              rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height,
-                top: rect.top, bottom: rect.bottom },
+              rect: {
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height,
+                top: rect.top,
+                bottom: rect.bottom,
+              },
             };
           };
-          const items = Array.from(list.children).filter(node =>
-            node.matches('li, [role="listitem"]')
-          );
-          const itemData = items.map(describeStyle);
-          const gaps = itemData.slice(1).map((item, index) => ({
-            from: itemData[index].text,
-            to: item.text,
-            pixels: item.rect.top - itemData[index].rect.bottom,
-          }));
-          const ancestry = [];
-          let current = list;
-          while (current && ancestry.length < 8) {
-            ancestry.push(describeStyle(current));
-            current = current.parentElement;
+          const all = Array.from(document.querySelectorAll('body *'));
+          const matches = tokens.map(token => {
+            const candidates = all.filter(element =>
+              visible(element) && normalise(element.innerText) === token
+            );
+            candidates.sort((left, right) => {
+              const descendants = left.querySelectorAll('*').length - right.querySelectorAll('*').length;
+              if (descendants !== 0) return descendants;
+              return left.getBoundingClientRect().width - right.getBoundingClientRect().width;
+            });
+            return candidates[0] || null;
+          });
+          const missing = tokens.filter((token, index) => !matches[index]);
+          if (missing.length) {
+            return {
+              error: `Missing visible labels: ${missing.join(', ')}`,
+              found: matches.map((element, index) => ({
+                token: tokens[index],
+                match: element ? describe(element) : null,
+              })),
+            };
           }
+
+          let common = matches[0];
+          while (common && !matches.every(element => common.contains(element))) {
+            common = common.parentElement;
+          }
+          if (!common) return { error: 'Could not find a common component ancestor.' };
+          common.setAttribute('data-exact-laser-component-diagnostic', 'true');
+
+          const directWrapper = element => {
+            let current = element;
+            while (current.parentElement && current.parentElement !== common) {
+              current = current.parentElement;
+            }
+            return current;
+          };
+          const wrappers = matches.map(directWrapper);
+          const uniqueWrappers = Array.from(new Set(wrappers));
+          uniqueWrappers.forEach((wrapper, index) => {
+            wrapper.setAttribute('data-exact-laser-wrapper-diagnostic', String(index));
+          });
+
+          const labels = matches.map((element, index) => ({
+            token: tokens[index],
+            element: describe(element),
+            wrapper: describe(wrappers[index]),
+            ancestry: (() => {
+              const chain = [];
+              let current = element;
+              while (current && chain.length < 10) {
+                chain.push(describe(current));
+                if (current === common) break;
+                current = current.parentElement;
+              }
+              return chain;
+            })(),
+          }));
+          const gaps = labels.slice(1).map((item, index) => ({
+            from: labels[index].token,
+            to: item.token,
+            pixels: item.element.rect.top - labels[index].element.rect.bottom,
+            wrapperPixels: item.wrapper.rect.top - labels[index].wrapper.rect.bottom,
+          }));
+          const labelPixels = gaps.map(gap => gap.pixels);
+          const wrapperPixels = gaps.map(gap => gap.wrapperPixels);
+          const first = labels[0].element.rect;
+          const last = labels[labels.length - 1].element.rect;
+          const clipY = Math.max(0, first.top + window.scrollY - 48);
+          const clipBottom = last.bottom + window.scrollY + 48;
+
           return {
-            outerHTML: list.outerHTML,
-            list: describeStyle(list),
-            items: itemData,
+            outerHTML: common.outerHTML,
+            component: describe(common),
+            componentAncestry: (() => {
+              const chain = [];
+              let current = common;
+              while (current && chain.length < 8) {
+                chain.push(describe(current));
+                current = current.parentElement;
+              }
+              return chain;
+            })(),
+            labels,
+            uniqueWrappers: uniqueWrappers.map(describe),
             gaps,
-            gapSpread: gaps.length ? Math.max(...gaps.map(g => g.pixels)) - Math.min(...gaps.map(g => g.pixels)) : 0,
-            maxGap: gaps.length ? Math.max(...gaps.map(g => g.pixels)) : 0,
-            minGap: gaps.length ? Math.min(...gaps.map(g => g.pixels)) : 0,
-            ancestry,
+            gapSpread: Math.max(...labelPixels) - Math.min(...labelPixels),
+            maxGap: Math.max(...labelPixels),
+            minGap: Math.min(...labelPixels),
+            wrapperGapSpread: Math.max(...wrapperPixels) - Math.min(...wrapperPixels),
+            maxWrapperGap: Math.max(...wrapperPixels),
+            minWrapperGap: Math.min(...wrapperPixels),
+            clip: {
+              x: 0,
+              y: clipY,
+              width: document.documentElement.clientWidth,
+              height: clipBottom - clipY,
+            },
           };
         }
-        """
+        """,
+        list(LASER_TOKENS),
     )
-    target.screenshot(path=str(screenshot_path), animations="disabled")
+    if result.get("error"):
+        raise RuntimeError(json.dumps(result, indent=2))
+    page.screenshot(
+        path=str(screenshot_path),
+        animations="disabled",
+        clip=result["clip"],
+    )
     return result
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base", default="https://www.aasthaskincentre.in")
-    parser.add_argument("--output", type=Path, default=Path("audit-artifacts/exact-mobile-diagnostic"))
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("audit-artifacts/exact-mobile-diagnostic"),
+    )
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
+    report_path = args.output / "diagnostic.json"
     base = args.base.rstrip("/")
-
     report: dict[str, Any] = {"base": base, "viewport": VIEWPORT}
+    write_report(report_path, report)
+
+    failure: Exception | None = None
     with sync_playwright() as playwright:
         browser = playwright.webkit.launch()
         try:
             home = prepare_page(browser)
-            settle(home, f"{base}/")
-            report["homepageFaq"] = inspect_faq(
-                home,
-                HOME_QUESTION,
-                args.output / "homepage-faq.png",
-            )
-            home.context.close()
+            try:
+                settle(home, f"{base}/")
+                report["homepageFaq"] = inspect_faq(
+                    home,
+                    HOME_QUESTION,
+                    args.output / "homepage-faq.png",
+                )
+                write_report(report_path, report)
+                print(json.dumps({"homepageFaq": report["homepageFaq"]}, indent=2))
+            finally:
+                home.context.close()
 
             acne = prepare_page(browser)
-            settle(acne, f"{base}/treatments/acne-scar-treatment/")
-            report["acneScarFaq"] = inspect_faq(
-                acne,
-                ACNE_QUESTION,
-                args.output / "acne-scar-faq.png",
-            )
-            acne.context.close()
+            try:
+                settle(acne, f"{base}/treatments/acne-scar-treatment/")
+                report["acneScarFaq"] = inspect_faq(
+                    acne,
+                    ACNE_QUESTION,
+                    args.output / "acne-scar-faq.png",
+                )
+                write_report(report_path, report)
+                print(json.dumps({"acneScarFaq": report["acneScarFaq"]}, indent=2))
+            finally:
+                acne.context.close()
 
             laser = prepare_page(browser)
-            settle(laser, f"{base}/treatments/laser-hair-reduction/")
-            report["laserList"] = inspect_laser_list(
-                laser,
-                args.output / "laser-sideburns-to-toes.png",
-            )
-            laser.context.close()
+            try:
+                settle(laser, f"{base}/treatments/laser-hair-reduction/")
+                report["laserComponent"] = inspect_laser_component(
+                    laser,
+                    args.output / "laser-sideburns-to-toes.png",
+                )
+                write_report(report_path, report)
+            finally:
+                laser.context.close()
+        except Exception as exc:  # Preserve every completed diagnostic.
+            failure = exc
+            report["error"] = {"type": type(exc).__name__, "message": str(exc)}
+            write_report(report_path, report)
         finally:
             browser.close()
 
-    report_path = args.output / "diagnostic.json"
-    report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-
-    summary = {
-        "homepageFaqText": report["homepageFaq"]["textNodes"],
-        "acneScarFaqText": report["acneScarFaq"]["textNodes"],
-        "laserList": {
-            "list": report["laserList"]["list"],
-            "gaps": report["laserList"]["gaps"],
-            "gapSpread": report["laserList"]["gapSpread"],
-            "ancestry": report["laserList"]["ancestry"],
-        },
-    }
-    print(json.dumps(summary, indent=2))
+    if "laserComponent" in report:
+        laser_summary = report["laserComponent"]
+        print(
+            json.dumps(
+                {
+                    "laserComponent": laser_summary["component"],
+                    "gaps": laser_summary["gaps"],
+                    "gapSpread": laser_summary["gapSpread"],
+                    "componentAncestry": laser_summary["componentAncestry"],
+                },
+                indent=2,
+            )
+        )
     print(f"Wrote exact mobile diagnostic to {report_path}")
+    if failure is not None:
+        raise failure
     return 0
 
 
