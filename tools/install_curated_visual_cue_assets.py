@@ -17,7 +17,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT / "home" / "static" / "images" / "visual-cue-sources"
 OUTPUT_DIR = ROOT / "home" / "static" / "images" / "visual-cues"
-SIZES = (128, 256, 512)
+SIZES = (64, 128, 256, 512)
 
 # Hair deliberately remains in the original approved core set. The curated
 # hair source produced the black/glitched artwork reported on iPhone Safari.
