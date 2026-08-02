@@ -38,6 +38,7 @@ jobs:
             --output audit-artifacts/exact-mobile-diagnostic
 
       - name: Upload diagnostic evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: exact-mobile-diagnostic-${{ github.sha }}
