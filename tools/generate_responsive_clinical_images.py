@@ -44,6 +44,14 @@ def variant_asset_path(source: Path, width: int) -> Path:
     return source.with_name(f"{source.stem}-{width}w.webp")
 
 
+def report_path(path: Path) -> str:
+    """Return a stable repository-relative path or an absolute test path."""
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.resolve().as_posix()
+
+
 def _normalise(image: Image.Image) -> Image.Image:
     normalised = ImageOps.exif_transpose(image)
     if normalised.mode == "RGBA":
@@ -76,8 +84,8 @@ def generate_variant(source: Path, destination: Path, width: int) -> dict:
 
     payload = destination.read_bytes()
     return {
-        "source": source.relative_to(ROOT).as_posix(),
-        "path": destination.relative_to(ROOT).as_posix(),
+        "source": report_path(source),
+        "path": report_path(destination),
         "width": width,
         "height": height,
         "bytes": len(payload),
