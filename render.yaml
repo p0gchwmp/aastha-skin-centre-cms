@@ -12,7 +12,13 @@ services:
     plan: starter
     region: singapore
     buildCommand: ./build.sh
-    startCommand: gunicorn aastha_cms.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: >-
+      gunicorn aastha_cms.wsgi:application
+      --bind 0.0.0.0:$PORT
+      --workers ${WEB_CONCURRENCY:-1}
+      --timeout 120
+      --max-requests 500
+      --max-requests-jitter 50
     healthCheckPath: /healthz/
     autoDeployTrigger: commit
     disk:
