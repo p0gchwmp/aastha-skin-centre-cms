@@ -10,7 +10,7 @@ class HomeConfig(AppConfig):
         # definitions can be upgraded without importing model-backed block
         # modules during app-registry construction.
         from .editor_runtime import configure_extended_editor_streams
-        from .exact_editor import configure_exact_content_editor
+        from .exact_editor_setup import configure_exact_content_editor
 
         configure_extended_editor_streams()
         configure_exact_content_editor()
