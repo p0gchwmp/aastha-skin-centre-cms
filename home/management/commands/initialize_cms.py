@@ -4,6 +4,10 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from wagtail.models import Site
 
+from home.exact_editor_sync import (
+    sync_all_exact_layout_editor_fields,
+    sync_uploaded_homepage_images,
+)
 from home.models import BlogPage, HomePage, SiteSettings, TreatmentPage
 
 
@@ -53,6 +57,21 @@ def sync_approved_site_settings(site):
 class Command(BaseCommand):
     help = "Import the v28 starter site only when the CMS is genuinely empty."
 
+    def sync_editor_state(self):
+        exact_layouts = sync_all_exact_layout_editor_fields()
+        if exact_layouts:
+            self.stdout.write(
+                f"Prepared simple text/image/link editing for {exact_layouts} pages."
+            )
+
+        image_updates = sync_uploaded_homepage_images()
+        if image_updates:
+            self.stdout.write(
+                "Connected uploaded Dr. Cheena Langer photos to: "
+                + ", ".join(image_updates)
+                + "."
+            )
+
     def handle(self, *args, **options):
         configured_host = (
             os.environ.get("SITE_HOSTNAME")
@@ -82,6 +101,7 @@ class Command(BaseCommand):
             or (home is not None and home.get_children().exists())
         )
         if has_content:
+            self.sync_editor_state()
             self.stdout.write(
                 "CMS already contains pages; starter import skipped."
             )
@@ -91,3 +111,4 @@ class Command(BaseCommand):
         # A fresh import creates the site-specific settings record.
         site = Site.objects.filter(is_default_site=True).first()
         sync_approved_site_settings(site)
+        self.sync_editor_state()
