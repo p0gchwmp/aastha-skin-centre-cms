@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from wagtail.models import Site
 
-from home.exact_editor import (
+from home.exact_editor_sync import (
     sync_all_exact_layout_editor_fields,
     sync_uploaded_homepage_images,
 )
