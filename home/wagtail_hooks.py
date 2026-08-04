@@ -48,39 +48,43 @@ class WebsiteControlPanel(Component):
             "doctors": Doctor.objects.filter(is_active=True, live=True).count(),
             "clinics": ClinicLocation.objects.filter(is_active=True, live=True).count(),
             "reusable": ReusableSection.objects.filter(is_active=True, live=True).count(),
+            "exact": ExactPageLayout.objects.filter(enabled=True).count(),
         }
         return mark_safe(f"""
         <section class="aastha-control-panel">
           <div>
             <span class="aastha-admin-kicker">Website control centre</span>
             <h2>Choose what you want to change</h2>
-            <p>Pages control URLs and section order. Snippets hold reusable doctors,
-            clinics and shared sections. Settings hold facts that must update
-            everywhere, such as the consultation fee and phone numbers.</p>
+            <p>Use <strong>Editable page content</strong> for existing wording,
+            photographs and button destinations. Use Pages for page settings,
+            hero images, new sections and complete builder layouts. Settings hold
+            facts that must update everywhere, such as the fee and phone numbers.</p>
             <div class="aastha-admin-stats">
               <span><strong>{counts["pages"]}</strong> live pages</span>
+              <span><strong>{counts["exact"]}</strong> simple content editors</span>
               <span><strong>{counts["clinical"]}</strong> clinical pages</span>
               <span><strong>{counts["doctors"]}</strong> active doctors</span>
               <span><strong>{counts["clinics"]}</strong> active clinics</span>
               <span><strong>{counts["reusable"]}</strong> shared sections</span>
             </div>
             <div class="aastha-editor-workflows">
-              <h3>Complex changes without code</h3>
+              <h3>Simple editing without code</h3>
               <ol>
-                <li><strong>Add to an existing design:</strong> edit the page and use Exact-design additions.</li>
+                <li><strong>Change existing text, images or buttons:</strong> open Editable page content and choose the page path.</li>
+                <li><strong>Change a page hero photograph:</strong> edit the Page and use Hero image.</li>
+                <li><strong>Add to an existing design:</strong> edit the Page and use Exact-design additions.</li>
                 <li><strong>Build or replace a page:</strong> choose Full visual page builder and drag sections into order.</li>
-                <li><strong>Add a clinic or doctor:</strong> publish a snippet; automatic lists update and an optional draft profile page is created.</li>
-                <li><strong>Update many pages together:</strong> create or edit a Reusable section.</li>
               </ol>
             </div>
           </div>
           <div class="aastha-admin-actions">
+            <a href="/admin/snippets/home/exactpagelayout/">Edit existing page text, images and buttons</a>
+            <a href="/admin/pages/">Edit page settings, hero images or sections</a>
             <a href="/admin/settings/home/sitesettings/{site_id}/">Edit global fee, phones and branding</a>
-            <a href="/admin/pages/">Edit or add pages and sections</a>
-            <a href="/admin/snippets/home/doctor/add/">Add a doctor</a>
-            <a href="/admin/snippets/home/cliniclocation/add/">Add a clinic</a>
+            <a href="/admin/images/">Upload or manage images</a>
+            <a href="/admin/snippets/home/doctor/">Edit doctor profile and photograph</a>
+            <a href="/admin/snippets/home/cliniclocation/">Edit clinic locations</a>
             <a href="/admin/snippets/home/reusablesection/add/">Create a reusable section</a>
-            <a href="/admin/images/">Manage images</a>
             <a href="/admin/reports/">Review drafts, workflows and reports</a>
           </div>
         </section>
@@ -105,21 +109,32 @@ def explain_rendering_mode(request, page):
     specific = page.specific
     if not hasattr(specific, "layout_mode"):
         return
-    exact_active = ExactPageLayout.objects.filter(
-        path=_public_path(specific, request),
+    public_path = _public_path(specific, request)
+    exact_layout = ExactPageLayout.objects.filter(
+        path=public_path,
         enabled=True,
-    ).exists()
-    if exact_active and specific.layout_mode == "hybrid":
+    ).first()
+    if exact_layout and specific.layout_mode == "hybrid":
         messages.info(
             request,
-            "This page keeps its verified design. Add, reorder and position new "
-            "sections in ‘Exact-design additions’; the existing layout remains intact.",
+            format_html(
+                "This page keeps its verified design. The Hero image field now "
+                "changes the live hero. To change existing wording, other images "
+                "or buttons, open <a href=\"/admin/snippets/home/exactpagelayout/\">"
+                "Editable page content</a> and choose <strong>{}</strong>. Use "
+                "Exact-design additions only for new sections.",
+                public_path,
+            ),
         )
-    elif exact_active and specific.layout_mode == "exact":
+    elif exact_layout and specific.layout_mode == "exact":
         messages.warning(
             request,
-            "Exact-design-only mode is active. Sections in the editor are saved "
-            "but intentionally hidden until the rendering mode is changed.",
+            format_html(
+                "Exact-design-only mode is active. Existing wording, images and "
+                "buttons remain editable in <a href=\"/admin/snippets/home/"
+                "exactpagelayout/\">Editable page content</a>; added sections are "
+                "hidden until the rendering mode changes."
+            ),
         )
     elif specific.layout_mode == "builder":
         messages.info(
