@@ -14,6 +14,8 @@ from home.exact_editor import (
     apply_exact_editor_overrides,
     apply_page_media_slots,
     extract_exact_editor_payload,
+)
+from home.exact_editor_sync import (
     sync_exact_layout_editor_fields,
     sync_uploaded_homepage_images,
 )
