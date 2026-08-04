@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("home", "0008_complete_future_editor_blocks"),
-        ("wagtailimages", "0026_delete_uploadedimage"),
     ]
 
     operations = [
