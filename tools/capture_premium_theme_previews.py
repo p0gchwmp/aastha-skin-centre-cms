@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Capture exact rendered premium-theme previews from the local CMS.
+"""Capture exact rendered luxury-theme previews from the local CMS.
 
-Preview-only QA helper used by PR #66. It does not mutate content or settings.
+QA helper for the approved redesign branch. It does not mutate content or
+settings. The route set intentionally covers each major page family so a
+site-wide design regression is visible before production rollout.
 """
 
 from __future__ import annotations
@@ -16,7 +18,13 @@ from playwright.sync_api import sync_playwright
 ROUTES = {
     "home": "/",
     "acne-treatment": "/treatments/acne-treatment/",
+    "treatments-index": "/treatments/",
+    "conditions-index": "/conditions/",
+    "doctor": "/doctor/dr-cheena-langer/",
+    "locations-index": "/locations/",
     "book-appointment": "/book-appointment/",
+    "contact": "/contact/",
+    "blog-index": "/blog/",
 }
 
 VIEWPORTS = {
@@ -78,8 +86,8 @@ def capture_acne_debug(page, output: Path) -> None:
           const assetUrls = [
             '/static/css/premium-v5-reference.css',
             '/static/js/premium-v5-reference.js',
-            '/static/css/premium-v5-acne-structure.css',
-            '/static/js/premium-v5-acne-structure.js',
+            '/static/css/premium-production.css',
+            '/static/js/premium-production.js',
           ];
           const assetFetches = {};
           for (const url of assetUrls) {
@@ -104,15 +112,10 @@ def capture_acne_debug(page, output: Path) -> None:
             careSidebar: describe(document.querySelector('.care-sidebar')),
             careSidebarCard: describe(document.querySelector('.care-sidebar-card')),
             v5Rail: describe(document.querySelector('.v5-page-rail')),
-            sectionPair: describe(document.querySelector('.v5-section-pair')),
+            luxuryRail: describe(document.querySelector('.luxury-page-rail')),
             releaseTocDisplay: document.querySelector('.release-toc') ? getComputedStyle(document.querySelector('.release-toc')).display : null,
-            v5StructureLink: document.querySelector('link[data-v5-acne-structure]') ? {
-              href: document.querySelector('link[data-v5-acne-structure]').href,
-              sheetLoaded: Boolean(document.querySelector('link[data-v5-acne-structure]').sheet),
-            } : null,
-            v5StructureScript: document.querySelector('script[data-v5-acne-structure]')?.src || null,
             assetFetches,
-            styleSheets: [...document.styleSheets].map(sheet => sheet.href).filter(Boolean).filter(href => href.includes('premium-v5')),
+            styleSheets: [...document.styleSheets].map(sheet => sheet.href).filter(Boolean).filter(href => href.includes('premium')),
             nearestContainers: [...document.querySelectorAll('#main-content .container')].slice(0, 8).map(describe),
           };
         }
@@ -144,7 +147,10 @@ def capture(base_url: str, output: Path) -> None:
                 )
                 page = context.new_page()
                 for label, route in ROUTES.items():
-                    page.goto(f"{base_url}{route}", wait_until="networkidle", timeout=60000)
+                    response = page.goto(f"{base_url}{route}", wait_until="networkidle", timeout=60000)
+                    if response is None or response.status >= 400:
+                        status = response.status if response else "no response"
+                        raise RuntimeError(f"Preview route {route} returned {status}")
                     page.evaluate(
                         "theme => {"
                         " localStorage.setItem('aastha-theme', theme);"
