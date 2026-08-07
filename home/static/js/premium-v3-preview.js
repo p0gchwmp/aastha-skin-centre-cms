@@ -1,4 +1,64 @@
 (() => {
+  /* Critical contrast rules are injected synchronously by this deferred script.
+     They intentionally sit after every legacy stylesheet so the preview can
+     keep the quiet-luxury palette without inheriting incompatible button/text
+     combinations from earlier design layers. */
+  const installContrastGuard = () => {
+    if (document.getElementById("premium-v3-contrast-guard")) return;
+    const style = document.createElement("style");
+    style.id = "premium-v3-contrast-guard";
+    style.textContent = `
+      body.release-v24:not(.cms-home-page) .article-cta .button:not(.button-secondary),
+      body.release-v24:not(.cms-home-page) .article-cta a.button:not(.button-secondary) {
+        color: #681d35 !important;
+        background: #fffdfa !important;
+        border-color: #fffdfa !important;
+      }
+      body.release-v24:not(.cms-home-page) .article-cta .button-secondary,
+      body.release-v24:not(.cms-home-page) .article-cta a.button-secondary {
+        color: #ffffff !important;
+        background: transparent !important;
+        border-color: rgba(255,255,255,.60) !important;
+      }
+      body.release-v24 .clinical-results__hero-label {
+        color: #4b1427 !important;
+        background: rgba(255,253,250,.94) !important;
+        text-shadow: none !important;
+      }
+      html[data-theme="dark"] body.release-v24 .page-hero-copy .breadcrumbs a,
+      html[data-theme="dark"] body.release-v24 .page-hero-copy nav a,
+      html[data-theme="dark"] body.release-v24:not(.cms-home-page) .breadcrumbs a {
+        color: #e0acbb !important;
+      }
+      html[data-theme="dark"] body.release-v24 .button:not(.button-secondary),
+      html[data-theme="dark"] body.release-v24 a.button:not(.button-secondary),
+      html[data-theme="dark"] body.release-v24 button.button:not(.button-secondary),
+      html[data-theme="dark"] body.release-v24 button[type="submit"],
+      html[data-theme="dark"] body.release-v24 a[href$="#appointment-form"].button,
+      html[data-theme="dark"] body.release-v24 .care-sidebar-card > .button,
+      html[data-theme="dark"] body.release-v24 .page-hero-copy .hero-actions > .button {
+        color: #ffffff !important;
+        background: #761b3b !important;
+        border-color: #761b3b !important;
+      }
+      html[data-theme="dark"] body.release-v24 .button-secondary,
+      html[data-theme="dark"] body.release-v24 a.button-secondary {
+        color: #f8f2ec !important;
+        background: transparent !important;
+        border-color: rgba(255,255,255,.52) !important;
+      }
+      html[data-theme="dark"] body.release-v24:not(.cms-home-page) .article-cta .button:not(.button-secondary),
+      html[data-theme="dark"] body.release-v24:not(.cms-home-page) .article-cta a.button:not(.button-secondary) {
+        color: #681d35 !important;
+        background: #fffdfa !important;
+        border-color: #fffdfa !important;
+      }
+    `;
+    document.head.appendChild(style);
+  };
+
+  installContrastGuard();
+
   const isRealPhoto = image => {
     if (!image) return false;
     const src = (image.currentSrc || image.getAttribute("src") || "").toLowerCase();
