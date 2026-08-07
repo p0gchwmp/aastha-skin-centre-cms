@@ -39,11 +39,10 @@ def capture(base_url: str, output: Path) -> None:
                     reduced_motion="reduce",
                 )
                 context.add_init_script(
-                    "theme => {"
-                    " localStorage.setItem('aastha-theme', theme);"
-                    " document.documentElement.dataset.theme = theme;"
-                    "}",
-                    theme,
+                    script=(
+                        "localStorage.setItem('aastha-theme', " + repr(theme) + ");"
+                        "document.documentElement.dataset.theme = " + repr(theme) + ";"
+                    )
                 )
                 page = context.new_page()
                 for label, route in ROUTES.items():
