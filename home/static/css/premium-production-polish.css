@@ -123,6 +123,26 @@ html[data-theme="light"] body.release-v24[data-page-type="contentindexpage"] .se
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 14px;
   }
+
+  /* Mobile directory pages are intentionally editorial, not microscopic.
+     Keep every repeated card text class at or above 12px for comfortable
+     reading and Lighthouse's legible-font-size best-practice gate. */
+  body.release-v24[data-page-type="contentindexpage"] .journal-card p {
+    font-size: .8rem;
+    line-height: 1.58;
+  }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card :is(span,strong) {
+    font-size: .75rem;
+  }
+  body.release-v24[data-page-type="contentindexpage"] :is(.quiet-label,.eyebrow,.section-kicker) {
+    font-size: .75rem;
+  }
+  body.release-v24[data-page-type="contentindexpage"] :is(.button,a.button) {
+    font-size: .75rem !important;
+  }
+  body.release-v24[data-page-type="contentindexpage"] .site-footer h2 {
+    font-size: .75rem;
+  }
 }
 
 @media (max-width: 480px) {
