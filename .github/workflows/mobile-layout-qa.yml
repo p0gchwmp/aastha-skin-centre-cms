@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -93,7 +92,6 @@ jobs:
           retention-days: 14
 
   live-mobile-layout:
-    if: github.event_name != 'pull_request'
     needs: local-mobile-layout
     runs-on: ubuntu-latest
     timeout-minutes: 45
