@@ -25,8 +25,11 @@ from home.clinical_results import CLINICAL_RESULT_GALLERIES
 
 STATIC_ROOT = ROOT / "home" / "static"
 OUTPUT = ROOT / "audit-artifacts" / "responsive-clinical-images.json"
-TARGET_WIDTHS = (384, 640, 768)
-QUALITY_BY_WIDTH = {384: 74, 640: 78, 768: 80}
+# 512px is a better bridge between the 384px mobile candidate and the 768px
+# tablet/retina candidate. It avoids downloading a 640px asset for a ~360px
+# clinical hero while retaining enough source detail for high-density screens.
+TARGET_WIDTHS = (384, 512, 768)
+QUALITY_BY_WIDTH = {384: 74, 512: 77, 768: 80}
 
 
 def original_asset_path(route: str, index: int) -> Path:
