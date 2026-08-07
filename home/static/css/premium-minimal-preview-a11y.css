@@ -1,0 +1,78 @@
+/* Preview-only contrast hardening for the quiet-luxury homepage. */
+body.cms-home-page .brand small {
+  color: #625b56 !important;
+}
+
+body.cms-home-page .button-secondary.button[href$="book-appointment/"],
+body.cms-home-page a.button-secondary[href$="book-appointment/"] {
+  color: var(--lux2-ink) !important;
+  background: transparent !important;
+  border-color: rgba(21,18,16,.42) !important;
+}
+
+body.cms-home-page .doctor-copy .button-secondary,
+body.cms-home-page .doctor-copy a.button-secondary,
+body.cms-home-page .home-cta .button-secondary,
+body.cms-home-page .home-cta a.button-secondary {
+  color: #fffdf9 !important;
+  background: transparent !important;
+  border-color: rgba(255,253,249,.52) !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .brand small {
+  color: #c2b9b0 !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .button,
+html[data-theme="dark"] body.cms-home-page a.button,
+html[data-theme="dark"] body.cms-home-page .primary-nav .button,
+html[data-theme="dark"] body.cms-home-page .location-actions .button {
+  color: #fff !important;
+  background: #74233d !important;
+  border-color: #74233d !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .button:hover,
+html[data-theme="dark"] body.cms-home-page a.button:hover {
+  color: #fff !important;
+  background: #8a2d4a !important;
+  border-color: #8a2d4a !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .hero-booking-card {
+  color: #f2ece4 !important;
+  background: #1e1a17 !important;
+  border-left-color: #b75a78 !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .hero-booking-card strong,
+html[data-theme="dark"] body.cms-home-page .hero-booking-card p,
+html[data-theme="dark"] body.cms-home-page .hero-booking-card .fee {
+  color: #f2ece4 !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .why-card .why-number,
+html[data-theme="dark"] body.cms-home-page .concern-card::before {
+  color: #cbb38d !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .doctor-copy .button {
+  color: #151210 !important;
+  background: #fffdf9 !important;
+  border-color: #fffdf9 !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .doctor-copy .button-secondary,
+html[data-theme="dark"] body.cms-home-page .doctor-copy a.button-secondary,
+html[data-theme="dark"] body.cms-home-page .home-cta .button-secondary,
+html[data-theme="dark"] body.cms-home-page .home-cta a.button-secondary {
+  color: #fffdf9 !important;
+  background: transparent !important;
+  border-color: rgba(255,253,249,.58) !important;
+}
+
+html[data-theme="dark"] body.cms-home-page .home-cta .button:not(.button-secondary) {
+  color: #53172b !important;
+  background: #fffdf9 !important;
+  border-color: #fffdf9 !important;
+}
