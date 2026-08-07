@@ -73,6 +73,13 @@ body.release-v24 .site-footer a:focus-visible {
   color: #fffaf5 !important;
 }
 
+/* Higher specificity than the light-mode header microcopy rule above. */
+html:not([data-theme="dark"]) body.release-v24 .site-footer .brand small,
+html:not([data-theme="dark"]) body.release-v24 .site-footer .brand-footer small,
+html:not([data-theme="dark"]) body.release-v24 .site-footer .brand-footer > span small {
+  color: #bfb5ab !important;
+}
+
 /* Dark mode retains the brighter champagne tone because contrast against the
    espresso surfaces is already comfortably above AA. */
 html[data-theme="dark"] body.release-v24 .brand small {
