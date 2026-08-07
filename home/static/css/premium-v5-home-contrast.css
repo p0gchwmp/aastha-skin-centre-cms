@@ -35,8 +35,8 @@ body.cms-home-page .doctor-feature a.button-secondary:hover {
 }
 
 /* The selected-treatment experience is a horizontal touch rail on phones.
-   Use flex rather than a four-column CSS grid so there are no off-viewport
-   grid tracks and browser/mobile QA can reason about the intended overflow. */
+   Before JS upgrades it, keep the layout bounded. After V5 pager activation,
+   render exactly one card at a time so no hidden grid tracks cross the viewport. */
 @media (max-width: 700px) {
   body.cms-home-page .treatment-grid,
   body.cms-home-page .treatment-grid.v4-carousel-ready {
@@ -62,5 +62,26 @@ body.cms-home-page .doctor-feature a.button-secondary:hover {
     max-width: min(78vw, 330px) !important;
     min-width: 0 !important;
     scroll-snap-align: start;
+  }
+
+  body.cms-home-page .treatment-grid.v5-mobile-pager,
+  body.cms-home-page .treatment-grid.v4-carousel-ready.v5-mobile-pager {
+    display: block !important;
+    overflow: hidden !important;
+    padding-bottom: 0 !important;
+    scroll-snap-type: none !important;
+  }
+  body.cms-home-page .treatment-grid.v5-mobile-pager > .treatment-card[hidden],
+  body.cms-home-page .treatment-grid.v4-carousel-ready.v5-mobile-pager > .treatment-card[hidden] {
+    display: none !important;
+  }
+  body.cms-home-page .treatment-grid.v5-mobile-pager > .treatment-card.v5-mobile-active,
+  body.cms-home-page .treatment-grid.v4-carousel-ready.v5-mobile-pager > .treatment-card.v5-mobile-active {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    flex: none !important;
   }
 }
