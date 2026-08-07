@@ -24,6 +24,18 @@ VIEWPORTS = {
 }
 
 
+def warm_lazy_media(page) -> None:
+    """Scroll through the document so lazy-loaded images enter the viewport."""
+    height = int(page.evaluate("Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)"))
+    viewport_height = int(page.evaluate("window.innerHeight"))
+    step = max(520, int(viewport_height * 0.72))
+    for y in range(0, height, step):
+        page.evaluate("y => window.scrollTo(0, y)", y)
+        page.wait_for_timeout(90)
+    page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(350)
+
+
 def capture(base_url: str, output: Path) -> None:
     output.mkdir(parents=True, exist_ok=True)
     base_url = base_url.rstrip("/")
@@ -54,7 +66,8 @@ def capture(base_url: str, output: Path) -> None:
                         "}",
                         theme,
                     )
-                    page.wait_for_timeout(700)
+                    page.wait_for_timeout(500)
+                    warm_lazy_media(page)
                     page.screenshot(
                         path=str(output / f"{label}--{device_name}--{theme}.png"),
                         full_page=True,
