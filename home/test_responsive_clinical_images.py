@@ -34,7 +34,7 @@ class ResponsiveClinicalImageGenerationTests(SimpleTestCase):
             source_bytes = source.stat().st_size
 
             records = []
-            expected = ((384, 288), (640, 480), (768, 576))
+            expected = ((384, 288), (512, 384), (768, 576))
             for width, expected_height in expected:
                 destination = root / f"source-{width}w.webp"
                 record = responsive_images.generate_variant(
@@ -52,7 +52,7 @@ class ResponsiveClinicalImageGenerationTests(SimpleTestCase):
 
             self.assertEqual(
                 [record["width"] for record in records],
-                [384, 640, 768],
+                [384, 512, 768],
             )
 
     def test_variant_path_preserves_source_and_adds_width_suffix(self):
