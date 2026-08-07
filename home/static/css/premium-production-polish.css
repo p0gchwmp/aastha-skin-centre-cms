@@ -1,5 +1,51 @@
 /* Final production-candidate polish kept separate so late QA fixes remain easy to audit. */
 
+/* Clinical layout is progressive enhancement. The broad production stylesheet
+   defines the approved 3-column geometry, but the JS adapter only opts pages
+   into it when the retained exact-page DOM exposes distinct article/sidebar
+   grid items. Older structures deliberately fall back to a wide editorial
+   reading layout instead of being squeezed into an invalid column. */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready {
+  display: grid !important;
+  grid-template-columns: 168px minmax(0, 1fr) 292px !important;
+  gap: clamp(18px, 2.2vw, 30px) !important;
+  align-items: start !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-page-rail {
+  grid-column: 1;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-content {
+  grid-column: 2;
+  min-width: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-sidebar {
+  grid-column: 3;
+  min-width: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback {
+  display: block !important;
+  width: 100% !important;
+  max-width: 1040px !important;
+  margin-inline: auto !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback .prose {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin-inline: auto !important;
+  padding-inline: 0 !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback :is(.care-sidebar,.care-sidebar-card,.sidebar-card) {
+  position: static !important;
+  width: min(100%, 900px) !important;
+  max-width: 900px !important;
+  margin: 30px auto 52px !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback :is(.release-toc,.article-toc) {
+  width: min(100%, 900px) !important;
+  max-width: 900px !important;
+  margin-inline: auto !important;
+}
+
 body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
   display: grid;
   gap: 0;
@@ -46,7 +92,26 @@ body.release-v24[data-page-type="contentindexpage"] .journal-card.luxury-focus {
   outline-offset: 3px;
 }
 
+@media (max-width: 1100px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready {
+    grid-template-columns: minmax(0, 1fr) 270px !important;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-page-rail {
+    display: none !important;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-content {
+    grid-column: 1;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-sidebar {
+    grid-column: 2;
+  }
+}
+
 @media (max-width: 760px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout:is(.luxury-clinical-grid-ready,.luxury-clinical-grid-fallback) {
+    display: block !important;
+    width: 100% !important;
+  }
   body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 14px;
