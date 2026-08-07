@@ -240,3 +240,22 @@
     document.body.appendChild(script);
   }
 })();
+
+/* V5 content-driven interactions: comparison slider, alternating reveals,
+   image masks and animated disclosures. Loaded once for every preview page. */
+(() => {
+  if (!document.querySelector('link[data-v5-content-interactions]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/assets/css/premium-v5-content-interactions.css";
+    link.dataset.v5ContentInteractions = "true";
+    document.head.appendChild(link);
+  }
+  if (!document.querySelector('script[data-v5-content-interactions]')) {
+    const script = document.createElement("script");
+    script.src = "/assets/js/premium-v5-content-interactions.js";
+    script.async = false;
+    script.dataset.v5ContentInteractions = "true";
+    document.body.appendChild(script);
+  }
+})();
