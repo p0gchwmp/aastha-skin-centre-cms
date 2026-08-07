@@ -1,21 +1,9 @@
 (() => {
   if (!document.body.classList.contains("cms-home-page")) return;
 
-  /* home_page.html's extra_head block is emitted before the global V3/V4/V5
-     preview layers. Append the same stylesheet here so this approval layer is
-     intentionally last in the cascade without touching production/main. */
-  if (!document.querySelector('link[data-v5-hybrid-last]')) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/assets/css/premium-v5-hybrid.css";
-    link.dataset.v5HybridLast = "true";
-    document.head.append(link);
-  }
-
   const qs = (selector, root = document) => root.querySelector(selector);
   const qsa = (selector, root = document) => [...root.querySelectorAll(selector)];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   const labelFor = (section, index) => {
     if (section.classList.contains("home-hero")) return "Welcome";
@@ -96,43 +84,6 @@
     entries[0]?.button.setAttribute("aria-current", "true");
   };
 
-  const setupPointerSpotlights = () => {
-    if (!finePointer || reduceMotion) return;
-    qsa(".concern-card, .treatment-card, .location-pro-card, .why-card").forEach(card => {
-      const move = event => {
-        const rect = card.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) / rect.width) * 100;
-        const y = ((event.clientY - rect.top) / rect.height) * 100;
-        card.style.setProperty("--v5-pointer-x", `${x}%`);
-        card.style.setProperty("--v5-pointer-y", `${y}%`);
-        card.classList.add("v5-pointer-active");
-      };
-      card.addEventListener("pointermove", move, { passive: true });
-      card.addEventListener("pointerleave", () => card.classList.remove("v5-pointer-active"), { passive: true });
-      card.addEventListener("focusin", () => card.classList.add("v5-pointer-active"));
-      card.addEventListener("focusout", () => card.classList.remove("v5-pointer-active"));
-    });
-  };
-
-  const setupImageDepth = () => {
-    if (!finePointer || reduceMotion) return;
-    qsa(".home-hero-media, .doctor-visual").forEach(frame => {
-      const move = event => {
-        const rect = frame.getBoundingClientRect();
-        const nx = ((event.clientX - rect.left) / rect.width) - .5;
-        const ny = ((event.clientY - rect.top) / rect.height) - .5;
-        frame.style.setProperty("--v5-depth-x", `${(nx * 1.35).toFixed(2)}deg`);
-        frame.style.setProperty("--v5-depth-y", `${(ny * -1.05).toFixed(2)}deg`);
-      };
-      const reset = () => {
-        frame.style.setProperty("--v5-depth-x", "0deg");
-        frame.style.setProperty("--v5-depth-y", "0deg");
-      };
-      frame.addEventListener("pointermove", move, { passive: true });
-      frame.addEventListener("pointerleave", reset, { passive: true });
-    });
-  };
-
   const setupConcernKeyboard = () => {
     const cards = qsa(".concern-card").filter(card => card.matches("a, button") || qs("a, button", card));
     if (cards.length < 2) return;
@@ -163,8 +114,6 @@
   const boot = () => {
     document.body.classList.add("v5-hybrid-ready");
     setupHomeRail();
-    setupPointerSpotlights();
-    setupImageDepth();
     setupConcernKeyboard();
     setupExclusiveFaq();
   };
