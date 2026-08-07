@@ -19,10 +19,14 @@ from home.clinical_results import (
 )
 
 
-RESPONSIVE_WIDTHS = (384, 640, 768)
+RESPONSIVE_WIDTHS = (384, 512, 768)
 ORIGINAL_MAX_WIDTH = 1200
+# The hero sits in a constrained visual card. On mobile, advertising roughly
+# 70% of the CSS slot lets high-density devices select the 512px/768px source
+# instead of unnecessarily jumping to a much larger original while preserving
+# crisp clinical detail.
 HERO_IMAGE_SIZES = (
-    "(max-width: 760px) calc(100vw - 48px), "
+    "(max-width: 760px) calc(70vw - 34px), "
     "(max-width: 980px) calc(100vw - 72px), 382px"
 )
 SECTION_IMAGE_SIZES = (
