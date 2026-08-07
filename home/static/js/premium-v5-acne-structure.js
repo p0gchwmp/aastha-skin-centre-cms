@@ -22,9 +22,45 @@
     return id;
   };
 
+  const moveClinicalResultIntoStory = () => {
+    const heroGallery = qs(".page-hero-art > .clinical-results--hero");
+    const prose = qs(".prose.article-stack");
+    if (!heroGallery || !prose || heroGallery.dataset.v5Moved === "true") return;
+
+    const sections = qsa(":scope > .article-section", prose);
+    const trigger = sections.find(section =>
+      qs("h2", section)?.textContent.trim().toLowerCase().startsWith("when should acne be examined")
+    );
+    if (!trigger) return;
+
+    /* The route currently has one clinic-supplied composite result image. Keep
+       it as a truthful result gallery — never manufacture a fake before/after
+       slider from one image. Moving it out of the hero also restores the normal
+       Wagtail hero image/illustration slot, matching the approved page design. */
+    heroGallery.dataset.v5Moved = "true";
+    heroGallery.classList.remove("clinical-results--hero");
+    heroGallery.classList.add("v5-results-feature");
+
+    const inner = qs(".clinical-results__inner", heroGallery);
+    if (inner) {
+      const existingLabel = qs(".clinical-results__hero-label", inner);
+      if (existingLabel) existingLabel.remove();
+      const header = document.createElement("header");
+      header.className = "v5-results-header";
+      header.innerHTML = `
+        <p class="v5-results-kicker">Real results · real confidence</p>
+        <h2>Acne treatment results</h2>
+        <p>Clinic-supplied photography. Individual response, treatment plans and timelines vary.</p>
+      `;
+      inner.prepend(header);
+    }
+    trigger.insertAdjacentElement("afterend", heroGallery);
+  };
+
   const sectionEntries = prose => {
     const selectors = [
       ":scope > .article-section > h2",
+      ":scope > .v5-section-pair > .article-section > h2",
       ":scope > .faq-section > h2",
       ":scope > .article-cta > h2",
       ":scope > .article-cta > h3",
@@ -130,6 +166,7 @@
 
   const boot = () => {
     pairSignsAndCauses();
+    moveClinicalResultIntoStory();
     buildRail();
     enrichSidebar();
   };
