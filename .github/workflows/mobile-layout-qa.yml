@@ -5,6 +5,9 @@ on:
     branches:
       - main
   pull_request:
+    paths:
+      - ".github/qa/run-mobile"
+      - ".github/workflows/mobile-layout-qa.yml"
   workflow_dispatch:
 
 permissions:
