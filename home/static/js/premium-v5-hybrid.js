@@ -1,6 +1,17 @@
 (() => {
   if (!document.body.classList.contains("cms-home-page")) return;
 
+  /* home_page.html's extra_head block is emitted before the global V3/V4/V5
+     preview layers. Append the same stylesheet here so this approval layer is
+     intentionally last in the cascade without touching production/main. */
+  if (!document.querySelector('link[data-v5-hybrid-last]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/assets/css/premium-v5-hybrid.css";
+    link.dataset.v5HybridLast = "true";
+    document.head.append(link);
+  }
+
   const qs = (selector, root = document) => root.querySelector(selector);
   const qsa = (selector, root = document) => [...root.querySelectorAll(selector)];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
