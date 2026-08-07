@@ -40,7 +40,7 @@ def warm_lazy_media(page) -> None:
 def capture_acne_debug(page, output: Path) -> None:
     payload = page.evaluate(
         """
-        () => {
+        async () => {
           const describe = node => {
             if (!node) return null;
             const rect = node.getBoundingClientRect();
@@ -75,14 +75,44 @@ def capture_acne_debug(page, output: Path) -> None:
               }),
             };
           };
+          const assetUrls = [
+            '/static/css/premium-v5-reference.css',
+            '/static/js/premium-v5-reference.js',
+            '/static/css/premium-v5-acne-structure.css',
+            '/static/js/premium-v5-acne-structure.js',
+          ];
+          const assetFetches = {};
+          for (const url of assetUrls) {
+            try {
+              const response = await fetch(url, {cache: 'no-store'});
+              assetFetches[url] = {
+                status: response.status,
+                ok: response.ok,
+                contentType: response.headers.get('content-type'),
+                bytes: (await response.text()).length,
+              };
+            } catch (error) {
+              assetFetches[url] = {error: String(error)};
+            }
+          }
           return {
             body: {className: document.body.className, dataset: {...document.body.dataset}},
             main: describe(document.querySelector('#main-content')),
             hero: describe(document.querySelector('.page-hero')),
             contentLayout: describe(document.querySelector('.content-layout')),
             prose: describe(document.querySelector('.prose')),
-            sidebar: describe(document.querySelector('.sidebar-card')),
+            careSidebar: describe(document.querySelector('.care-sidebar')),
+            careSidebarCard: describe(document.querySelector('.care-sidebar-card')),
             v5Rail: describe(document.querySelector('.v5-page-rail')),
+            sectionPair: describe(document.querySelector('.v5-section-pair')),
+            releaseTocDisplay: document.querySelector('.release-toc') ? getComputedStyle(document.querySelector('.release-toc')).display : null,
+            v5StructureLink: document.querySelector('link[data-v5-acne-structure]') ? {
+              href: document.querySelector('link[data-v5-acne-structure]').href,
+              sheetLoaded: Boolean(document.querySelector('link[data-v5-acne-structure]').sheet),
+            } : null,
+            v5StructureScript: document.querySelector('script[data-v5-acne-structure]')?.src || null,
+            assetFetches,
+            styleSheets: [...document.styleSheets].map(sheet => sheet.href).filter(Boolean).filter(href => href.includes('premium-v5')),
             nearestContainers: [...document.querySelectorAll('#main-content .container')].slice(0, 8).map(describe),
           };
         }
