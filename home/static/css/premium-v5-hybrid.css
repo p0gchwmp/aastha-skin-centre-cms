@@ -1,0 +1,312 @@
+/* =========================================================
+   PREMIUM V5 HYBRID — COUTURE CRISS-CROSS + INTERACTION
+   PREVIEW ONLY. Homepage-first approval layer.
+   ========================================================= */
+
+body.cms-home-page {
+  --v5-hybrid-gap: clamp(28px, 4vw, 64px);
+  --v5-hybrid-shift: clamp(26px, 3vw, 52px);
+}
+
+/* Editorial cross-axis guide: subtle enough to read as art direction, not decoration. */
+body.cms-home-page .home-main {
+  position: relative;
+}
+body.cms-home-page .home-main::before {
+  content: "";
+  position: absolute;
+  top: 15%;
+  right: 4.5%;
+  width: min(26vw, 360px);
+  aspect-ratio: 1;
+  border-top: 1px solid color-mix(in srgb, var(--v5-gold) 35%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--v5-gold) 22%, transparent);
+  border-radius: 0 100% 0 0;
+  opacity: .42;
+  pointer-events: none;
+}
+
+/* Concern catalogue: slight cross-rhythm instead of a perfectly flat matrix. */
+@media (min-width: 961px) {
+  body.cms-home-page .concern-grid {
+    align-items: start;
+    row-gap: 34px !important;
+  }
+  body.cms-home-page .concern-card:nth-child(3n + 2) {
+    translate: 0 18px;
+  }
+  body.cms-home-page .concern-card:nth-child(3n) {
+    translate: 0 4px;
+  }
+}
+
+body.cms-home-page .concern-card,
+body.cms-home-page .treatment-card,
+body.cms-home-page .location-pro-card,
+body.cms-home-page .why-card {
+  --v5-pointer-x: 50%;
+  --v5-pointer-y: 50%;
+  isolation: isolate;
+}
+body.cms-home-page .concern-card::before,
+body.cms-home-page .treatment-card::before,
+body.cms-home-page .location-pro-card::before,
+body.cms-home-page .why-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    260px circle at var(--v5-pointer-x) var(--v5-pointer-y),
+    color-mix(in srgb, var(--v5-gold) 8%, transparent),
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity .28s ease;
+  pointer-events: none;
+}
+body.cms-home-page .concern-card.v5-pointer-active::before,
+body.cms-home-page .treatment-card.v5-pointer-active::before,
+body.cms-home-page .location-pro-card.v5-pointer-active::before,
+body.cms-home-page .why-card.v5-pointer-active::before {
+  opacity: 1;
+}
+
+/* Doctor brand moment: media and copy deliberately overlap the centre axis. */
+@media (min-width: 961px) {
+  body.cms-home-page .doctor-feature {
+    grid-template-columns: minmax(360px, .92fr) minmax(0, 1.08fr) !important;
+    gap: 0 !important;
+    align-items: center !important;
+  }
+  body.cms-home-page .doctor-visual {
+    z-index: 1;
+    width: calc(100% + 34px);
+  }
+  body.cms-home-page .doctor-copy {
+    position: relative;
+    z-index: 2;
+    margin-left: -34px;
+    padding: clamp(36px, 4vw, 64px) clamp(34px, 4.5vw, 72px) !important;
+    border-top: 1px solid color-mix(in srgb, var(--v5-gold) 34%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--v5-gold) 22%, transparent);
+    background: color-mix(in srgb, #0b0b0a 88%, transparent);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  html:not([data-theme="dark"]) body.cms-home-page .doctor-copy {
+    background: color-mix(in srgb, #181613 93%, transparent);
+  }
+}
+
+/* Selected treatments: couture criss-cross rather than a flat app-card row. */
+@media (min-width: 961px) {
+  body.cms-home-page .treatment-grid,
+  body.cms-home-page .treatment-grid.v4-carousel-ready {
+    display: grid !important;
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    grid-auto-flow: row !important;
+    gap: 30px var(--v5-hybrid-gap) !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+    padding-bottom: 0 !important;
+  }
+  body.cms-home-page .treatment-grid > .treatment-card {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+  body.cms-home-page .treatment-grid > .treatment-card:nth-child(1) {
+    grid-column: 1 / span 6;
+    margin-top: 0;
+  }
+  body.cms-home-page .treatment-grid > .treatment-card:nth-child(2) {
+    grid-column: 7 / span 6;
+    margin-top: var(--v5-hybrid-shift);
+  }
+  body.cms-home-page .treatment-grid > .treatment-card:nth-child(3) {
+    grid-column: 1 / span 6;
+    margin-top: 8px;
+  }
+  body.cms-home-page .treatment-grid > .treatment-card:nth-child(4) {
+    grid-column: 7 / span 6;
+    margin-top: calc(var(--v5-hybrid-shift) + 6px);
+  }
+  body.cms-home-page .treatment-card {
+    display: grid !important;
+    grid-template-columns: minmax(180px, .9fr) minmax(0, 1.1fr) !important;
+    min-height: 270px;
+    border-color: color-mix(in srgb, var(--v5-line) 88%, var(--v5-gold) 12%) !important;
+  }
+  body.cms-home-page .treatment-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1.1fr) minmax(180px, .9fr) !important;
+  }
+  body.cms-home-page .treatment-card:nth-child(even) > :first-child {
+    order: 2;
+  }
+  body.cms-home-page .treatment-card:nth-child(even) .treatment-card-body {
+    order: 1;
+  }
+  body.cms-home-page .treatment-card > img,
+  body.cms-home-page .treatment-card > picture,
+  body.cms-home-page .treatment-card .treatment-card-media {
+    height: 100% !important;
+    min-height: 270px !important;
+    object-fit: cover !important;
+  }
+  body.cms-home-page .treatment-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(24px, 3vw, 42px) !important;
+    border-top: 0 !important;
+  }
+  body.cms-home-page .v5-treatment-controls {
+    display: none !important;
+  }
+}
+
+/* Credibility and clinics continue the alternation without making every section zig-zag. */
+@media (min-width: 961px) {
+  body.cms-home-page .why-grid > :nth-child(even) {
+    translate: 0 18px;
+  }
+  body.cms-home-page .location-grid,
+  body.cms-home-page .locations-grid {
+    align-items: start;
+  }
+  body.cms-home-page .location-pro-card:nth-child(even) {
+    translate: 0 28px;
+  }
+}
+
+/* Active homepage reading rail — useful on large screens, invisible on mobile. */
+.v5-home-rail {
+  position: fixed;
+  top: 50%;
+  right: 18px;
+  z-index: 28;
+  display: grid;
+  gap: 8px;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+body.v5-hybrid-ready .v5-home-rail {
+  opacity: 1;
+  pointer-events: auto;
+}
+.v5-home-rail button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.v5-home-rail button::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--v5-gold) 48%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--v5-gold) 28%, transparent);
+  transition: width .22s ease, height .22s ease, background .22s ease, box-shadow .22s ease;
+}
+.v5-home-rail button[aria-current="true"]::before,
+.v5-home-rail button:hover::before,
+.v5-home-rail button:focus-visible::before {
+  width: 9px;
+  height: 9px;
+  background: var(--v5-gold-soft);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--v5-gold) 12%, transparent);
+}
+.v5-home-rail button span {
+  position: absolute;
+  right: 30px;
+  width: max-content;
+  max-width: 150px;
+  padding: 5px 8px;
+  border: 1px solid var(--v5-line-soft);
+  background: color-mix(in srgb, var(--v5-surface) 94%, transparent);
+  color: var(--v5-text-soft);
+  font-size: .58rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.v5-home-rail button:hover span,
+.v5-home-rail button:focus-visible span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Interactive image depth is intentionally tiny: expensive, not game-like. */
+body.cms-home-page .home-hero-media,
+body.cms-home-page .doctor-visual {
+  --v5-depth-x: 0deg;
+  --v5-depth-y: 0deg;
+  transform: perspective(1200px) rotateX(var(--v5-depth-y)) rotateY(var(--v5-depth-x));
+  transform-style: preserve-3d;
+  transition: transform .35s cubic-bezier(.2,.72,.2,1);
+}
+body.cms-home-page .home-hero-media img,
+body.cms-home-page .doctor-visual img {
+  transform: translateZ(10px);
+}
+
+/* Mobile/tablet: return to clean vertical hierarchy; interactions survive without offsets. */
+@media (max-width: 960px) {
+  body.cms-home-page .home-main::before,
+  .v5-home-rail { display: none !important; }
+  body.cms-home-page .concern-card,
+  body.cms-home-page .why-grid > *,
+  body.cms-home-page .location-pro-card {
+    translate: none !important;
+  }
+  body.cms-home-page .doctor-visual {
+    width: auto !important;
+  }
+  body.cms-home-page .doctor-copy {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 700px) {
+  /* Preserve V5's deterministic one-card-at-a-time phone treatment pager. */
+  body.cms-home-page .treatment-grid,
+  body.cms-home-page .treatment-grid.v4-carousel-ready {
+    display: block !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+  body.cms-home-page .treatment-grid > .treatment-card {
+    display: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    translate: none !important;
+  }
+  body.cms-home-page .treatment-grid > .treatment-card.v5-mobile-current {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.cms-home-page .home-hero-media,
+  body.cms-home-page .doctor-visual,
+  body.cms-home-page .concern-card,
+  body.cms-home-page .treatment-card,
+  body.cms-home-page .location-pro-card,
+  body.cms-home-page .why-card {
+    transform: none !important;
+    transition: none !important;
+  }
+}
