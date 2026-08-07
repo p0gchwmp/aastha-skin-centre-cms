@@ -1,6 +1,6 @@
 /* =========================================================
    PREMIUM V5 — CONTENT-DRIVEN INTERACTIONS
-   Preview only. Keeps motion tied to content, not cursor gimmicks.
+   Preview only. Motion is tied to content and clinical results.
    ========================================================= */
 
 /* Criss-cross scroll choreography. */
@@ -9,16 +9,16 @@ body.release-v24 [data-v5-motion] {
   --v5-motion-y: 26px;
   opacity: 0;
   transform: translate3d(var(--v5-motion-x), var(--v5-motion-y), 0);
-  filter: blur(3px);
+  filter: blur(2px);
   transition:
-    opacity .66s cubic-bezier(.2,.72,.2,1),
-    transform .72s cubic-bezier(.2,.72,.2,1),
-    filter .56s ease;
+    opacity .68s cubic-bezier(.18,.76,.18,1),
+    transform .76s cubic-bezier(.18,.76,.18,1),
+    filter .58s ease;
   transition-delay: var(--v5-motion-delay, 0ms);
   will-change: opacity, transform;
 }
-body.release-v24 [data-v5-motion="left"] { --v5-motion-x: -42px; --v5-motion-y: 18px; }
-body.release-v24 [data-v5-motion="right"] { --v5-motion-x: 42px; --v5-motion-y: 18px; }
+body.release-v24 [data-v5-motion="left"] { --v5-motion-x: -48px; --v5-motion-y: 15px; }
+body.release-v24 [data-v5-motion="right"] { --v5-motion-x: 48px; --v5-motion-y: 15px; }
 body.release-v24 [data-v5-motion="up"] { --v5-motion-x: 0px; --v5-motion-y: 30px; }
 body.release-v24 [data-v5-motion].v5-motion-visible {
   opacity: 1;
@@ -26,69 +26,206 @@ body.release-v24 [data-v5-motion].v5-motion-visible {
   filter: blur(0);
 }
 
-/* Editorial image-mask reveal. The direction alternates with the criss-cross axis. */
+/* Major headings rise through an editorial mask instead of simply fading. */
+body.release-v24 .v5-heading-reveal {
+  clip-path: inset(0 0 100% 0);
+  transform: translateY(22px);
+  opacity: .35;
+  transition:
+    clip-path .82s cubic-bezier(.18,.78,.18,1),
+    transform .82s cubic-bezier(.18,.78,.18,1),
+    opacity .56s ease;
+  transition-delay: var(--v5-heading-delay, 0ms);
+}
+body.release-v24 .v5-heading-reveal.v5-motion-visible {
+  clip-path: inset(0 0 0 0);
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Editorial image-mask reveal. Direction follows the criss-cross axis. */
 body.release-v24 .v5-mask-reveal {
   clip-path: inset(0 100% 0 0);
-  transition: clip-path .9s cubic-bezier(.18,.78,.18,1), transform .8s cubic-bezier(.2,.72,.2,1) !important;
-  transition-delay: var(--v5-mask-delay, 80ms) !important;
+  transform: scale(1.018);
+  transition:
+    clip-path .96s cubic-bezier(.16,.8,.16,1),
+    transform 1.05s cubic-bezier(.18,.76,.18,1) !important;
+  transition-delay: var(--v5-mask-delay, 90ms) !important;
 }
 body.release-v24 .v5-mask-reveal.v5-mask-reveal--right { clip-path: inset(0 0 0 100%); }
-body.release-v24 .v5-mask-reveal.v5-motion-visible { clip-path: inset(0 0 0 0); }
+body.release-v24 .v5-mask-reveal.v5-motion-visible {
+  clip-path: inset(0 0 0 0);
+  transform: scale(1);
+}
 
-/* Make the real Wagtail two-image ComparisonBlock feel like a premium result viewer. */
+/* ComparisonBlock becomes a deliberate luxury result stage. */
+body.release-v24 .cms-comparison-section.v5-comparison-stage {
+  position: relative;
+  margin-block: clamp(3.5rem, 8vw, 7rem);
+  padding-block: clamp(1.5rem, 3.5vw, 2.75rem);
+  border-top: 1px solid var(--v5-line);
+  border-bottom: 1px solid var(--v5-line);
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--v5-gold) 3%, transparent) 50%, transparent);
+}
+body.release-v24 .cms-comparison-section.v5-comparison-stage > h2 {
+  margin-bottom: .65rem;
+  font-family: var(--v5-serif) !important;
+  font-size: clamp(2rem, 4.5vw, 4.2rem) !important;
+  font-weight: 500 !important;
+  letter-spacing: -.045em !important;
+  line-height: .98 !important;
+}
+body.release-v24 .cms-comparison-section.v5-comparison-stage > .lead {
+  max-width: 58ch;
+  color: var(--v5-text-soft);
+}
+body.cms-home-page .cms-comparison-section.v5-comparison-stage--home {
+  display: grid;
+  grid-template-columns: minmax(210px, .36fr) minmax(0, 1fr);
+  grid-template-areas:
+    "heading compare"
+    "intro compare"
+    ". instruction"
+    ". disclaimer";
+  column-gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+body.cms-home-page .cms-comparison-section.v5-comparison-stage--home > h2 { grid-area: heading; }
+body.cms-home-page .cms-comparison-section.v5-comparison-stage--home > .lead { grid-area: intro; }
+body.cms-home-page .cms-comparison-section.v5-comparison-stage--home > .cms-comparison-grid { grid-area: compare; }
+body.cms-home-page .cms-comparison-section.v5-comparison-stage--home > .v5-comparison-instruction { grid-area: instruction; }
+body.cms-home-page .cms-comparison-section.v5-comparison-stage--home > .medical-disclaimer { grid-area: disclaimer; }
+
 body.release-v24 .cms-comparison-grid.v5-comparison-enhanced {
   --v5-compare: 50%;
+  position: relative;
   isolation: isolate;
   aspect-ratio: 16 / 10;
   min-height: 0 !important;
+  overflow: hidden;
   touch-action: pan-y;
   cursor: ew-resize;
+  border: 1px solid var(--v5-line) !important;
+  background: var(--v5-surface-2);
+  box-shadow: 0 26px 70px rgba(0,0,0,.10);
+}
+html[data-theme="dark"] body.release-v24 .cms-comparison-grid.v5-comparison-enhanced {
+  box-shadow: 0 32px 86px rgba(0,0,0,.34);
 }
 body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure,
 body.release-v24 .cms-comparison-grid.v5-comparison-enhanced img {
   min-height: 0 !important;
 }
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure {
+  position: absolute;
+  inset: 0;
+  margin: 0 !important;
+}
 body.release-v24 .cms-comparison-grid.v5-comparison-enhanced img {
+  display: block;
+  width: 100% !important;
   height: 100% !important;
+  object-fit: cover !important;
   user-select: none;
   -webkit-user-drag: none;
 }
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure:first-child { z-index: 1; }
 body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure:nth-child(2) {
+  z-index: 2;
   clip-path: inset(0 0 0 var(--v5-compare));
   will-change: clip-path;
 }
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figcaption {
+  position: absolute;
+  bottom: 14px;
+  z-index: 3;
+  padding: 7px 10px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(8,11,13,.72);
+  color: #fff9f1;
+  font-family: var(--v5-sans);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure:first-child figcaption { left: 14px; }
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure:nth-child(2) figcaption { right: 14px; }
 body.release-v24 .v5-comparison-handle {
+  position: absolute;
+  z-index: 4;
+  inset-block: 0;
   left: var(--v5-compare) !important;
   width: 1px !important;
-  background: rgba(255,255,255,.92) !important;
+  background: rgba(255,255,255,.94) !important;
   box-shadow: 0 0 24px rgba(0,0,0,.22);
+  transform: translateX(-.5px);
+  pointer-events: none;
   transition: left .04s linear;
 }
 body.release-v24 .v5-comparison-handle::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 50%;
-  width: 22px;
+  width: 24px;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.045), transparent);
 }
 body.release-v24 .v5-comparison-handle::after {
   content: "‹  ›" !important;
-  width: 46px !important;
-  height: 46px !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px !important;
+  height: 48px !important;
   display: grid !important;
   place-items: center !important;
+  transform: translate(-50%,-50%);
   border: 1px solid color-mix(in srgb, var(--v5-gold-soft) 72%, white 28%) !important;
   border-radius: 50% !important;
-  background: color-mix(in srgb, var(--v5-surface) 80%, rgba(8,11,13,.78)) !important;
+  background: rgba(15,15,14,.78) !important;
   color: #fffaf3 !important;
   font-family: var(--v5-sans) !important;
   font-size: .92rem !important;
   letter-spacing: .05em;
-  box-shadow: 0 10px 28px rgba(0,0,0,.28);
+  box-shadow: 0 10px 28px rgba(0,0,0,.32);
+  backdrop-filter: blur(12px);
 }
 body.release-v24 .v5-comparison-range {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
   touch-action: none;
+}
+body.release-v24 .v5-comparison-hint {
+  position: absolute;
+  z-index: 4;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 7px 12px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(8,11,13,.66);
+  color: #fff9f1;
+  font-family: var(--v5-sans);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  transition: opacity .32s ease, transform .32s ease;
+}
+body.release-v24 .cms-comparison-grid[data-v5-comparison-used="true"] .v5-comparison-hint {
+  opacity: 0;
+  transform: translate(-50%,-7px);
 }
 body.release-v24 .cms-comparison-grid.v5-comparison-enhanced:has(.v5-comparison-range:focus-visible) {
   outline: 2px solid var(--v5-gold-soft);
@@ -98,67 +235,81 @@ body.release-v24 .cms-comparison-grid.v5-comparison-enhanced:has(.v5-comparison-
   box-shadow: 0 0 0 5px color-mix(in srgb, var(--v5-gold) 24%, transparent), 0 10px 28px rgba(0,0,0,.28);
 }
 body.release-v24 .v5-comparison-instruction {
-  margin: 10px 0 0;
+  margin: 11px 0 0;
   color: var(--v5-muted);
   font-family: var(--v5-sans);
   font-size: .68rem;
   letter-spacing: .02em;
 }
-body.release-v24 .cms-comparison-grid.v5-comparison-static {
-  cursor: default;
-}
+body.release-v24 .cms-comparison-grid.v5-comparison-static { cursor: default; }
 
-/* Native details remain semantic, but opening/closing gets a controlled couture motion. */
+/* Native details remain semantic, with controlled couture motion. */
 body.release-v24 details.v5-accordion-animated {
   overflow: clip;
   will-change: height;
 }
-body.release-v24 details.v5-accordion-animated > summary {
-  cursor: pointer;
-}
+body.release-v24 details.v5-accordion-animated > summary { cursor: pointer; }
 body.release-v24 details.v5-accordion-animated > :not(summary) {
-  transition: opacity .28s ease, transform .36s cubic-bezier(.2,.72,.2,1);
+  transition: opacity .3s ease, transform .38s cubic-bezier(.18,.76,.18,1);
 }
 body.release-v24 details.v5-accordion-animated.v5-accordion-opening > :not(summary) {
   opacity: 0;
-  transform: translateY(-7px);
+  transform: translateY(-8px);
 }
 body.release-v24 details.v5-accordion-animated[open]:not(.v5-accordion-opening) > :not(summary) {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Clinical result carousels feel draggable on touch without hijacking vertical scroll. */
+/* Clinical result galleries feel swipeable and transition between cases. */
 body.release-v24 [data-clinical-carousel] .clinical-results__viewport {
   touch-action: pan-y;
   cursor: grab;
 }
 body.release-v24 [data-clinical-carousel] .clinical-results__viewport:active { cursor: grabbing; }
+body.release-v24 .clinical-results__slide.v5-result-enter {
+  animation: v5-result-enter .58s cubic-bezier(.18,.76,.18,1) both;
+}
+@keyframes v5-result-enter {
+  from { opacity: .22; transform: scale(1.012) translateY(5px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
 
-/* Criss-cross is a desktop storytelling device; phones stay clean and vertical. */
+/* Phones stay vertical and calm. */
 @media (max-width: 760px) {
   body.release-v24 [data-v5-motion="left"],
   body.release-v24 [data-v5-motion="right"] {
     --v5-motion-x: 0px;
     --v5-motion-y: 22px;
   }
-  body.release-v24 .cms-comparison-grid.v5-comparison-enhanced {
-    aspect-ratio: 4 / 3;
+  body.release-v24 .cms-comparison-section.v5-comparison-stage,
+  body.cms-home-page .cms-comparison-section.v5-comparison-stage--home {
+    display: block;
+    margin-block: 3rem;
+    padding-block: 1.25rem;
   }
+  body.release-v24 .cms-comparison-grid.v5-comparison-enhanced { aspect-ratio: 4 / 3; }
   body.release-v24 .v5-comparison-handle::after {
     width: 42px !important;
     height: 42px !important;
+  }
+  body.release-v24 .v5-comparison-hint {
+    top: 10px;
+    font-size: .54rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   body.release-v24 [data-v5-motion],
+  body.release-v24 .v5-heading-reveal,
   body.release-v24 .v5-mask-reveal,
-  body.release-v24 details.v5-accordion-animated > :not(summary) {
+  body.release-v24 details.v5-accordion-animated > :not(summary),
+  body.release-v24 .clinical-results__slide.v5-result-enter {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
     clip-path: inset(0 0 0 0) !important;
     transition: none !important;
+    animation: none !important;
   }
 }
