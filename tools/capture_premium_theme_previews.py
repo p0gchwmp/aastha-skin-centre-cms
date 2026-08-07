@@ -7,6 +7,7 @@ Preview-only QA helper used by PR #66. It does not mutate content or settings.
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -34,6 +35,61 @@ def warm_lazy_media(page) -> None:
         page.wait_for_timeout(90)
     page.evaluate("window.scrollTo(0, 0)")
     page.wait_for_timeout(350)
+
+
+def capture_acne_debug(page, output: Path) -> None:
+    payload = page.evaluate(
+        """
+        () => {
+          const describe = node => {
+            if (!node) return null;
+            const rect = node.getBoundingClientRect();
+            const style = getComputedStyle(node);
+            return {
+              tag: node.tagName,
+              id: node.id,
+              className: node.className,
+              rect: {x: rect.x, y: rect.y, width: rect.width, height: rect.height},
+              display: style.display,
+              position: style.position,
+              width: style.width,
+              maxWidth: style.maxWidth,
+              gridTemplateColumns: style.gridTemplateColumns,
+              gap: style.gap,
+              parent: node.parentElement ? {
+                tag: node.parentElement.tagName,
+                id: node.parentElement.id,
+                className: node.parentElement.className,
+              } : null,
+              children: [...node.children].map(child => {
+                const childRect = child.getBoundingClientRect();
+                const childStyle = getComputedStyle(child);
+                return {
+                  tag: child.tagName,
+                  id: child.id,
+                  className: child.className,
+                  rect: {x: childRect.x, y: childRect.y, width: childRect.width, height: childRect.height},
+                  display: childStyle.display,
+                  position: childStyle.position,
+                };
+              }),
+            };
+          };
+          return {
+            body: {className: document.body.className, dataset: {...document.body.dataset}},
+            main: describe(document.querySelector('#main-content')),
+            hero: describe(document.querySelector('.page-hero')),
+            contentLayout: describe(document.querySelector('.content-layout')),
+            prose: describe(document.querySelector('.prose')),
+            sidebar: describe(document.querySelector('.sidebar-card')),
+            v5Rail: describe(document.querySelector('.v5-page-rail')),
+            nearestContainers: [...document.querySelectorAll('#main-content .container')].slice(0, 8).map(describe),
+          };
+        }
+        """
+    )
+    (output / "acne-layout-debug.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    (output / "acne-rendered.html").write_text(page.content(), encoding="utf-8")
 
 
 def capture(base_url: str, output: Path) -> None:
@@ -68,6 +124,8 @@ def capture(base_url: str, output: Path) -> None:
                     )
                     page.wait_for_timeout(500)
                     warm_lazy_media(page)
+                    if label == "acne-treatment" and device_name == "desktop" and theme == "dark":
+                        capture_acne_debug(page, output)
                     page.screenshot(
                         path=str(output / f"{label}--{device_name}--{theme}.png"),
                         full_page=True,
