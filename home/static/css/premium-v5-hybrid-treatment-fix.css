@@ -62,3 +62,47 @@
     translate: none !important;
   }
 }
+
+/* Couture does not mean microscopic. Keep the phone version visually refined
+   while ensuring secondary copy remains comfortably legible at real device
+   scale. This intentionally wins over the tiny desktop editorial labels. */
+@media (max-width: 700px) {
+  body.cms-home-page {
+    font-size: 16px !important;
+  }
+  body.cms-home-page .brand small,
+  body.cms-home-page .home-hero .eyebrow,
+  body.cms-home-page .section-kicker,
+  body.cms-home-page .quiet-label,
+  body.cms-home-page .v5-card-kicker,
+  body.cms-home-page .v5-hero-card p,
+  body.cms-home-page .trust-item strong,
+  body.cms-home-page .trust-item span,
+  body.cms-home-page .concern-card p,
+  body.cms-home-page .concern-card .text-link,
+  body.cms-home-page .treatment-card p,
+  body.cms-home-page .treatment-card .text-link,
+  body.cms-home-page .why-card p,
+  body.cms-home-page .location-pro-card p,
+  body.cms-home-page .location-pro-card li,
+  body.cms-home-page .location-pro-card a,
+  body.cms-home-page .home-main details,
+  body.cms-home-page .home-main details summary,
+  body.cms-home-page .site-footer,
+  body.cms-home-page .site-footer p,
+  body.cms-home-page .site-footer li,
+  body.cms-home-page .site-footer a,
+  body.cms-home-page .site-footer small {
+    font-size: max(12px, .75rem) !important;
+  }
+  body.cms-home-page .home-hero .lead,
+  body.cms-home-page .section-heading p,
+  body.cms-home-page .doctor-copy > p,
+  body.cms-home-page .doctor-points li {
+    font-size: max(13px, .8125rem) !important;
+  }
+  body.cms-home-page .button,
+  body.cms-home-page a.button {
+    font-size: max(12px, .75rem) !important;
+  }
+}
