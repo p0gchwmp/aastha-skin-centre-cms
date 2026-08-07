@@ -9,6 +9,11 @@
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const suppressLegacyPreviewChrome = () => {
+    qsa(".v4-carousel-controls").forEach(node => { node.hidden = true; node.style.display = "none"; });
+    if (isAcne) qsa(".v4-reading-progress").forEach(node => { node.hidden = true; node.style.display = "none"; });
+  };
+
   const setupHeader = () => {
     const header = qs(".site-header");
     if (!header) return;
@@ -333,6 +338,7 @@
   };
 
   const boot = () => {
+    suppressLegacyPreviewChrome();
     setupHeader();
     setupHomeHeroSide();
     setupTreatmentCarousel();
