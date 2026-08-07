@@ -4,6 +4,7 @@
 {% block extra_head %}
   <link rel="stylesheet" href="{% static 'css/premium-icons.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-minimal-preview.css' %}">
+  <link rel="stylesheet" href="{% static 'css/premium-minimal-preview-v2.css' %}">
 {% endblock %}
 {% block content %}
 {% exact_page_main as exact_main %}
@@ -24,4 +25,7 @@
   {% endif %}
 </main>
 {% endif %}
+{% endblock %}
+{% block extra_js %}
+  <script src="{% static 'js/premium-minimal-preview.js' %}" defer></script>
 {% endblock %}
