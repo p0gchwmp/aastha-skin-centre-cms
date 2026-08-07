@@ -220,3 +220,24 @@
     boot();
   }
 })();
+
+/* Preview-only V5 loader. Keeping this in the existing V4 entry point means
+   the experimental reference-match layer remains completely isolated from
+   production `main` until explicitly approved. */
+(() => {
+  if (!document.querySelector('link[data-premium-v5]')) {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = "/static/css/premium-v5-reference.css";
+    stylesheet.dataset.premiumV5 = "true";
+    document.head.appendChild(stylesheet);
+  }
+
+  if (!document.querySelector('script[data-premium-v5]')) {
+    const script = document.createElement("script");
+    script.src = "/static/js/premium-v5-reference.js";
+    script.defer = true;
+    script.dataset.premiumV5 = "true";
+    document.body.appendChild(script);
+  }
+})();
