@@ -1,0 +1,164 @@
+/* =========================================================
+   PREMIUM V5 — CONTENT-DRIVEN INTERACTIONS
+   Preview only. Keeps motion tied to content, not cursor gimmicks.
+   ========================================================= */
+
+/* Criss-cross scroll choreography. */
+body.release-v24 [data-v5-motion] {
+  --v5-motion-x: 0px;
+  --v5-motion-y: 26px;
+  opacity: 0;
+  transform: translate3d(var(--v5-motion-x), var(--v5-motion-y), 0);
+  filter: blur(3px);
+  transition:
+    opacity .66s cubic-bezier(.2,.72,.2,1),
+    transform .72s cubic-bezier(.2,.72,.2,1),
+    filter .56s ease;
+  transition-delay: var(--v5-motion-delay, 0ms);
+  will-change: opacity, transform;
+}
+body.release-v24 [data-v5-motion="left"] { --v5-motion-x: -42px; --v5-motion-y: 18px; }
+body.release-v24 [data-v5-motion="right"] { --v5-motion-x: 42px; --v5-motion-y: 18px; }
+body.release-v24 [data-v5-motion="up"] { --v5-motion-x: 0px; --v5-motion-y: 30px; }
+body.release-v24 [data-v5-motion].v5-motion-visible {
+  opacity: 1;
+  transform: translate3d(0,0,0);
+  filter: blur(0);
+}
+
+/* Editorial image-mask reveal. The direction alternates with the criss-cross axis. */
+body.release-v24 .v5-mask-reveal {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path .9s cubic-bezier(.18,.78,.18,1), transform .8s cubic-bezier(.2,.72,.2,1) !important;
+  transition-delay: var(--v5-mask-delay, 80ms) !important;
+}
+body.release-v24 .v5-mask-reveal.v5-mask-reveal--right { clip-path: inset(0 0 0 100%); }
+body.release-v24 .v5-mask-reveal.v5-motion-visible { clip-path: inset(0 0 0 0); }
+
+/* Make the real Wagtail two-image ComparisonBlock feel like a premium result viewer. */
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced {
+  --v5-compare: 50%;
+  isolation: isolate;
+  aspect-ratio: 16 / 10;
+  min-height: 0 !important;
+  touch-action: pan-y;
+  cursor: ew-resize;
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure,
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced img {
+  min-height: 0 !important;
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced img {
+  height: 100% !important;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced figure:nth-child(2) {
+  clip-path: inset(0 0 0 var(--v5-compare));
+  will-change: clip-path;
+}
+body.release-v24 .v5-comparison-handle {
+  left: var(--v5-compare) !important;
+  width: 1px !important;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: 0 0 24px rgba(0,0,0,.22);
+  transition: left .04s linear;
+}
+body.release-v24 .v5-comparison-handle::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 50%;
+  width: 22px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+}
+body.release-v24 .v5-comparison-handle::after {
+  content: "‹  ›" !important;
+  width: 46px !important;
+  height: 46px !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1px solid color-mix(in srgb, var(--v5-gold-soft) 72%, white 28%) !important;
+  border-radius: 50% !important;
+  background: color-mix(in srgb, var(--v5-surface) 80%, rgba(8,11,13,.78)) !important;
+  color: #fffaf3 !important;
+  font-family: var(--v5-sans) !important;
+  font-size: .92rem !important;
+  letter-spacing: .05em;
+  box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+body.release-v24 .v5-comparison-range {
+  touch-action: none;
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced:has(.v5-comparison-range:focus-visible) {
+  outline: 2px solid var(--v5-gold-soft);
+  outline-offset: 4px;
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-enhanced:has(.v5-comparison-range:focus-visible) .v5-comparison-handle::after {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--v5-gold) 24%, transparent), 0 10px 28px rgba(0,0,0,.28);
+}
+body.release-v24 .v5-comparison-instruction {
+  margin: 10px 0 0;
+  color: var(--v5-muted);
+  font-family: var(--v5-sans);
+  font-size: .68rem;
+  letter-spacing: .02em;
+}
+body.release-v24 .cms-comparison-grid.v5-comparison-static {
+  cursor: default;
+}
+
+/* Native details remain semantic, but opening/closing gets a controlled couture motion. */
+body.release-v24 details.v5-accordion-animated {
+  overflow: clip;
+  will-change: height;
+}
+body.release-v24 details.v5-accordion-animated > summary {
+  cursor: pointer;
+}
+body.release-v24 details.v5-accordion-animated > :not(summary) {
+  transition: opacity .28s ease, transform .36s cubic-bezier(.2,.72,.2,1);
+}
+body.release-v24 details.v5-accordion-animated.v5-accordion-opening > :not(summary) {
+  opacity: 0;
+  transform: translateY(-7px);
+}
+body.release-v24 details.v5-accordion-animated[open]:not(.v5-accordion-opening) > :not(summary) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Clinical result carousels feel draggable on touch without hijacking vertical scroll. */
+body.release-v24 [data-clinical-carousel] .clinical-results__viewport {
+  touch-action: pan-y;
+  cursor: grab;
+}
+body.release-v24 [data-clinical-carousel] .clinical-results__viewport:active { cursor: grabbing; }
+
+/* Criss-cross is a desktop storytelling device; phones stay clean and vertical. */
+@media (max-width: 760px) {
+  body.release-v24 [data-v5-motion="left"],
+  body.release-v24 [data-v5-motion="right"] {
+    --v5-motion-x: 0px;
+    --v5-motion-y: 22px;
+  }
+  body.release-v24 .cms-comparison-grid.v5-comparison-enhanced {
+    aspect-ratio: 4 / 3;
+  }
+  body.release-v24 .v5-comparison-handle::after {
+    width: 42px !important;
+    height: 42px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.release-v24 [data-v5-motion],
+  body.release-v24 .v5-mask-reveal,
+  body.release-v24 details.v5-accordion-animated > :not(summary) {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: inset(0 0 0 0) !important;
+    transition: none !important;
+  }
+}
