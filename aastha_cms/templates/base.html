@@ -151,7 +151,14 @@
     {% endif %}
     <div data-site-header></div>
     {% block content %}{% endblock %}
-    <div data-site-footer></div>
+    <div data-site-footer>
+      {# Critical mobile actions are server-rendered so they paint immediately; site.js hydrates the full footer later. #}
+      <div class="mobile-actions" aria-label="Quick contact">
+        <a href="tel:+91{{ site_settings.primary_mobile }}">Call</a>
+        <a href="{{ site_settings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="/book-appointment/">Book</a>
+      </div>
+    </div>
   {% endwith %}
   <script src="{% static 'js/site.js' %}" defer></script>
   <script src="{% static 'js/professional.js' %}" defer></script>
