@@ -1,0 +1,60 @@
+/* Final production-candidate polish kept separate so late QA fixes remain easy to audit. */
+
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
+  display: grid;
+  gap: 0;
+  margin-top: 19px;
+  padding-top: 12px;
+  border-top: 1px solid var(--luxury-line-soft);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust > div {
+  position: relative;
+  padding: 9px 0 9px 18px;
+  border-bottom: 1px solid var(--luxury-line-soft);
+  color: var(--luxury-muted);
+  font-family: var(--luxury-sans);
+  font-size: .57rem;
+  line-height: 1.45;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust > div:last-child {
+  border-bottom: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust > div::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  color: var(--luxury-gold);
+  font-size: .62rem;
+}
+
+/* Keep generic clinical CTA and comparison copy aligned with the couture grid. */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.article-cta,.cms-comparison-section) {
+  border-radius: 1px;
+  box-shadow: none;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .medical-disclaimer {
+  color: var(--luxury-muted);
+  font-size: .62rem;
+  line-height: 1.55;
+}
+
+/* Directory cards retain obvious keyboard focus without introducing chunky UI chrome. */
+body.release-v24[data-page-type="contentindexpage"] .journal-card:focus-visible,
+body.release-v24[data-page-type="contentindexpage"] .journal-card.luxury-focus {
+  outline: 2px solid var(--luxury-gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
+    grid-template-columns: 1fr;
+  }
+}
