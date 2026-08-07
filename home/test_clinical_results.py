@@ -54,7 +54,7 @@ class ClinicalResultGalleryTests(SimpleTestCase):
 
     def test_responsive_candidate_paths_are_deterministic(self):
         route = "/treatments/acne-scar-treatment/"
-        self.assertEqual(RESPONSIVE_WIDTHS, (384, 640, 768))
+        self.assertEqual(RESPONSIVE_WIDTHS, (384, 512, 768))
         for width in RESPONSIVE_WIDTHS:
             self.assertEqual(
                 responsive_asset_path(route, 1, width),
@@ -161,6 +161,7 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             first_image.get("srcset"),
         )
         self.assertIn("max-width: 760px", first_image.get("sizes"))
+        self.assertIn("70vw", first_image.get("sizes"))
         self.assertIn("382px", first_image.get("sizes"))
         self.assertEqual(
             len(gallery.select("[data-clinical-slide] img[data-src]")),
