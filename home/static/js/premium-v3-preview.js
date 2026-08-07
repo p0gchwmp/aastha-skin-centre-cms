@@ -20,9 +20,10 @@
         background: transparent !important;
         border-color: rgba(255,255,255,.60) !important;
       }
-      body.release-v24 .clinical-results__hero-label {
+      html body.release-v24 main#main-content .clinical-results .clinical-results__hero-label,
+      html[data-theme="dark"] body.release-v24 main#main-content .clinical-results .clinical-results__hero-label {
         color: #4b1427 !important;
-        background: rgba(255,253,250,.94) !important;
+        background: rgba(255,253,250,.96) !important;
         text-shadow: none !important;
       }
       html[data-theme="dark"] body.release-v24 .page-hero-copy .breadcrumbs a,
