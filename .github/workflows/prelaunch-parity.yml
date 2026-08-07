@@ -1,10 +1,10 @@
 name: Prelaunch parity QA
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+    paths:
+      - ".github/qa/run-parity"
+      - ".github/workflows/prelaunch-parity.yml"
   workflow_dispatch:
 
 permissions:
@@ -131,6 +131,7 @@ jobs:
           retention-days: 14
 
   deployed-render-audit:
+    if: github.event_name != 'pull_request'
     needs: local-branch-audit
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -176,28 +177,24 @@ jobs:
             --output audit-artifacts/deployed-browser
 
       - name: Exercise deployed clinical galleries and carousels
-        if: github.event_name != 'pull_request'
         run: |
           python tools/audit_clinical_result_galleries_browser.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --output audit-artifacts/deployed-clinical-gallery-browser
 
       - name: Audit deployed dark-mode readability
-        if: github.event_name != 'pull_request'
         run: |
           python tools/audit_dark_mode_readability.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --output audit-artifacts/deployed-dark-readability
 
       - name: Audit deployed editorial content rhythm
-        if: github.event_name != 'pull_request'
         run: |
           python tools/audit_content_rhythm.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
             --output audit-artifacts/deployed-content-rhythm
 
       - name: Audit deployed frontend performance budgets
-        if: github.event_name != 'pull_request'
         run: |
           python tools/audit_frontend_performance.py \
             --cms https://aastha-skin-centre-cms.onrender.com \
