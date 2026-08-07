@@ -19,6 +19,15 @@
     return heading.id;
   };
 
+  const directChildWithin = (node, ancestor) => {
+    if (!node || !ancestor || !ancestor.contains(node)) return null;
+    let current = node;
+    while (current && current.parentElement && current.parentElement !== ancestor) {
+      current = current.parentElement;
+    }
+    return current?.parentElement === ancestor ? current : null;
+  };
+
   const classifyImages = () => {
     qsa(".page-hero-art img, .cms-split-media img, .journal-card > img, .cms-comparison-grid img").forEach(image => {
       const src = (image.currentSrc || image.getAttribute("src") || "").toLowerCase();
@@ -61,14 +70,54 @@
     hero.insertAdjacentElement("afterend", strip);
   };
 
-  const setupClinicalRail = () => {
-    if (!isClinical) return;
+  const prepareClinicalLayout = () => {
+    if (!isClinical) return null;
     const layout = qs(".content-layout");
     const prose = qs(".prose", layout || document);
-    if (!layout || !prose || qs(".luxury-page-rail", layout) || qs(".v5-page-rail", layout)) return;
+    if (!layout || !prose) return null;
 
-    const headings = qsa(":scope > h2", prose).filter(node => (node.textContent || "").trim());
-    if (headings.length < 2) return;
+    /* Acne already has the approved V5 structure adapter. Leave it untouched. */
+    if (qs(".v5-page-rail", layout)) {
+      layout.classList.add("luxury-clinical-grid-approved");
+      return { layout, prose, safeForRail: false };
+    }
+
+    const sidebarCandidate =
+      qs(".care-sidebar", layout) ||
+      qs(".care-sidebar-card", layout) ||
+      qs(".sidebar-card", layout);
+    const contentRoot = directChildWithin(prose, layout);
+    const sidebarRoot = directChildWithin(sidebarCandidate, layout);
+
+    /* Legacy exact pages are not structurally identical. Only opt into the
+       three-column grid when the article and concierge resolve to distinct
+       direct grid items. Otherwise deliberately use the wide fallback. */
+    const safeForRail = Boolean(
+      contentRoot && sidebarRoot && contentRoot !== sidebarRoot
+    );
+
+    layout.classList.toggle("luxury-clinical-grid-ready", safeForRail);
+    layout.classList.toggle("luxury-clinical-grid-fallback", !safeForRail);
+
+    if (safeForRail) {
+      contentRoot.classList.add("luxury-clinical-content");
+      sidebarRoot.classList.add("luxury-clinical-sidebar");
+    }
+
+    return { layout, prose, safeForRail, contentRoot, sidebarRoot };
+  };
+
+  const setupClinicalRail = clinical => {
+    if (!isClinical || !clinical?.safeForRail) return;
+    const { layout, prose, contentRoot } = clinical;
+    if (qs(".luxury-page-rail", layout) || qs(".v5-page-rail", layout)) return;
+
+    const headings = qsa("h2", prose).filter(node => (node.textContent || "").trim());
+    if (headings.length < 2) {
+      layout.classList.remove("luxury-clinical-grid-ready");
+      layout.classList.add("luxury-clinical-grid-fallback");
+      return;
+    }
 
     const rail = document.createElement("nav");
     rail.className = "luxury-page-rail";
@@ -106,7 +155,7 @@
     help.append(whatsapp);
     rail.append(help);
 
-    layout.prepend(rail);
+    layout.insertBefore(rail, contentRoot || layout.firstChild);
 
     if (!("IntersectionObserver" in window)) {
       entries[0]?.li.classList.add("luxury-active");
@@ -182,7 +231,7 @@
       ".cms-accordion",
       ".article-cta",
     ];
-    if (isClinical) selectors.push(".prose > h2", ".clinical-results", ".location-pro-card");
+    if (isClinical) selectors.push(".prose h2", ".clinical-results", ".location-pro-card");
     if (isHome) return; // Home has its approved dedicated choreography.
 
     const targets = qsa(selectors.join(",")).filter((node, index, list) => list.indexOf(node) === index);
@@ -233,9 +282,6 @@
       section.dataset.luxurySplitIndex = String(index + 1);
       const split = qs(".cms-split", section);
       if (!split) return;
-      /* If editors leave all media on one side, preserve their explicit choice.
-         Otherwise this class lets CSS/animation give adjacent sections a natural
-         alternating editorial rhythm without rewriting CMS content. */
       section.classList.toggle("luxury-split-even", index % 2 === 1);
     });
   };
@@ -243,7 +289,8 @@
   const boot = () => {
     classifyImages();
     setupClinicalProof();
-    setupClinicalRail();
+    const clinical = prepareClinicalLayout();
+    setupClinicalRail(clinical);
     setupSidebarTrust();
     setupReadingProgress();
     setupSplitRhythm();
