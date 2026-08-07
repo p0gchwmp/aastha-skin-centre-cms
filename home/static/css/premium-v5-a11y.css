@@ -16,7 +16,10 @@ html:not([data-theme="dark"]) body.release-v24 .brand small,
 html:not([data-theme="dark"]) body.release-v24 .breadcrumbs,
 html:not([data-theme="dark"]) body.release-v24 .breadcrumbs a,
 html:not([data-theme="dark"]) body.release-v24 .breadcrumbs span,
-html:not([data-theme="dark"]) body.release-v24 .breadcrumbs [aria-current="page"] {
+html:not([data-theme="dark"]) body.release-v24 .breadcrumbs [aria-current="page"],
+html:not([data-theme="dark"]) body.release-v24 .page-hero-copy > nav,
+html:not([data-theme="dark"]) body.release-v24 .page-hero-copy > nav a,
+html:not([data-theme="dark"]) body.release-v24 .page-hero-copy > nav span {
   color: #6a6056 !important;
 }
 
