@@ -1,0 +1,35 @@
+/* V5 homepage final contrast polish: the doctor brand moment remains a dark editorial band in both themes. */
+body.cms-home-page .doctor-section,
+body.cms-home-page .doctor-feature-section,
+body.cms-home-page section:has(.doctor-feature) {
+  color: #eee4d8 !important;
+}
+body.cms-home-page .doctor-feature .doctor-copy h1,
+body.cms-home-page .doctor-feature .doctor-copy h2,
+body.cms-home-page .doctor-feature .doctor-copy h3,
+body.cms-home-page .doctor-feature .doctor-copy h4 {
+  color: #f2e8dc !important;
+}
+body.cms-home-page .doctor-feature .doctor-copy .section-kicker,
+body.cms-home-page .doctor-feature .doctor-copy .quiet-label,
+body.cms-home-page .doctor-feature .doctor-copy .doctor-role {
+  color: #c7a16d !important;
+}
+body.cms-home-page .doctor-feature .doctor-copy > p,
+body.cms-home-page .doctor-feature .doctor-points li {
+  color: #cfc3b7 !important;
+}
+body.cms-home-page .doctor-feature .doctor-points,
+body.cms-home-page .doctor-feature .doctor-points li {
+  border-color: rgba(206, 171, 119, .22) !important;
+}
+body.cms-home-page .doctor-feature .button-secondary,
+body.cms-home-page .doctor-feature a.button-secondary {
+  color: #f2e8dc !important;
+  border-color: rgba(242, 232, 220, .38) !important;
+}
+body.cms-home-page .doctor-feature .button-secondary:hover,
+body.cms-home-page .doctor-feature a.button-secondary:hover {
+  color: #d5b27b !important;
+  border-color: #b08655 !important;
+}
