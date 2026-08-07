@@ -101,14 +101,20 @@
   {% include "home/partials/accessibility_contrast_styles.html" %}
   {% include "home/partials/content_rhythm_styles.html" %}
   {% block extra_head %}{% endblock %}
+
+  {# Approved luxury system. These modules are centralized here so every Wagtail page type inherits the same art direction. #}
   <link rel="stylesheet" href="{% static 'css/premium-v3-preview.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-v4-final-preview.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-v5-reference.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-v5-a11y.css' %}">
+  <link rel="stylesheet" href="{% static 'css/premium-v5-hybrid.css' %}">
+  <link rel="stylesheet" href="{% static 'css/premium-v5-content-interactions.css' %}">
+  <link rel="stylesheet" href="{% static 'css/premium-production.css' %}">
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
   data-page-slug="{{ page.slug }}"
+  data-page-type="{{ page.content_type.model|default:'' }}"
   data-clinic-name="{{ settings.home.SiteSettings.clinic_name }}"
   data-clinic-short-name="{{ settings.home.SiteSettings.short_name }}"
   data-logo-url="{{ brand_assets.logo.url }}"
@@ -154,10 +160,16 @@
   <script src="{% static 'js/analytics-events.js' %}" defer></script>
   <script src="{% static 'js/appointment-form-controller.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
+
+  {# Site-wide approved luxury interactions; idempotent modules preserve legacy exact-page compatibility. #}
   <script src="{% static 'js/premium-v3-preview.js' %}" defer></script>
   <script src="{% static 'js/premium-v4-final-preview.js' %}" defer></script>
   <script src="{% static 'js/premium-v5-reference.js' %}" defer></script>
   <script src="{% static 'js/premium-v5-mobile-carousel.js' %}" defer></script>
+  <script src="{% static 'js/premium-v5-hybrid.js' %}" defer></script>
+  <script src="{% static 'js/premium-v5-hybrid-treatment-fix.js' %}" defer></script>
+  <script src="{% static 'js/premium-v5-content-interactions.js' %}" defer></script>
+  <script src="{% static 'js/premium-production.js' %}" defer></script>
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script>
       (() => {
