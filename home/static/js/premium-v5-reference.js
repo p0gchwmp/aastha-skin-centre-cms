@@ -5,6 +5,7 @@
   const slug = document.body.dataset.pageSlug || "";
   const isHome = document.body.classList.contains("cms-home-page");
   const isAcne = slug === "acne-treatment" || location.pathname === "/treatments/acne-treatment/";
+  if (isAcne && !document.body.dataset.pageSlug) document.body.dataset.pageSlug = "acne-treatment";
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
