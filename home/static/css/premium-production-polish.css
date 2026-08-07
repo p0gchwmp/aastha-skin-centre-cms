@@ -92,6 +92,13 @@ body.release-v24[data-page-type="contentindexpage"] .journal-card.luxury-focus {
   outline-offset: 3px;
 }
 
+/* Light-mode directory intro text needs a hair more contrast than the muted
+   beauty palette otherwise supplies. Keep the visual tone while clearing AA. */
+html:not([data-theme="dark"]) body.release-v24[data-page-type="contentindexpage"] .section-heading > div > p,
+html[data-theme="light"] body.release-v24[data-page-type="contentindexpage"] .section-heading > div > p {
+  color: #6f6268;
+}
+
 @media (max-width: 1100px) {
   body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready {
     grid-template-columns: minmax(0, 1fr) 270px !important;
