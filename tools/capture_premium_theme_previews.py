@@ -18,9 +18,10 @@ from playwright.sync_api import sync_playwright
 ROUTES = {
     "home": "/",
     "acne-treatment": "/treatments/acne-treatment/",
+    "laser-hair-reduction": "/treatments/laser-hair-reduction/",
     "treatments-index": "/treatments/",
     "conditions-index": "/conditions/",
-    "doctor": "/doctor/dr-cheena-langer/",
+    "doctor": "/dr-cheena-langer/",
     "locations-index": "/locations/",
     "book-appointment": "/book-appointment/",
     "contact": "/contact/",
@@ -87,6 +88,7 @@ def capture_acne_debug(page, output: Path) -> None:
             '/static/css/premium-v5-reference.css',
             '/static/js/premium-v5-reference.js',
             '/static/css/premium-production.css',
+            '/static/css/premium-production-polish.css',
             '/static/js/premium-production.js',
           ];
           const assetFetches = {};
