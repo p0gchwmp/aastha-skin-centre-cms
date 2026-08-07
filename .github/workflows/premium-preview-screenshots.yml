@@ -3,10 +3,7 @@ name: Premium V4 preview screenshots
 on:
   pull_request:
     paths:
-      - "aastha_cms/templates/base.html"
-      - "home/static/css/premium-v*.css"
-      - "home/static/js/premium-v*.js"
-      - "tools/capture_premium_theme_previews.py"
+      - ".github/qa/run-preview"
       - ".github/workflows/premium-preview-screenshots.yml"
   workflow_dispatch:
 
