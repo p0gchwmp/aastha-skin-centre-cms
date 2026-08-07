@@ -306,6 +306,7 @@
             ".article-cta",
           ]
         : [];
+    if (!selectors.length) return;
     const targets = qsa(selectors.join(",")).filter(Boolean);
     if (!targets.length) return;
 
