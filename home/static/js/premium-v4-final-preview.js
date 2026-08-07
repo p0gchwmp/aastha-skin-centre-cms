@@ -220,3 +220,23 @@
     boot();
   }
 })();
+
+/* Load the retained-markup structure correction only on the acne preview. */
+(() => {
+  if (location.pathname !== "/treatments/acne-treatment/") return;
+
+  if (!document.querySelector('link[data-v5-acne-structure]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/static/css/premium-v5-acne-structure.css";
+    link.dataset.v5AcneStructure = "true";
+    document.head.appendChild(link);
+  }
+
+  if (!document.querySelector('script[data-v5-acne-structure]')) {
+    const script = document.createElement("script");
+    script.src = "/static/js/premium-v5-acne-structure.js";
+    script.dataset.v5AcneStructure = "true";
+    document.body.appendChild(script);
+  }
+})();
