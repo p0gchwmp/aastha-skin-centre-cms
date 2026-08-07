@@ -102,6 +102,7 @@
   {% include "home/partials/content_rhythm_styles.html" %}
   {% block extra_head %}{% endblock %}
   <link rel="stylesheet" href="{% static 'css/premium-v3-preview.css' %}">
+  <link rel="stylesheet" href="{% static 'css/premium-v4-final-preview.css' %}">
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
@@ -151,6 +152,7 @@
   <script src="{% static 'js/appointment-form-controller.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
   <script src="{% static 'js/premium-v3-preview.js' %}" defer></script>
+  <script src="{% static 'js/premium-v4-final-preview.js' %}" defer></script>
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script>
       (() => {
