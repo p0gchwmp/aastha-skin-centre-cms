@@ -6,6 +6,15 @@
   const qsa = (selector, root = document) => [...root.querySelectorAll(selector)];
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const loadResultsStyles = () => {
+    if (document.querySelector('link[data-v5-acne-results]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/assets/css/premium-v5-acne-results.css";
+    link.dataset.v5AcneResults = "true";
+    document.head.appendChild(link);
+  };
+
   const anchorFor = (heading, index) => {
     if (heading.id) return heading.id;
     const base = (heading.textContent || `section-${index + 1}`)
@@ -165,6 +174,7 @@
   };
 
   const boot = () => {
+    loadResultsStyles();
     pairSignsAndCauses();
     moveClinicalResultIntoStory();
     buildRail();
