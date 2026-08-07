@@ -33,3 +33,34 @@ body.cms-home-page .doctor-feature a.button-secondary:hover {
   color: #d5b27b !important;
   border-color: #b08655 !important;
 }
+
+/* The selected-treatment experience is a horizontal touch rail on phones.
+   Use flex rather than a four-column CSS grid so there are no off-viewport
+   grid tracks and browser/mobile QA can reason about the intended overflow. */
+@media (max-width: 700px) {
+  body.cms-home-page .treatment-grid,
+  body.cms-home-page .treatment-grid.v4-carousel-ready {
+    display: flex !important;
+    grid-template-columns: unset !important;
+    grid-auto-columns: unset !important;
+    grid-auto-flow: unset !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0 0 8px !important;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+  body.cms-home-page .treatment-grid::-webkit-scrollbar { display: none; }
+  body.cms-home-page .treatment-grid > .treatment-card,
+  body.cms-home-page .treatment-grid.v4-carousel-ready > .treatment-card {
+    flex: 0 0 min(78vw, 330px) !important;
+    width: min(78vw, 330px) !important;
+    max-width: min(78vw, 330px) !important;
+    min-width: 0 !important;
+    scroll-snap-align: start;
+  }
+}
