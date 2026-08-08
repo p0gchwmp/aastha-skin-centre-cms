@@ -111,6 +111,8 @@
   <link rel="stylesheet" href="{% static 'css/premium-v5-content-interactions.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-production.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-production-polish.css' %}">
+  <link rel="stylesheet" href="{% static 'css/production-polish-hotfix.css' %}">
+  <link rel="stylesheet" href="{% static 'css/production-polish-final.css' %}">
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
@@ -178,6 +180,7 @@
   <script src="{% static 'js/premium-v5-hybrid-treatment-fix.js' %}" defer></script>
   <script src="{% static 'js/premium-v5-content-interactions.js' %}" defer></script>
   <script src="{% static 'js/premium-production.js' %}" defer></script>
+  <script src="{% static 'js/production-polish-hotfix.js' %}" defer></script>
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script>
       (() => {
