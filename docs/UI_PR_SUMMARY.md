@@ -1,0 +1,1 @@
+Sitewide UI stabilization from live screenshots and failed V6 QA evidence. CSS-only production behavior changes; documentation records confirmed root causes and validation targets.
