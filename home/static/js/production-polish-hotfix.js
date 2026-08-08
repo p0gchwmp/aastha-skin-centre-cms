@@ -58,25 +58,36 @@
   const run = (root = document) => {
     fixDoctorLinks(root);
     unlockContent(root);
-    if (root === document) {
-      cleanAcneNavigation();
-      removeDecorativeChrome();
-    }
+    cleanAcneNavigation();
+    removeDecorativeChrome();
   };
 
   const boot = () => {
     run();
 
-    /* Late editor/preview adapters can still insert content after DOM ready.
-       Newly inserted content is made visible immediately and bad legacy links
-       are corrected without relying on browser-specific animation timing. */
+    /* Late preview/editor adapters can insert DOM after our deferred script.
+       Re-clean immediately so there is no persistent duplicate rail, stale
+       doctor URL or observer-dependent invisible content. */
+    let cleanupQueued = false;
+    const queueCleanup = () => {
+      if (cleanupQueued) return;
+      cleanupQueued = true;
+      queueMicrotask(() => {
+        cleanupQueued = false;
+        cleanAcneNavigation();
+        removeDecorativeChrome();
+      });
+    };
+
     const observer = new MutationObserver(records => {
       records.forEach(record => {
         record.addedNodes.forEach(node => {
           if (!(node instanceof Element)) return;
-          run(node);
+          fixDoctorLinks(node);
+          unlockContent(node);
         });
       });
+      queueCleanup();
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
