@@ -1,0 +1,568 @@
+/* Production polish hotfix — 2026-08-08
+   Loaded last. This deliberately neutralises legacy preview choreography and
+   restores a calm, legible, square-edged production system. */
+
+/* ---------- Global legibility + stable rendering ---------- */
+body.release-v24 {
+  font-size: 17px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+body.release-v24 main p,
+body.release-v24 main li,
+body.release-v24 main dd,
+body.release-v24 main dt {
+  text-wrap: pretty;
+}
+
+/* Never make essential content depend on IntersectionObserver / reveal state. */
+body.release-v24 [data-v5-motion],
+body.release-v24 [data-luxury-reveal],
+body.release-v24 .v5-heading-reveal,
+body.release-v24 .v5-mask-reveal,
+body.release-v24 .v5-reveal,
+body.release-v24 .v5-image-reveal,
+body.release-v24 .luxury-image-reveal {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  filter: none !important;
+  clip-path: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+body.release-v24 img {
+  visibility: visible !important;
+}
+
+/* No staggered / criss-cross cards. Keep a disciplined baseline. */
+body.cms-home-page :is(.concern-card,.treatment-card,.why-card,.location-pro-card,.v5-hero-card),
+body.release-v24 :is(.journal-card,.cms-card,.cms-feature-card,.cms-split-section) {
+  margin-top: 0 !important;
+  top: auto !important;
+  transform: none !important;
+  translate: none !important;
+  align-self: stretch !important;
+}
+
+/* Square, architectural cards instead of pill/soft UI. */
+body.release-v24 :is(
+  .v5-hero-card,
+  .concern-card,
+  .treatment-card,
+  .why-card,
+  .location-pro-card,
+  .journal-card,
+  .cms-card,
+  .cms-feature-card,
+  .cms-comparison-grid,
+  .sidebar-card,
+  .care-sidebar-card,
+  .article-cta,
+  .clinic-card,
+  .clinic-choice-card,
+  .faq-pro-list details,
+  .faq-list details
+) {
+  border-radius: 2px !important;
+}
+body.release-v24 :is(.button,a.button,.mobile-actions a) {
+  border-radius: 1px !important;
+}
+
+/* ---------- Header / navigation ---------- */
+body.release-v24 .primary-nav > a,
+body.release-v24 .nav-item > button {
+  font-size: .78rem !important;
+  line-height: 1.2 !important;
+}
+body.release-v24 .primary-nav .button.button-small,
+body.release-v24 :is(.button,a.button) {
+  font-size: .88rem !important;
+}
+body.release-v24 .theme-toggle {
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  border-radius: 2px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+}
+body.release-v24 .theme-toggle .theme-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  font-size: 1.12rem !important;
+  text-align: center !important;
+}
+
+/* ---------- Homepage ---------- */
+body.cms-home-page .home-hero .eyebrow,
+body.cms-home-page .section-kicker,
+body.cms-home-page .quiet-label {
+  font-size: .73rem !important;
+  line-height: 1.35 !important;
+}
+body.cms-home-page .home-hero .lead {
+  font-size: 1.04rem !important;
+  line-height: 1.68 !important;
+}
+body.cms-home-page .v5-hero-card {
+  padding: 26px 24px !important;
+}
+body.cms-home-page .v5-hero-card::before {
+  display: none !important;
+  content: none !important;
+}
+body.cms-home-page .v5-hero-card .v5-card-kicker {
+  font-size: .74rem !important;
+}
+body.cms-home-page .v5-hero-card h2,
+body.cms-home-page .v5-hero-card h3 {
+  font-size: 1.48rem !important;
+  line-height: 1.16 !important;
+}
+body.cms-home-page .v5-hero-card p {
+  font-size: .96rem !important;
+  line-height: 1.55 !important;
+}
+body.cms-home-page .v5-hero-card .button,
+body.cms-home-page .v5-hero-card .v5-text-link {
+  font-size: .9rem !important;
+}
+
+body.cms-home-page .trust-ribbon {
+  align-items: stretch !important;
+}
+body.cms-home-page .trust-item {
+  min-height: 118px !important;
+  padding: 20px !important;
+  gap: 8px !important;
+}
+body.cms-home-page .trust-icon {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+}
+body.cms-home-page .trust-icon :is(svg,img) {
+  width: 100% !important;
+  height: 100% !important;
+}
+body.cms-home-page .trust-item strong {
+  font-size: 1.08rem !important;
+  line-height: 1.25 !important;
+}
+body.cms-home-page .trust-item span {
+  font-size: .84rem !important;
+  line-height: 1.4 !important;
+}
+
+body.cms-home-page .section-heading > div > p,
+body.cms-home-page .section-heading > p {
+  font-size: .98rem !important;
+  line-height: 1.62 !important;
+  max-width: 68ch !important;
+}
+body.cms-home-page .concern-card {
+  padding: 28px !important;
+}
+body.cms-home-page .concern-card h3 {
+  font-size: 1.38rem !important;
+  line-height: 1.2 !important;
+}
+body.cms-home-page .concern-card p {
+  font-size: .96rem !important;
+  line-height: 1.58 !important;
+}
+body.cms-home-page .concern-card a {
+  font-size: .9rem !important;
+}
+
+body.cms-home-page .doctor-copy .doctor-role {
+  font-size: .78rem !important;
+  line-height: 1.45 !important;
+}
+body.cms-home-page .doctor-copy > p {
+  font-size: .98rem !important;
+  line-height: 1.64 !important;
+}
+body.cms-home-page .doctor-points li {
+  padding: 13px 0 !important;
+  font-size: .96rem !important;
+  line-height: 1.45 !important;
+}
+body.cms-home-page .doctor-points li::before,
+body.cms-home-page .doctor-points li::after,
+body.cms-home-page .doctor-points :is(span,i)::before {
+  display: none !important;
+  content: none !important;
+}
+
+body.cms-home-page .treatment-grid {
+  align-items: stretch !important;
+}
+body.cms-home-page .treatment-card:nth-child(n) {
+  margin-top: 0 !important;
+  transform: none !important;
+  translate: none !important;
+  align-self: stretch !important;
+}
+body.cms-home-page .treatment-card h3 {
+  font-size: 1.4rem !important;
+  line-height: 1.18 !important;
+}
+body.cms-home-page .treatment-card p {
+  font-size: .96rem !important;
+  line-height: 1.58 !important;
+}
+body.cms-home-page .treatment-card a {
+  font-size: .9rem !important;
+}
+
+body.cms-home-page .why-card {
+  padding: 28px !important;
+}
+body.cms-home-page .why-card .why-number {
+  font-size: .88rem !important;
+}
+body.cms-home-page .why-card h3 {
+  font-size: 1.35rem !important;
+}
+body.cms-home-page .why-card p {
+  font-size: .94rem !important;
+  line-height: 1.58 !important;
+}
+
+body.cms-home-page .location-pro-card {
+  min-height: 240px !important;
+}
+body.cms-home-page .location-pro-card .location-art {
+  display: grid !important;
+  place-items: center !important;
+  min-height: 220px !important;
+}
+body.cms-home-page .location-pro-card .location-art :is(img,svg) {
+  width: min(44%, 130px) !important;
+  height: auto !important;
+  max-height: 130px !important;
+  object-fit: contain !important;
+}
+body.cms-home-page .location-pro-card .location-copy {
+  padding: 26px !important;
+}
+body.cms-home-page .location-pro-card h3 {
+  font-size: 1.42rem !important;
+}
+body.cms-home-page .location-pro-card p,
+body.cms-home-page .location-pro-card li {
+  font-size: .94rem !important;
+  line-height: 1.58 !important;
+}
+body.cms-home-page .location-pro-card :is(.button,a.button) {
+  font-size: .88rem !important;
+}
+
+body.cms-home-page :is(.faq-pro-list,.faq-list) summary {
+  font-size: .98rem !important;
+  line-height: 1.4 !important;
+}
+body.cms-home-page :is(.faq-pro-list,.faq-list) details > :not(summary) {
+  font-size: .95rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Keep useful iconography visible, but remove ornamental dots/ticks/stars. */
+body.release-v24 :is(
+  .v5-proof-item,
+  .luxury-proof-item,
+  .v5-sidebar-trust > div,
+  .luxury-sidebar-trust > div
+)::before,
+body.release-v24 .care-facts :is(dt,dd)::before {
+  display: none !important;
+  content: none !important;
+}
+body.release-v24 :is(.v5-sidebar-trust > div,.luxury-sidebar-trust > div) {
+  padding-left: 0 !important;
+}
+
+/* ---------- Clinical / treatment / condition pages ---------- */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .page-hero .lead,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .page-hero p {
+  font-size: 1rem !important;
+  line-height: 1.62 !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose p,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose li {
+  font-size: 1rem !important;
+  line-height: 1.62 !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose h2 {
+  line-height: 1.08 !important;
+  text-wrap: balance;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.v5-proof-item,.luxury-proof-item) {
+  font-size: .83rem !important;
+  line-height: 1.35 !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) p,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) li,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) dt,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) dd {
+  font-size: .9rem !important;
+  line-height: 1.5 !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.v5-sidebar-trust,.luxury-sidebar-trust) > div {
+  font-size: .82rem !important;
+  line-height: 1.45 !important;
+}
+
+/* Acne: one calm rail, no legacy duplicate TOC, no colliding helper panel. */
+body.release-v24[data-page-slug="acne-treatment"] :is(.release-toc,.article-toc) {
+  display: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] :is(.v5-reading-progress,.luxury-reading-progress,.v4-reading-progress) {
+  display: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail {
+  min-width: 0 !important;
+  max-height: calc(100vh - 112px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail-title {
+  font-size: .76rem !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail a {
+  font-size: .82rem !important;
+  line-height: 1.4 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail ol {
+  gap: 0 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail li {
+  min-height: 0 !important;
+  padding-block: 8px !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail .v5-rail-help {
+  display: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail li:nth-child(n+10) {
+  display: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section p,
+body.release-v24[data-page-slug="acne-treatment"] .article-section li,
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive p,
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive li {
+  font-size: 1rem !important;
+  line-height: 1.62 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section > h2,
+body.release-v24[data-page-slug="acne-treatment"] .faq-section > h2,
+body.release-v24[data-page-slug="acne-treatment"] .clinic-choice-section > h2 {
+  font-size: clamp(2rem, 2.6vw, 2.75rem) !important;
+  line-height: 1.06 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section > h3 {
+  font-size: 1.38rem !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section li,
+body.release-v24[data-page-slug="acne-treatment"] .care-principles li {
+  min-height: 48px !important;
+  padding: 12px 8px 12px 0 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section li::before,
+body.release-v24[data-page-slug="acne-treatment"] .care-principles li::before {
+  display: none !important;
+  content: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive > summary,
+body.release-v24[data-page-slug="acne-treatment"] .faq-section summary {
+  font-size: 1rem !important;
+  line-height: 1.4 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .quiet-label {
+  font-size: .72rem !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card h2 {
+  font-size: 1.72rem !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card > p,
+body.release-v24[data-page-slug="acne-treatment"] .care-facts dt,
+body.release-v24[data-page-slug="acne-treatment"] .care-facts dd,
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .plain-link {
+  font-size: .88rem !important;
+  line-height: 1.5 !important;
+}
+
+@media (min-width: 1181px) {
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout {
+    grid-template-columns: 220px minmax(0, 1fr) 300px !important;
+    gap: 36px !important;
+    align-items: start !important;
+  }
+}
+@media (max-width: 1180px) {
+  body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail,
+  body.release-v24[data-page-slug="acne-treatment"] .luxury-page-rail {
+    display: none !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout {
+    grid-template-columns: minmax(0, 1fr) 280px !important;
+    gap: 28px !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > .prose {
+    grid-column: 1 !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > :is(.care-sidebar,.luxury-clinical-sidebar) {
+    grid-column: 2 !important;
+  }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 760px) {
+  body.release-v24 { font-size: 16px; }
+  body.release-v24 .nav-shell {
+    width: min(calc(100% - 28px), var(--v5-max, 1320px)) !important;
+  }
+  body.release-v24 .brand strong {
+    font-size: 1.06rem !important;
+  }
+  body.release-v24 .brand small {
+    font-size: .68rem !important;
+  }
+  body.release-v24 .theme-toggle {
+    margin-inline: auto !important;
+  }
+  body.release-v24 .theme-toggle .theme-label {
+    line-height: 1.2 !important;
+  }
+
+  body.cms-home-page .container {
+    width: min(calc(100% - 32px), var(--v5-max)) !important;
+  }
+  body.cms-home-page .home-hero {
+    padding-top: 34px !important;
+  }
+  body.cms-home-page .home-hero h1 {
+    font-size: clamp(2.75rem, 13.5vw, 4.15rem) !important;
+    line-height: .98 !important;
+  }
+  body.cms-home-page .home-hero .lead {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+  }
+  body.cms-home-page .v5-hero-card {
+    padding: 22px 20px !important;
+  }
+  body.cms-home-page .v5-hero-card p,
+  body.cms-home-page .concern-card p,
+  body.cms-home-page .treatment-card p,
+  body.cms-home-page .why-card p,
+  body.cms-home-page .location-pro-card p,
+  body.cms-home-page .location-pro-card li,
+  body.cms-home-page .doctor-copy > p {
+    font-size: 1rem !important;
+    line-height: 1.58 !important;
+  }
+  body.cms-home-page .trust-item {
+    min-height: 112px !important;
+    padding: 18px !important;
+  }
+  body.cms-home-page .trust-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  body.cms-home-page .trust-item strong {
+    font-size: 1.02rem !important;
+  }
+  body.cms-home-page .trust-item span {
+    font-size: .88rem !important;
+  }
+  body.cms-home-page .section-heading h2 {
+    font-size: clamp(2.2rem, 10.5vw, 3.1rem) !important;
+    line-height: 1 !important;
+  }
+  body.cms-home-page .concern-card,
+  body.cms-home-page .why-card {
+    padding: 22px !important;
+  }
+  body.cms-home-page .doctor-copy h2 {
+    font-size: clamp(2.5rem, 11vw, 3.35rem) !important;
+  }
+  body.cms-home-page .doctor-points li {
+    font-size: 1rem !important;
+  }
+  body.cms-home-page .treatment-grid {
+    grid-auto-columns: minmax(88vw, 1fr) !important;
+  }
+  body.cms-home-page .location-pro-card {
+    grid-template-columns: 1fr !important;
+  }
+  body.cms-home-page .location-pro-card .location-art {
+    min-height: 180px !important;
+  }
+  body.cms-home-page .location-pro-card .location-art :is(img,svg) {
+    width: min(38%, 120px) !important;
+    max-height: 120px !important;
+  }
+  body.cms-home-page .location-pro-card .location-copy {
+    padding: 22px !important;
+  }
+
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout,
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout {
+    display: block !important;
+    width: 100% !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair {
+    display: block !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .article-section > h2,
+  body.release-v24[data-page-slug="acne-treatment"] .faq-section > h2 {
+    font-size: clamp(2rem, 9vw, 2.6rem) !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] :is(.article-section p,.article-section li,details.deep-dive p,details.deep-dive li,.faq-section summary) {
+    font-size: 1rem !important;
+  }
+
+  /* Keep logged-in Wagtail controls clear of the fixed public action bar. */
+  body.release-v24 .wagtail-userbar,
+  body.release-v24 [data-wagtail-userbar] {
+    bottom: 94px !important;
+    right: 14px !important;
+  }
+
+  /* Mobile motion stays quiet. Interactive state changes are still allowed. */
+  body.release-v24 :is(.concern-card,.treatment-card,.why-card,.location-pro-card,.journal-card,.v5-hero-card) {
+    transition: border-color .2s ease, background-color .2s ease !important;
+  }
+  body.release-v24 :is(.concern-card,.treatment-card,.why-card,.location-pro-card,.journal-card,.v5-hero-card):hover {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.release-v24 .brand .brand-mark.brand-mark--image {
+    min-width: 46px !important;
+    height: 48px !important;
+  }
+  body.release-v24 .brand strong {
+    font-size: 1rem !important;
+  }
+  body.cms-home-page .home-hero h1 {
+    font-size: clamp(2.55rem, 13vw, 3.55rem) !important;
+  }
+}
