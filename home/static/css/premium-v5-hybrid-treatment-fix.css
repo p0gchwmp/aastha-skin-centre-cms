@@ -1,0 +1,108 @@
+/* Final treatment-layout guard for the V5 hybrid preview.
+   Keep the existing card internals intact; only compose the cards in an
+   alternating two-column editorial rhythm. */
+@media (min-width: 961px) {
+  body.cms-home-page .treatment-grid,
+  body.cms-home-page .treatment-grid.v4-carousel-ready {
+    display: grid !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-columns: unset !important;
+    grid-auto-flow: row !important;
+    gap: 30px var(--v5-hybrid-gap) !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+    padding: 0 0 var(--v5-hybrid-shift) !important;
+  }
+
+  body.cms-home-page .treatment-grid > .treatment-card,
+  body.cms-home-page .treatment-grid.v4-carousel-ready > .treatment-card {
+    display: block !important;
+    grid-column: auto !important;
+    flex: initial !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    translate: none !important;
+    border-color: color-mix(in srgb, var(--v5-line) 88%, var(--v5-gold) 12%) !important;
+  }
+
+  body.cms-home-page .treatment-grid > .treatment-card:nth-child(even) {
+    translate: 0 var(--v5-hybrid-shift) !important;
+  }
+
+  body.cms-home-page .treatment-card > :first-child,
+  body.cms-home-page .treatment-card:nth-child(even) > :first-child,
+  body.cms-home-page .treatment-card .treatment-card-body,
+  body.cms-home-page .treatment-card:nth-child(even) .treatment-card-body {
+    order: initial !important;
+  }
+
+  body.cms-home-page .treatment-card > img,
+  body.cms-home-page .treatment-card > picture,
+  body.cms-home-page .treatment-card .treatment-card-media {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  body.cms-home-page .treatment-card-body {
+    display: block !important;
+    padding: 20px 22px 24px !important;
+    border-top: 1px solid var(--v5-line-soft) !important;
+  }
+}
+
+@media (max-width: 960px) {
+  body.cms-home-page .treatment-grid > .treatment-card {
+    translate: none !important;
+  }
+}
+
+/* Couture does not mean microscopic. Keep the phone version visually refined
+   while ensuring secondary copy remains comfortably legible at real device
+   scale. This intentionally wins over the tiny desktop editorial labels. */
+@media (max-width: 700px) {
+  body.cms-home-page {
+    font-size: 16px !important;
+  }
+  body.cms-home-page .brand small,
+  body.cms-home-page .home-hero .eyebrow,
+  body.cms-home-page .section-kicker,
+  body.cms-home-page .quiet-label,
+  body.cms-home-page .v5-card-kicker,
+  body.cms-home-page .v5-hero-card p,
+  body.cms-home-page .trust-item strong,
+  body.cms-home-page .trust-item span,
+  body.cms-home-page .concern-card p,
+  body.cms-home-page .concern-card .text-link,
+  body.cms-home-page .treatment-card p,
+  body.cms-home-page .treatment-card .text-link,
+  body.cms-home-page .why-card p,
+  body.cms-home-page .location-pro-card p,
+  body.cms-home-page .location-pro-card li,
+  body.cms-home-page .location-pro-card a,
+  body.cms-home-page .home-main details,
+  body.cms-home-page .home-main details summary,
+  body.cms-home-page .site-footer,
+  body.cms-home-page .site-footer p,
+  body.cms-home-page .site-footer li,
+  body.cms-home-page .site-footer a,
+  body.cms-home-page .site-footer small {
+    font-size: max(12px, .75rem) !important;
+  }
+  body.cms-home-page .home-hero .lead,
+  body.cms-home-page .section-heading p,
+  body.cms-home-page .doctor-copy > p,
+  body.cms-home-page .doctor-points li {
+    font-size: max(13px, .8125rem) !important;
+  }
+  body.cms-home-page .button,
+  body.cms-home-page a.button {
+    font-size: max(12px, .75rem) !important;
+  }
+}

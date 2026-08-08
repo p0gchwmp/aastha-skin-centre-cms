@@ -57,8 +57,9 @@ class WebsiteControlPanel(Component):
             <h2>Choose what you want to change</h2>
             <p>Use <strong>Editable page content</strong> for existing wording,
             photographs and button destinations. Use Pages for page settings,
-            hero images, new sections and complete builder layouts. Settings hold
-            facts that must update everywhere, such as the fee and phone numbers.</p>
+            hero images, new premium sections and complete builder layouts.
+            Settings hold facts that must update everywhere, such as the fee,
+            phone numbers and branding.</p>
             <div class="aastha-admin-stats">
               <span><strong>{counts["pages"]}</strong> live pages</span>
               <span><strong>{counts["exact"]}</strong> simple content editors</span>
@@ -72,18 +73,20 @@ class WebsiteControlPanel(Component):
               <ol>
                 <li><strong>Change existing text, images or buttons:</strong> open Editable page content and choose the page path.</li>
                 <li><strong>Change a page hero photograph:</strong> edit the Page and use Hero image.</li>
-                <li><strong>Add to an existing design:</strong> edit the Page and use Exact-design additions.</li>
+                <li><strong>Add a luxury text + photo section:</strong> edit the Page → Exact-design additions → Split text and media. Choose media left/right; the site handles the criss-cross reveal automatically.</li>
+                <li><strong>Add a real before/after slider:</strong> edit the Page → Exact-design additions → Two-image comparison. Upload separate approved Before and After photographs; the draggable slider is automatic.</li>
+                <li><strong>Add galleries, FAQs or treatment cards:</strong> use the matching visual block in Exact-design additions. Styling and motion are automatic.</li>
                 <li><strong>Build or replace a page:</strong> choose Full visual page builder and drag sections into order.</li>
               </ol>
             </div>
           </div>
           <div class="aastha-admin-actions">
             <a href="/admin/snippets/home/exactpagelayout/">Edit existing page text, images and buttons</a>
-            <a href="/admin/pages/">Edit page settings, hero images or sections</a>
+            <a href="/admin/pages/">Edit page settings, hero images or premium sections</a>
             <a href="/admin/settings/home/sitesettings/{site_id}/">Edit global fee, phones and branding</a>
             <a href="/admin/images/">Upload or manage images</a>
             <a href="/admin/snippets/home/doctor/">Edit doctor profile and photograph</a>
-            <a href="/admin/snippets/home/cliniclocation/">Edit clinic locations</a>
+            <a href="/admin/snippets/home/cliniclocation/">Edit clinic locations and photographs</a>
             <a href="/admin/snippets/home/reusablesection/add/">Create a reusable section</a>
             <a href="/admin/reports/">Review drafts, workflows and reports</a>
           </div>
@@ -118,11 +121,13 @@ def explain_rendering_mode(request, page):
         messages.info(
             request,
             format_html(
-                "This page keeps its verified design. The Hero image field now "
-                "changes the live hero. To change existing wording, other images "
-                "or buttons, open <a href=\"/admin/snippets/home/exactpagelayout/\">"
-                "Editable page content</a> and choose <strong>{}</strong>. Use "
-                "Exact-design additions only for new sections.",
+                "This page keeps its verified design. The Hero image field changes "
+                "the live hero. To change existing wording, other images or buttons, "
+                "open <a href=\"/admin/snippets/home/exactpagelayout/\">Editable "
+                "page content</a> and choose <strong>{}</strong>. For new premium "
+                "sections use Exact-design additions: Split text and media creates "
+                "the criss-cross layout, and Two-image comparison creates a real "
+                "draggable before/after slider when two distinct images are supplied.",
                 public_path,
             ),
         )

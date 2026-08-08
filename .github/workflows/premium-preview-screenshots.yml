@@ -1,0 +1,79 @@
+name: Premium V4 preview screenshots
+
+on:
+  pull_request:
+    paths:
+      - ".github/qa/run-preview"
+      - ".github/workflows/premium-preview-screenshots.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: premium-v4-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DJANGO_SETTINGS_MODULE: aastha_cms.settings.dev
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install application and Chromium
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Validate preview capture source
+        run: |
+          python -m py_compile tools/capture_premium_theme_previews.py
+          python manage.py check
+
+      - name: Build local CMS
+        run: |
+          rm -f db.sqlite3
+          python tools/generate_responsive_clinical_images.py
+          python tools/audit_clinical_result_images.py
+          python manage.py migrate --no-input
+          python manage.py initialize_cms
+
+      - name: Start local CMS
+        run: |
+          nohup python manage.py runserver 127.0.0.1:8000 --noreload > /tmp/aastha-premium-preview.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/healthz/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/aastha-premium-preview.log
+          exit 1
+
+      - name: Capture exact light and dark renders
+        run: |
+          python tools/capture_premium_theme_previews.py \
+            --base-url http://127.0.0.1:8000 \
+            --output audit-artifacts/premium-v4-preview
+
+      - name: Upload preview boards
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-v4-preview-${{ github.sha }}
+          path: audit-artifacts/premium-v4-preview/
+          if-no-files-found: error
+          retention-days: 14

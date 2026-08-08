@@ -1,0 +1,591 @@
+/* =========================================================
+   AASTHA PREMIUM V4 — FINAL ART-DIRECTION PREVIEW
+   ---------------------------------------------------------
+   PREVIEW ONLY. This layer deliberately sits after V3.
+
+   Final approved direction:
+   - Dark: blackened espresso + oxblood + antique champagne
+   - Light: warm stone + oxblood + aged bronze
+   - sharp editorial geometry, restrained fashion-house polish
+   - medium motion, never scroll-jacking
+   - dermatologist credibility remains the primary hierarchy
+   ========================================================= */
+
+body.release-v24 {
+  --v4-serif: "Iowan Old Style", Baskerville, "Palatino Linotype", Palatino, Georgia, serif;
+  --v4-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --v4-bg: #eee8dd;
+  --v4-paper: #f8f4ec;
+  --v4-surface: #fffaf3;
+  --v4-ink: #151311;
+  --v4-ink-soft: #342e2a;
+  --v4-muted: #746a62;
+  --v4-accent: #702433;
+  --v4-accent-deep: #531827;
+  --v4-metal: #9d7658;
+  --v4-metal-soft: #c8ad91;
+  --v4-line: rgba(21, 19, 17, .17);
+  --v4-line-soft: rgba(21, 19, 17, .09);
+  --v4-shadow: 0 28px 80px rgba(36, 24, 18, .08);
+
+  /* Bridge prior preview layers to the final palette. */
+  --v3-bone: var(--v4-bg);
+  --v3-paper: var(--v4-paper);
+  --v3-white: var(--v4-surface);
+  --v3-ink: var(--v4-ink);
+  --v3-ink-soft: var(--v4-ink-soft);
+  --v3-muted: var(--v4-muted);
+  --v3-wine: var(--v4-accent);
+  --v3-wine-deep: var(--v4-accent-deep);
+  --v3-brass: var(--v4-metal);
+  --v3-line: var(--v4-line);
+  --v3-line-soft: var(--v4-line-soft);
+  --lux-bone: var(--v4-bg);
+  --lux-paper: var(--v4-paper);
+  --lux-white: var(--v4-surface);
+  --lux-ink: var(--v4-ink);
+  --lux-muted: var(--v4-muted);
+  --lux-wine: var(--v4-accent);
+  --lux-wine-dark: var(--v4-accent-deep);
+  --lux-brass: var(--v4-metal);
+  --lux-line: var(--v4-line);
+  --lux-line-soft: var(--v4-line-soft);
+
+  background: var(--v4-bg);
+  color: var(--v4-ink);
+  text-rendering: optimizeLegibility;
+}
+
+html[data-theme="dark"] body.release-v24 {
+  --v4-bg: #100f0e;
+  --v4-paper: #141311;
+  --v4-surface: #1b1917;
+  --v4-ink: #f4ede3;
+  --v4-ink-soft: #ddd3c7;
+  --v4-muted: #a99d92;
+  --v4-accent: #7b203c;
+  --v4-accent-deep: #941f49;
+  --v4-metal: #c3a16b;
+  --v4-metal-soft: #ddc796;
+  --v4-line: rgba(231, 215, 196, .21);
+  --v4-line-soft: rgba(231, 215, 196, .11);
+  --v4-shadow: 0 34px 100px rgba(0, 0, 0, .34);
+}
+
+/* ---------- Brand typography and geometry ---------- */
+body.release-v24 h1,
+body.release-v24 h2,
+body.release-v24 h3,
+body.release-v24 h4,
+body.release-v24 .display-serif {
+  font-family: var(--v4-serif);
+  font-weight: 500;
+  font-kerning: normal;
+}
+
+body.release-v24 .quiet-label,
+body.release-v24 .eyebrow,
+body.release-v24 .section-kicker {
+  color: var(--v4-accent);
+  font-family: var(--v4-sans);
+  font-weight: 720;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+html[data-theme="dark"] body.release-v24 .quiet-label,
+html[data-theme="dark"] body.release-v24 .eyebrow,
+html[data-theme="dark"] body.release-v24 .section-kicker {
+  color: var(--v4-metal-soft);
+}
+
+/* ---------- Header: couture restraint ---------- */
+body.release-v24 .topbar {
+  background: var(--v4-ink);
+  border: 0;
+}
+html[data-theme="dark"] body.release-v24 .topbar { background: #090908; }
+
+body.release-v24 .site-header {
+  background: color-mix(in srgb, var(--v4-paper) 92%, transparent);
+  border-bottom: 1px solid var(--v4-line-soft);
+  box-shadow: none;
+  transition: background .32s ease, border-color .32s ease, box-shadow .32s ease;
+}
+html[data-theme="dark"] body.release-v24 .site-header {
+  background: rgba(16, 15, 14, .88);
+}
+
+body.release-v24 .nav-shell,
+body.release-v24 .brand .brand-mark,
+body.release-v24 .brand strong {
+  transition: min-height .28s ease, height .28s ease, font-size .28s ease, opacity .28s ease;
+}
+body.release-v24.v4-scrolled .site-header {
+  background: color-mix(in srgb, var(--v4-paper) 96%, transparent);
+  box-shadow: 0 10px 42px rgba(25, 16, 12, .055);
+}
+html[data-theme="dark"] body.release-v24.v4-scrolled .site-header {
+  background: rgba(13, 12, 11, .95);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, .28);
+}
+body.release-v24.v4-scrolled .nav-shell { min-height: 66px; }
+body.release-v24.v4-scrolled .brand .brand-mark { height: 40px; }
+body.release-v24.v4-scrolled .brand strong { font-size: .96rem; }
+
+body.release-v24 .primary-nav > a:not(.button),
+body.release-v24 .nav-item > button {
+  position: relative;
+  color: var(--v4-ink-soft);
+}
+body.release-v24 .primary-nav > a:not(.button)::before,
+body.release-v24 .nav-item > button::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 7px;
+  height: 1px;
+  background: var(--v4-metal);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .28s cubic-bezier(.2,.7,.2,1);
+}
+body.release-v24 .primary-nav > a:not(.button):hover::before,
+body.release-v24 .primary-nav > a:not(.button):focus-visible::before,
+body.release-v24 .primary-nav > a.is-current::before,
+body.release-v24 .nav-item > button:hover::before,
+body.release-v24 .nav-item > button[aria-expanded="true"]::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- Buttons: sharp, low-chrome, tactile ---------- */
+body.release-v24 .button,
+body.release-v24 a.button,
+body.release-v24 button.button {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--v4-accent);
+  border-color: var(--v4-accent);
+  box-shadow: none;
+  transition: color .24s ease, background .24s ease, border-color .24s ease, transform .24s ease;
+}
+body.release-v24 .button::after,
+body.release-v24 a.button::after,
+body.release-v24 button.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 18%, rgba(255,255,255,.10) 48%, transparent 78%);
+  transform: translateX(-120%);
+  transition: transform .55s cubic-bezier(.2,.7,.2,1);
+  pointer-events: none;
+}
+body.release-v24 .button:hover::after,
+body.release-v24 a.button:hover::after,
+body.release-v24 button.button:hover::after { transform: translateX(120%); }
+body.release-v24 .button:hover,
+body.release-v24 a.button:hover,
+body.release-v24 button.button:hover {
+  background: var(--v4-accent-deep);
+  border-color: var(--v4-accent-deep);
+  transform: translateY(-1px);
+}
+body.release-v24 .button-secondary,
+body.release-v24 a.button-secondary {
+  color: var(--v4-ink) !important;
+  background: transparent;
+  border-color: var(--v4-line);
+}
+html[data-theme="dark"] body.release-v24 .button-secondary,
+html[data-theme="dark"] body.release-v24 a.button-secondary {
+  color: var(--v4-ink) !important;
+  border-color: rgba(244, 237, 227, .34);
+}
+
+/* ---------- Homepage: sharper editorial composition ---------- */
+body.cms-home-page,
+body.cms-home-page .home-main,
+body.cms-home-page .home-hero { background: var(--v4-bg); }
+
+body.cms-home-page .home-hero {
+  border-bottom: 1px solid var(--v4-line);
+}
+body.cms-home-page .home-hero h1 {
+  color: var(--v4-ink);
+  letter-spacing: -.071em;
+}
+body.cms-home-page .home-hero h1 em {
+  color: var(--v4-accent);
+  font-style: italic;
+}
+html[data-theme="dark"] body.cms-home-page .home-hero h1 em { color: var(--v4-metal-soft); }
+
+body.cms-home-page .home-hero .lead,
+body.cms-home-page .section-heading p,
+body.cms-home-page .concern-card p,
+body.cms-home-page .treatment-card p,
+body.cms-home-page .why-card p { color: var(--v4-muted); }
+
+body.cms-home-page .home-hero-media,
+body.cms-home-page .doctor-visual,
+body.cms-home-page .treatment-card img {
+  border-radius: 0;
+}
+body.cms-home-page .home-hero-media > img,
+body.cms-home-page .doctor-visual img,
+body.cms-home-page .treatment-card img {
+  transition: filter .45s ease, transform .65s cubic-bezier(.2,.7,.2,1), clip-path .85s cubic-bezier(.2,.7,.2,1);
+}
+body.cms-home-page .home-hero-media:hover > img.v3-real-photo,
+body.cms-home-page .doctor-visual:hover img.v3-real-photo,
+body.cms-home-page .treatment-card:hover img.v3-real-photo {
+  transform: scale(1.012);
+}
+html[data-theme="dark"] body.cms-home-page .home-hero-media > img.v3-real-photo,
+html[data-theme="dark"] body.cms-home-page .doctor-visual img.v3-real-photo,
+html[data-theme="dark"] body.cms-home-page .treatment-card img.v3-real-photo {
+  filter: saturate(.78) contrast(1.07) brightness(.88);
+}
+
+body.cms-home-page .hero-booking-card {
+  border: 1px solid var(--v4-line);
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--v4-surface) 96%, transparent);
+  box-shadow: var(--v4-shadow);
+  backdrop-filter: blur(20px);
+}
+html[data-theme="dark"] body.cms-home-page .hero-booking-card {
+  background: rgba(27,25,23,.94);
+}
+
+body.cms-home-page .trust-ribbon,
+body.cms-home-page .why-grid { border-color: var(--v4-line); }
+
+body.cms-home-page .concern-card,
+body.cms-home-page .why-card {
+  border-color: var(--v4-line);
+}
+body.cms-home-page .concern-card,
+body.cms-home-page .treatment-card,
+body.cms-home-page .location-pro-card {
+  transition: transform .32s cubic-bezier(.2,.7,.2,1), opacity .32s ease;
+}
+body.cms-home-page .concern-card:hover,
+body.cms-home-page .treatment-card:hover { transform: translateY(-4px); }
+
+body.cms-home-page .doctor-section,
+body.cms-home-page .doctor-feature-section,
+body.cms-home-page .home-section--dark {
+  background: #181613;
+}
+html[data-theme="dark"] body.cms-home-page .doctor-section,
+html[data-theme="dark"] body.cms-home-page .doctor-feature-section,
+html[data-theme="dark"] body.cms-home-page .home-section--dark {
+  background: #0b0b0a;
+}
+body.cms-home-page .doctor-copy h2,
+body.cms-home-page .doctor-copy p,
+body.cms-home-page .doctor-copy .doctor-role,
+body.cms-home-page .doctor-points li { color: #f4ede3; }
+
+/* Treatment cards feel like editorial objects, not app cards. */
+body.cms-home-page .treatment-card-body { border-top: 1px solid var(--v4-line); }
+body.cms-home-page .treatment-card h3 { color: var(--v4-ink); }
+body.cms-home-page .text-link {
+  color: var(--v4-accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--v4-accent) 45%, transparent);
+  padding-bottom: 2px;
+}
+html[data-theme="dark"] body.cms-home-page .text-link { color: var(--v4-metal-soft); }
+
+/* ---------- Inner pages: dark and light are equally intentional ---------- */
+body.release-v24:not(.cms-home-page),
+body.release-v24:not(.cms-home-page) main { background: var(--v4-paper); }
+body.release-v24:not(.cms-home-page) .page-hero,
+body.release-v24:not(.cms-home-page) .page-hero.page-hero--professional {
+  background: var(--v4-bg);
+  border-color: var(--v4-line);
+}
+body.release-v24:not(.cms-home-page) .page-hero-copy h1,
+body.release-v24:not(.cms-home-page) .prose > h2,
+body.release-v24:not(.cms-home-page) .prose > h3,
+body.release-v24:not(.cms-home-page) details summary { color: var(--v4-ink); }
+body.release-v24:not(.cms-home-page) .page-hero-copy .lead,
+body.release-v24:not(.cms-home-page) .prose,
+body.release-v24:not(.cms-home-page) .prose li,
+body.release-v24:not(.cms-home-page) .feature-list li { color: var(--v4-ink-soft); }
+
+body.release-v24:not(.cms-home-page) .page-hero-art,
+body.release-v24:not(.cms-home-page) .sidebar-card,
+body.release-v24:not(.cms-home-page) .form-card,
+body.release-v24:not(.cms-home-page) .appointment-form,
+body.release-v24:not(.cms-home-page) .location-pro-card {
+  border-radius: 0;
+  border-color: var(--v4-line);
+  background: var(--v4-surface);
+  box-shadow: none;
+}
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .page-hero-art { background: #211e1a; }
+
+body.release-v24:not(.cms-home-page) .sidebar-card {
+  box-shadow: 0 22px 80px rgba(37,24,18,.045);
+}
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .sidebar-card {
+  box-shadow: 0 26px 90px rgba(0,0,0,.26);
+}
+
+body.release-v24:not(.cms-home-page) .prose > h2::after,
+body.release-v24:not(.cms-home-page) .prose li::before,
+body.release-v24:not(.cms-home-page) .feature-list li::before {
+  background: var(--v4-metal);
+}
+body.release-v24:not(.cms-home-page) .prose a,
+body.release-v24:not(.cms-home-page) .faq-pro-list summary::after { color: var(--v4-accent); }
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .prose a,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .faq-pro-list summary::after { color: var(--v4-metal-soft); }
+
+/* Clinical galleries: jewellery-box framing, without pretending a composite is a true slider. */
+body.release-v24 .clinical-results {
+  --results-border: var(--v4-line);
+  --results-panel: var(--v4-surface);
+  --results-muted: var(--v4-muted);
+}
+body.release-v24 .clinical-results__inner {
+  border-radius: 0;
+  border-color: var(--v4-line);
+  background: var(--v4-surface);
+  box-shadow: none;
+}
+body.release-v24 .clinical-results__viewport {
+  border-radius: 0;
+  border-color: var(--v4-line);
+  background: color-mix(in srgb, var(--v4-bg) 86%, #0000);
+}
+body.release-v24 .clinical-results__button {
+  border-radius: 0;
+  border-color: var(--v4-line);
+  color: var(--v4-ink);
+  background: transparent;
+}
+body.release-v24 .clinical-results__button:hover,
+body.release-v24 .clinical-results__button:focus-visible {
+  color: #fff;
+  background: var(--v4-accent);
+}
+html[data-theme="dark"] body.release-v24 .clinical-results__slide img,
+html[data-theme="dark"] body.release-v24 .clinical-results__viewport { background: #0d0c0b; }
+
+/* Future real before/after pair component. It is activated only when distinct
+   before and after media are supplied in Wagtail; no clinical result is faked. */
+.v4-before-after {
+  --v4-compare: 50%;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--v4-line);
+  background: var(--v4-surface);
+  touch-action: pan-y;
+}
+.v4-before-after [data-before-image],
+.v4-before-after [data-after-image] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.v4-before-after [data-after-image] { clip-path: inset(0 0 0 var(--v4-compare)); }
+.v4-before-after::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--v4-compare);
+  width: 1px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.12);
+  pointer-events: none;
+}
+.v4-before-after input[type="range"] {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+}
+.v4-before-after__handle {
+  position: absolute;
+  z-index: 2;
+  left: var(--v4-compare);
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.82);
+  border-radius: 50%;
+  background: rgba(16,15,14,.78);
+  color: #fff;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+}
+
+/* ---------- Reading progress rail for long clinical pages ---------- */
+.v4-reading-progress {
+  position: fixed;
+  z-index: 20;
+  top: 50%;
+  left: max(18px, calc((100vw - 1500px) / 2));
+  width: 132px;
+  transform: translateY(-50%);
+  opacity: .82;
+}
+.v4-reading-progress::before {
+  content: "On this page";
+  display: block;
+  margin-bottom: 13px;
+  color: var(--v4-muted);
+  font-size: .56rem;
+  font-weight: 720;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.v4-reading-progress a {
+  display: block;
+  padding: 7px 0 7px 13px;
+  border-left: 1px solid var(--v4-line);
+  color: var(--v4-muted);
+  font-size: .64rem;
+  line-height: 1.25;
+  text-decoration: none;
+  transition: border-color .2s ease, color .2s ease, padding-left .2s ease;
+}
+.v4-reading-progress a[aria-current="true"] {
+  padding-left: 17px;
+  border-left-color: var(--v4-metal);
+  color: var(--v4-ink);
+}
+
+/* ---------- Treatment carousel controls ---------- */
+.v4-carousel-controls {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 22px;
+}
+.v4-carousel-button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--v4-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--v4-ink);
+  cursor: pointer;
+}
+.v4-carousel-button:hover,
+.v4-carousel-button:focus-visible {
+  border-color: var(--v4-metal);
+  color: var(--v4-accent);
+}
+.v4-carousel-progress {
+  width: 72px;
+  height: 1px;
+  overflow: hidden;
+  background: var(--v4-line);
+}
+.v4-carousel-progress > span {
+  display: block;
+  width: var(--v4-progress, 25%);
+  height: 100%;
+  background: var(--v4-metal);
+  transition: width .25s ease;
+}
+
+/* ---------- Reveal choreography ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  body.release-v24 .v4-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity .72s cubic-bezier(.2,.7,.2,1) calc(var(--v4-delay, 0) * 70ms),
+      transform .72s cubic-bezier(.2,.7,.2,1) calc(var(--v4-delay, 0) * 70ms);
+  }
+  body.release-v24 .v4-reveal.v4-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  body.release-v24 .v4-image-reveal {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path .95s cubic-bezier(.16,.78,.24,1) .08s;
+  }
+  body.release-v24 .v4-image-reveal.v4-visible { clip-path: inset(0); }
+  body.release-v24 details[open] > :not(summary) {
+    animation: v4-detail-in .28s ease both;
+  }
+  @keyframes v4-detail-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ---------- Focus treatment ---------- */
+body.release-v24 :focus-visible {
+  outline: 2px solid var(--v4-metal);
+  outline-offset: 4px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1320px) {
+  .v4-reading-progress { display: none; }
+}
+
+@media (max-width: 700px) {
+  body.release-v24.v4-scrolled .nav-shell { min-height: 64px; }
+
+  body.cms-home-page .treatment-grid.v4-carousel-ready {
+    display: flex;
+    width: auto;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    padding-right: 11vw;
+  }
+  body.cms-home-page .treatment-grid.v4-carousel-ready::-webkit-scrollbar { display: none; }
+  body.cms-home-page .treatment-grid.v4-carousel-ready .treatment-card {
+    flex: 0 0 min(82vw, 360px);
+    scroll-snap-align: start;
+    transform: none;
+  }
+  body.cms-home-page .treatment-grid.v4-carousel-ready .treatment-card img { aspect-ratio: 4 / 5; }
+  .v4-carousel-controls { display: flex; }
+
+  .v4-before-after { aspect-ratio: 4 / 5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.release-v24 *,
+  body.release-v24 *::before,
+  body.release-v24 *::after {
+    scroll-behavior: auto !important;
+  }
+  body.release-v24 .v4-reveal,
+  body.release-v24 .v4-image-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+}

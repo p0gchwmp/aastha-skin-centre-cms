@@ -1,0 +1,1 @@
+Heavy browser suites are intentionally restricted to main/manual runs to reduce Actions usage.

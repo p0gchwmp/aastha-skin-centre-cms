@@ -1,0 +1,87 @@
+/* V5 homepage final contrast polish: the doctor brand moment remains a dark editorial band in both themes. */
+body.cms-home-page .doctor-section,
+body.cms-home-page .doctor-feature-section,
+body.cms-home-page section:has(.doctor-feature) {
+  color: #eee4d8 !important;
+}
+body.cms-home-page .doctor-feature .doctor-copy h1,
+body.cms-home-page .doctor-feature .doctor-copy h2,
+body.cms-home-page .doctor-feature .doctor-copy h3,
+body.cms-home-page .doctor-feature .doctor-copy h4 {
+  color: #f2e8dc !important;
+}
+body.cms-home-page .doctor-feature .doctor-copy .section-kicker,
+body.cms-home-page .doctor-feature .doctor-copy .quiet-label,
+body.cms-home-page .doctor-feature .doctor-copy .doctor-role {
+  color: #c7a16d !important;
+}
+body.cms-home-page .doctor-feature .doctor-copy > p,
+body.cms-home-page .doctor-feature .doctor-points li {
+  color: #cfc3b7 !important;
+}
+body.cms-home-page .doctor-feature .doctor-points,
+body.cms-home-page .doctor-feature .doctor-points li {
+  border-color: rgba(206, 171, 119, .22) !important;
+}
+body.cms-home-page .doctor-feature .button-secondary,
+body.cms-home-page .doctor-feature a.button-secondary {
+  color: #f2e8dc !important;
+  border-color: rgba(242, 232, 220, .38) !important;
+}
+body.cms-home-page .doctor-feature .button-secondary:hover,
+body.cms-home-page .doctor-feature a.button-secondary:hover {
+  color: #d5b27b !important;
+  border-color: #b08655 !important;
+}
+
+/* The selected-treatment experience is a horizontal touch rail on phones.
+   Before JS upgrades it, keep the layout bounded. After V5 pager activation,
+   render exactly one card at a time so no hidden grid tracks cross the viewport. */
+@media (max-width: 700px) {
+  body.cms-home-page .treatment-grid,
+  body.cms-home-page .treatment-grid.v4-carousel-ready {
+    display: flex !important;
+    grid-template-columns: unset !important;
+    grid-auto-columns: unset !important;
+    grid-auto-flow: unset !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0 0 8px !important;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+  body.cms-home-page .treatment-grid::-webkit-scrollbar { display: none; }
+  body.cms-home-page .treatment-grid > .treatment-card,
+  body.cms-home-page .treatment-grid.v4-carousel-ready > .treatment-card {
+    flex: 0 0 min(78vw, 330px) !important;
+    width: min(78vw, 330px) !important;
+    max-width: min(78vw, 330px) !important;
+    min-width: 0 !important;
+    scroll-snap-align: start;
+  }
+
+  body.cms-home-page .treatment-grid.v5-mobile-pager,
+  body.cms-home-page .treatment-grid.v4-carousel-ready.v5-mobile-pager {
+    display: block !important;
+    overflow: hidden !important;
+    padding-bottom: 0 !important;
+    scroll-snap-type: none !important;
+  }
+  body.cms-home-page .treatment-grid.v5-mobile-pager > .treatment-card[hidden],
+  body.cms-home-page .treatment-grid.v4-carousel-ready.v5-mobile-pager > .treatment-card[hidden] {
+    display: none !important;
+  }
+  body.cms-home-page .treatment-grid.v5-mobile-pager > .treatment-card.v5-mobile-active,
+  body.cms-home-page .treatment-grid.v4-carousel-ready.v5-mobile-pager > .treatment-card.v5-mobile-active {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    flex: none !important;
+  }
+}

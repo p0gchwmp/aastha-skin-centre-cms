@@ -1,0 +1,1125 @@
+/* =========================================================
+   AASTHA QUIET-LUXURY HOMEPAGE PREVIEW
+   ---------------------------------------------------------
+   Preview-only layer. Scoped to .cms-home-page so inner pages
+   stay untouched until the direction is approved.
+
+   Design intent:
+   - editorial rather than "clinic template"
+   - warm bone / charcoal / restrained wine
+   - almost no gradients, shadows, bubbles or decorative cards
+   - larger type + more negative space
+   - photography carries the visual weight
+   - thin rules and precise alignment create the premium feel
+   ========================================================= */
+
+body.cms-home-page {
+  --lux-bone: #f5f1e9;
+  --lux-paper: #fbf9f4;
+  --lux-white: #fffdfa;
+  --lux-ink: #171311;
+  --lux-muted: #716964;
+  --lux-wine: #651f34;
+  --lux-wine-dark: #4e1427;
+  --lux-brass: #a8895e;
+  --lux-line: rgba(23, 19, 17, .14);
+  --lux-line-soft: rgba(23, 19, 17, .08);
+  --lux-container: 1380px;
+  --lux-serif: "Iowan Old Style", "Baskerville", "Palatino Linotype", Palatino, Georgia, serif;
+  --lux-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--lux-ink);
+  background: var(--lux-bone);
+  font-family: var(--lux-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -.005em;
+}
+
+body.cms-home-page h1,
+body.cms-home-page h2,
+body.cms-home-page h3,
+body.cms-home-page h4,
+body.cms-home-page .display-serif {
+  font-family: var(--lux-serif);
+  color: var(--lux-ink);
+  letter-spacing: -.045em;
+  font-weight: 500;
+}
+
+body.cms-home-page .container {
+  width: min(calc(100% - 72px), var(--lux-container));
+}
+
+/* ---------- Header: less chrome, more architecture ---------- */
+body.cms-home-page .topbar {
+  background: var(--lux-ink);
+  border: 0;
+  color: rgba(255,255,255,.82);
+}
+
+body.cms-home-page .topbar-inner {
+  min-height: 32px;
+  font-size: .73rem;
+  letter-spacing: .045em;
+}
+
+body.cms-home-page .site-header {
+  background: rgba(251, 249, 244, .92);
+  border-bottom: 1px solid var(--lux-line);
+  box-shadow: none;
+  backdrop-filter: blur(18px) saturate(115%);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+}
+
+body.cms-home-page .nav-shell {
+  min-height: 82px;
+}
+
+body.cms-home-page .brand strong {
+  font-family: var(--lux-serif);
+  font-size: 1.08rem;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+
+body.cms-home-page .brand small {
+  color: var(--lux-muted);
+  font-size: .73rem;
+  letter-spacing: .02em;
+}
+
+body.cms-home-page .primary-nav > a,
+body.cms-home-page .nav-item > button {
+  padding-inline: 11px;
+  color: var(--lux-ink);
+  border-radius: 0;
+  background: transparent;
+  font-size: .84rem;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+body.cms-home-page .primary-nav > a:hover,
+body.cms-home-page .primary-nav > a.is-current,
+body.cms-home-page .nav-item > button:hover,
+body.cms-home-page .nav-item > button[aria-expanded="true"] {
+  color: var(--lux-wine);
+  background: transparent;
+}
+
+body.cms-home-page .primary-nav > a:not(.button)::after,
+body.cms-home-page .nav-item > button::after {
+  opacity: .7;
+}
+
+body.cms-home-page .dropdown {
+  border: 1px solid var(--lux-line);
+  border-radius: 2px;
+  background: rgba(255,253,250,.98);
+  box-shadow: 0 28px 70px rgba(26, 17, 15, .10);
+}
+
+/* ---------- Buttons: flat, deliberate, no SaaS gradients ---------- */
+body.cms-home-page .button,
+body.cms-home-page a.button,
+body.cms-home-page .primary-nav .button,
+body.cms-home-page .sidebar-card .button {
+  min-height: 48px;
+  padding: 12px 21px;
+  gap: 9px;
+  border: 1px solid var(--lux-wine);
+  border-radius: 2px;
+  background: var(--lux-wine);
+  color: #fff !important;
+  box-shadow: none;
+  font-size: .84rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+body.cms-home-page .button:hover,
+body.cms-home-page a.button:hover {
+  background: var(--lux-wine-dark);
+  border-color: var(--lux-wine-dark);
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+body.cms-home-page .button-secondary,
+body.cms-home-page a.button-secondary,
+body.cms-home-page .sidebar-card .button-secondary {
+  color: var(--lux-ink) !important;
+  background: transparent;
+  border-color: var(--lux-line);
+}
+
+body.cms-home-page .button-secondary:hover,
+body.cms-home-page a.button-secondary:hover {
+  color: var(--lux-wine) !important;
+  background: transparent;
+  border-color: var(--lux-wine);
+}
+
+/* ---------- Hero: editorial split + photography ---------- */
+body.cms-home-page .home-main {
+  overflow: clip;
+  background: var(--lux-bone);
+}
+
+body.cms-home-page .home-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: min(860px, calc(100svh - 114px));
+  padding: clamp(82px, 8vw, 132px) 0 clamp(64px, 7vw, 104px);
+  background: var(--lux-bone);
+  border-bottom: 1px solid var(--lux-line);
+}
+
+body.cms-home-page .home-hero::before {
+  display: none;
+}
+
+body.cms-home-page .home-hero-grid {
+  grid-template-columns: minmax(0, 1.04fr) minmax(430px, .96fr);
+  gap: clamp(68px, 8vw, 138px);
+  align-items: center;
+}
+
+body.cms-home-page .home-hero-copy {
+  max-width: 770px;
+}
+
+body.cms-home-page .home-hero .eyebrow,
+body.cms-home-page .section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  color: var(--lux-wine);
+  font-size: .68rem;
+  font-weight: 750;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+}
+
+body.cms-home-page .home-hero .eyebrow::before,
+body.cms-home-page .section-kicker::before {
+  width: 34px;
+  height: 1px;
+  border-radius: 0;
+  background: var(--lux-brass);
+}
+
+body.cms-home-page .home-hero h1 {
+  max-width: 820px;
+  margin: 0;
+  font-size: clamp(4.2rem, 6.55vw, 7.5rem);
+  line-height: .88;
+  letter-spacing: -.065em;
+  text-wrap: balance;
+}
+
+body.cms-home-page .home-hero h1 em {
+  color: var(--lux-wine);
+  font-style: italic;
+  font-weight: 500;
+}
+
+body.cms-home-page .home-hero .lead {
+  max-width: 590px;
+  margin-top: 32px;
+  color: #514a46;
+  font-size: clamp(1rem, 1.2vw, 1.13rem);
+  line-height: 1.78;
+}
+
+body.cms-home-page .hero-actions {
+  margin-top: 34px;
+  gap: 10px;
+}
+
+body.cms-home-page .hero-note {
+  margin-top: 26px;
+  color: var(--lux-muted);
+  font-size: .82rem;
+}
+
+body.cms-home-page .hero-note::before {
+  width: 19px;
+  height: 19px;
+  color: var(--lux-wine);
+  background: transparent;
+  border: 1px solid var(--lux-line);
+  font-size: .7rem;
+}
+
+body.cms-home-page .home-hero-media {
+  min-height: 610px;
+  place-items: stretch;
+  align-self: stretch;
+  overflow: visible;
+}
+
+body.cms-home-page .home-hero-media::before {
+  display: none;
+}
+
+body.cms-home-page .home-hero-media > img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 610px;
+  max-height: 690px;
+  object-fit: cover;
+  object-position: center 22%;
+  border-radius: 2px;
+  filter: none;
+  background: #e8e0d8;
+}
+
+body.cms-home-page .hero-booking-card {
+  right: -22px;
+  bottom: -28px;
+  width: min(320px, 78%);
+  padding: 24px;
+  border: 1px solid var(--lux-line);
+  border-radius: 2px;
+  background: rgba(255,253,250,.97);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+body.cms-home-page .hero-booking-card strong {
+  color: var(--lux-ink);
+  font-family: var(--lux-serif);
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+
+body.cms-home-page .hero-booking-card p {
+  color: var(--lux-muted);
+  font-size: .82rem;
+}
+
+body.cms-home-page .hero-booking-card .fee {
+  border-top-color: var(--lux-line-soft);
+  color: var(--lux-ink);
+  font-size: .82rem;
+}
+
+body.cms-home-page .hero-booking-card .button {
+  min-height: 43px;
+  font-size: .78rem;
+}
+
+/* Trust points become a quiet information rail, not five cards. */
+body.cms-home-page .trust-ribbon {
+  margin-top: clamp(72px, 8vw, 118px);
+  border: 0;
+  border-top: 1px solid var(--lux-line);
+  border-bottom: 1px solid var(--lux-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.cms-home-page .trust-item {
+  min-height: 106px;
+  padding: 24px 22px;
+  border-right: 1px solid var(--lux-line);
+}
+
+body.cms-home-page .trust-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 0;
+  background: transparent;
+  color: var(--lux-brass);
+  font-size: 1rem;
+}
+
+body.cms-home-page .trust-item strong {
+  color: var(--lux-ink);
+  font-size: .83rem;
+  font-weight: 700;
+}
+
+body.cms-home-page .trust-item span {
+  color: var(--lux-muted);
+  font-size: .7rem;
+}
+
+/* ---------- Section rhythm ---------- */
+body.cms-home-page .home-section {
+  padding: clamp(100px, 11vw, 168px) 0;
+}
+
+body.cms-home-page .home-section--soft,
+body.cms-home-page .home-section--blush {
+  background: var(--lux-paper);
+}
+
+body.cms-home-page .home-section:nth-of-type(even) {
+  background: var(--lux-white);
+}
+
+body.cms-home-page .section-heading {
+  align-items: end;
+  gap: 52px;
+  margin-bottom: clamp(48px, 5vw, 76px);
+}
+
+body.cms-home-page .section-heading > div {
+  max-width: 860px;
+}
+
+body.cms-home-page .section-heading h2 {
+  max-width: 920px;
+  font-size: clamp(3rem, 5.1vw, 5.7rem);
+  line-height: .94;
+  letter-spacing: -.06em;
+  text-wrap: balance;
+}
+
+body.cms-home-page .section-heading p {
+  max-width: 620px;
+  margin-top: 20px;
+  color: var(--lux-muted);
+  font-size: .96rem;
+  line-height: 1.7;
+}
+
+body.cms-home-page .section-heading > a {
+  color: var(--lux-ink);
+  border-bottom: 1px solid var(--lux-ink);
+  font-size: .78rem;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ---------- Concerns: editorial index, not a card wall ---------- */
+body.cms-home-page .concern-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 44px;
+  border-bottom: 1px solid var(--lux-line);
+}
+
+body.cms-home-page .concern-card {
+  min-height: 250px;
+  padding: 30px 0 34px;
+  border: 0;
+  border-top: 1px solid var(--lux-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: padding .22s ease, color .22s ease;
+}
+
+body.cms-home-page .concern-card::after {
+  display: none;
+}
+
+body.cms-home-page .concern-card:hover {
+  padding-left: 12px;
+  color: var(--lux-wine);
+  border-color: var(--lux-line);
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+body.cms-home-page .concern-card .icon-bubble {
+  width: auto;
+  height: auto;
+  display: block;
+  margin-bottom: 34px;
+  border-radius: 0;
+  background: transparent;
+  color: var(--lux-brass);
+  font-family: var(--lux-serif);
+  font-size: .82rem;
+}
+
+body.cms-home-page .concern-card .icon-bubble svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.2;
+}
+
+body.cms-home-page .concern-card h3 {
+  margin: 0 0 12px;
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  line-height: 1.06;
+}
+
+body.cms-home-page .concern-card p {
+  max-width: 330px;
+  color: var(--lux-muted);
+  font-size: .82rem;
+  line-height: 1.65;
+}
+
+body.cms-home-page .concern-card .card-link {
+  padding-top: 28px;
+  color: var(--lux-wine);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+/* ---------- Doctor: portrait + editorial credentials ---------- */
+body.cms-home-page .doctor-feature {
+  grid-template-columns: minmax(430px, .92fr) minmax(0, 1.08fr);
+  gap: clamp(72px, 8vw, 140px);
+  align-items: center;
+}
+
+body.cms-home-page .doctor-visual {
+  min-height: 690px;
+  place-items: stretch;
+  border: 0;
+  border-radius: 2px;
+  background: #e6ded6;
+  overflow: hidden;
+}
+
+body.cms-home-page .doctor-visual img {
+  width: 100%;
+  height: 100%;
+  min-height: 690px;
+  max-height: none;
+  object-fit: cover;
+  object-position: center 18%;
+  filter: none;
+}
+
+body.cms-home-page .doctor-visual::after {
+  left: 18px;
+  bottom: 18px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 2px;
+  color: #fff;
+  background: rgba(23,19,17,.70);
+  box-shadow: none;
+  font-size: .66rem;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+body.cms-home-page .doctor-copy h2 {
+  max-width: 760px;
+  font-size: clamp(3.4rem, 5vw, 6.2rem);
+  line-height: .9;
+  letter-spacing: -.065em;
+}
+
+body.cms-home-page .doctor-copy .doctor-role {
+  margin-top: 24px;
+  color: var(--lux-wine);
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+body.cms-home-page .doctor-copy > p {
+  max-width: 650px;
+  margin-top: 28px;
+  color: var(--lux-muted);
+  font-size: .95rem;
+  line-height: 1.75;
+}
+
+body.cms-home-page .doctor-points {
+  gap: 0 36px;
+  margin: 40px 0 36px;
+  border-top: 1px solid var(--lux-line);
+}
+
+body.cms-home-page .doctor-points li {
+  min-height: 76px;
+  align-items: center;
+  padding: 17px 0;
+  border: 0;
+  border-bottom: 1px solid var(--lux-line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--lux-ink);
+  font-size: .8rem;
+  font-weight: 650;
+}
+
+body.cms-home-page .doctor-points li::before {
+  color: var(--lux-brass);
+  font-size: .8rem;
+}
+
+/* ---------- Treatments: product-editorial cards ---------- */
+body.cms-home-page .treatment-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+}
+
+body.cms-home-page .treatment-card {
+  min-height: 470px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.cms-home-page .treatment-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: #ebe4dc;
+  transition: transform .5s cubic-bezier(.2,.7,.2,1);
+}
+
+body.cms-home-page .treatment-card:hover img {
+  transform: scale(1.012);
+}
+
+body.cms-home-page .treatment-card-body {
+  padding: 24px 0 0;
+}
+
+body.cms-home-page .treatment-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.65rem;
+  line-height: 1.02;
+}
+
+body.cms-home-page .treatment-card p {
+  color: var(--lux-muted);
+  font-size: .8rem;
+  line-height: 1.65;
+}
+
+body.cms-home-page .treatment-card .text-link {
+  padding-top: 24px;
+  color: var(--lux-wine);
+  font-size: .74rem;
+  font-weight: 700;
+}
+
+/* ---------- Why Aastha: numbers + rules, not boxes ---------- */
+body.cms-home-page .why-grid {
+  gap: 0;
+  border-top: 1px solid var(--lux-line);
+  border-bottom: 1px solid var(--lux-line);
+}
+
+body.cms-home-page .why-card {
+  min-height: 260px;
+  padding: 32px 30px 34px;
+  border: 0;
+  border-right: 1px solid var(--lux-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.cms-home-page .why-card:last-child {
+  border-right: 0;
+}
+
+body.cms-home-page .why-card .why-number {
+  color: var(--lux-brass);
+  font-family: var(--lux-sans);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+body.cms-home-page .why-card h3 {
+  margin: 50px 0 14px;
+  font-size: 1.65rem;
+  line-height: 1.03;
+}
+
+body.cms-home-page .why-card p {
+  color: var(--lux-muted);
+  font-size: .8rem;
+  line-height: 1.65;
+}
+
+/* ---------- Locations ---------- */
+body.cms-home-page .location-pro-grid {
+  gap: 32px;
+}
+
+body.cms-home-page .location-pro-card {
+  grid-template-columns: 180px 1fr;
+  min-height: 350px;
+  border: 1px solid var(--lux-line);
+  border-radius: 2px;
+  background: var(--lux-white);
+  box-shadow: none;
+}
+
+body.cms-home-page .location-pro-card .location-art {
+  border-right: 1px solid var(--lux-line);
+  background: var(--lux-bone);
+}
+
+body.cms-home-page .location-pro-card .location-art img {
+  width: 110px;
+  opacity: .76;
+  filter: grayscale(.1) sepia(.08);
+}
+
+body.cms-home-page .location-pro-card .location-copy {
+  padding: 34px;
+}
+
+body.cms-home-page .location-pro-card h3 {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+body.cms-home-page .location-pro-card address {
+  margin-top: 16px;
+  color: var(--lux-muted);
+  font-size: .84rem;
+}
+
+body.cms-home-page .location-pro-card .location-hours {
+  margin-top: 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--lux-line);
+  border-bottom: 1px solid var(--lux-line);
+  border-radius: 0;
+  background: transparent;
+  font-size: .76rem;
+}
+
+body.cms-home-page .location-actions .button {
+  min-height: 40px;
+  padding: 8px 13px;
+  font-size: .72rem;
+}
+
+/* ---------- FAQ: editorial disclosure list ---------- */
+body.cms-home-page .faq-pro-list {
+  max-width: 1020px;
+  gap: 0;
+  border-bottom: 1px solid var(--lux-line);
+}
+
+body.cms-home-page .faq-pro-list details {
+  border: 0;
+  border-top: 1px solid var(--lux-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.cms-home-page .faq-pro-list summary {
+  padding: 27px 60px 27px 0;
+  color: var(--lux-ink);
+  font-family: var(--lux-serif);
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+
+body.cms-home-page .faq-pro-list summary::after {
+  right: 0;
+  color: var(--lux-wine);
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
+body.cms-home-page .faq-pro-list details p {
+  max-width: 760px;
+  padding: 0 0 30px;
+  color: var(--lux-muted);
+  font-size: .9rem;
+  line-height: 1.75;
+}
+
+/* ---------- Final CTA: one confident dark moment ---------- */
+body.cms-home-page .home-cta {
+  padding: clamp(96px, 11vw, 168px) 0;
+  color: #fff;
+  background: #21191a;
+}
+
+body.cms-home-page .home-cta::before,
+body.cms-home-page .home-cta::after {
+  display: none;
+}
+
+body.cms-home-page .home-cta-grid {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 74px;
+}
+
+body.cms-home-page .home-cta h2 {
+  max-width: 920px;
+  color: #fff;
+  font-size: clamp(3.6rem, 6vw, 7rem);
+  line-height: .9;
+  letter-spacing: -.065em;
+}
+
+body.cms-home-page .home-cta p {
+  max-width: 650px;
+  margin-top: 24px;
+  color: rgba(255,255,255,.64);
+  font-size: .88rem;
+  line-height: 1.7;
+}
+
+body.cms-home-page .home-cta .button {
+  color: var(--lux-ink) !important;
+  background: #f3eee6;
+  border-color: #f3eee6;
+}
+
+body.cms-home-page .home-cta .button:hover {
+  color: var(--lux-ink) !important;
+  background: #fff;
+  border-color: #fff;
+}
+
+body.cms-home-page .home-cta .button-secondary {
+  color: #fff !important;
+  background: transparent;
+  border-color: rgba(255,255,255,.36);
+}
+
+/* ---------- Motion: restrained and optional ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  body.cms-home-page .home-hero-copy {
+    animation: lux-fade-up .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+  body.cms-home-page .home-hero-media {
+    animation: lux-fade-in .9s .08s ease both;
+  }
+  body.cms-home-page .concern-card,
+  body.cms-home-page .treatment-card,
+  body.cms-home-page .location-pro-card {
+    transition: transform .28s ease, border-color .28s ease, background .28s ease, padding .28s ease;
+  }
+}
+
+@keyframes lux-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lux-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1080px) {
+  body.cms-home-page .container {
+    width: min(calc(100% - 48px), var(--lux-container));
+  }
+
+  body.cms-home-page .home-hero-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 54px;
+  }
+
+  body.cms-home-page .home-hero h1 {
+    font-size: clamp(3.8rem, 7.2vw, 5.8rem);
+  }
+
+  body.cms-home-page .home-hero-media,
+  body.cms-home-page .home-hero-media > img {
+    min-height: 540px;
+  }
+
+  body.cms-home-page .doctor-feature {
+    grid-template-columns: minmax(360px, .9fr) 1.1fr;
+    gap: 54px;
+  }
+
+  body.cms-home-page .doctor-visual,
+  body.cms-home-page .doctor-visual img {
+    min-height: 580px;
+  }
+
+  body.cms-home-page .treatment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 54px 28px;
+  }
+
+  body.cms-home-page .why-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.cms-home-page .why-card:nth-child(2) {
+    border-right: 0;
+  }
+
+  body.cms-home-page .why-card:nth-child(-n+2) {
+    border-bottom: 1px solid var(--lux-line);
+  }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 760px) {
+  body.cms-home-page .container {
+    width: min(calc(100% - 38px), var(--lux-container));
+  }
+
+  body.cms-home-page .topbar-inner {
+    min-height: 29px;
+    font-size: .66rem;
+  }
+
+  body.cms-home-page .nav-shell {
+    min-height: 72px;
+  }
+
+  body.cms-home-page .home-hero {
+    min-height: 0;
+    padding: 64px 0 72px;
+  }
+
+  body.cms-home-page .home-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  body.cms-home-page .home-hero .eyebrow,
+  body.cms-home-page .section-kicker {
+    margin-bottom: 18px;
+    font-size: .62rem;
+  }
+
+  body.cms-home-page .home-hero h1 {
+    max-width: 100%;
+    font-size: clamp(3.25rem, 15vw, 5.2rem);
+    line-height: .9;
+    letter-spacing: -.06em;
+  }
+
+  body.cms-home-page .home-hero .lead {
+    margin-top: 25px;
+    font-size: .96rem;
+    line-height: 1.65;
+  }
+
+  body.cms-home-page .hero-actions {
+    margin-top: 28px;
+  }
+
+  body.cms-home-page .hero-actions .button {
+    flex: 1 1 100%;
+  }
+
+  body.cms-home-page .home-hero-media {
+    min-height: 510px;
+  }
+
+  body.cms-home-page .home-hero-media > img {
+    min-height: 510px;
+    max-height: 600px;
+  }
+
+  body.cms-home-page .hero-booking-card {
+    right: 14px;
+    bottom: -26px;
+    width: calc(100% - 28px);
+  }
+
+  body.cms-home-page .trust-ribbon {
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 94px;
+  }
+
+  body.cms-home-page .trust-item {
+    min-height: 94px;
+    padding: 18px 14px;
+    border-bottom: 1px solid var(--lux-line);
+  }
+
+  body.cms-home-page .trust-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  body.cms-home-page .trust-item:last-child {
+    grid-column: 1 / -1;
+    border-bottom: 0;
+  }
+
+  body.cms-home-page .home-section {
+    padding: 92px 0;
+  }
+
+  body.cms-home-page .section-heading {
+    display: block;
+    margin-bottom: 42px;
+  }
+
+  body.cms-home-page .section-heading h2 {
+    font-size: clamp(2.85rem, 12vw, 4.25rem);
+    line-height: .95;
+  }
+
+  body.cms-home-page .section-heading p {
+    margin-top: 16px;
+    font-size: .9rem;
+  }
+
+  body.cms-home-page .section-heading > a {
+    display: inline-block;
+    margin-top: 24px;
+  }
+
+  body.cms-home-page .concern-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  body.cms-home-page .concern-card {
+    min-height: 0;
+    padding: 28px 0 30px;
+  }
+
+  body.cms-home-page .concern-card .icon-bubble {
+    margin-bottom: 22px;
+  }
+
+  body.cms-home-page .doctor-feature {
+    grid-template-columns: 1fr;
+    gap: 52px;
+  }
+
+  body.cms-home-page .doctor-visual,
+  body.cms-home-page .doctor-visual img {
+    min-height: 540px;
+  }
+
+  body.cms-home-page .doctor-copy h2 {
+    font-size: clamp(3rem, 13vw, 4.6rem);
+  }
+
+  body.cms-home-page .doctor-points {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  body.cms-home-page .treatment-grid {
+    grid-template-columns: 1fr;
+    gap: 52px;
+  }
+
+  body.cms-home-page .treatment-card {
+    min-height: 0;
+  }
+
+  body.cms-home-page .treatment-card img {
+    height: min(108vw, 440px);
+  }
+
+  body.cms-home-page .why-grid {
+    grid-template-columns: 1fr;
+    border-bottom: 0;
+  }
+
+  body.cms-home-page .why-card,
+  body.cms-home-page .why-card:nth-child(2) {
+    min-height: 0;
+    padding: 28px 0 34px;
+    border-right: 0;
+    border-bottom: 1px solid var(--lux-line);
+  }
+
+  body.cms-home-page .why-card h3 {
+    margin-top: 30px;
+  }
+
+  body.cms-home-page .location-pro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.cms-home-page .location-pro-card {
+    grid-template-columns: 1fr;
+  }
+
+  body.cms-home-page .location-pro-card .location-art {
+    min-height: 170px;
+    border-right: 0;
+    border-bottom: 1px solid var(--lux-line);
+  }
+
+  body.cms-home-page .location-pro-card .location-copy {
+    padding: 28px 24px;
+  }
+
+  body.cms-home-page .faq-pro-list summary {
+    padding: 24px 42px 24px 0;
+    font-size: 1.35rem;
+  }
+
+  body.cms-home-page .home-cta {
+    padding: 88px 0 110px;
+  }
+
+  body.cms-home-page .home-cta-grid {
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+
+  body.cms-home-page .home-cta h2 {
+    font-size: clamp(3rem, 13vw, 5rem);
+  }
+}
+
+/* ---------- Dark mode: quiet, not neon ---------- */
+html[data-theme="dark"] body.cms-home-page {
+  --lux-bone: #151211;
+  --lux-paper: #191615;
+  --lux-white: #1e1a18;
+  --lux-ink: #f3eee7;
+  --lux-muted: #aaa19b;
+  --lux-wine: #d49aaa;
+  --lux-wine-dark: #e1abba;
+  --lux-brass: #c5ab83;
+  --lux-line: rgba(255,255,255,.14);
+  --lux-line-soft: rgba(255,255,255,.08);
+  color: var(--lux-ink);
+  background: var(--lux-bone);
+}
+
+html[data-theme="dark"] body.cms-home-page .site-header {
+  background: rgba(21,18,17,.90);
+}
+
+html[data-theme="dark"] body.cms-home-page .home-hero .lead,
+html[data-theme="dark"] body.cms-home-page .section-heading p,
+html[data-theme="dark"] body.cms-home-page .concern-card p,
+html[data-theme="dark"] body.cms-home-page .doctor-copy > p,
+html[data-theme="dark"] body.cms-home-page .treatment-card p,
+html[data-theme="dark"] body.cms-home-page .why-card p,
+html[data-theme="dark"] body.cms-home-page .location-pro-card address,
+html[data-theme="dark"] body.cms-home-page .faq-pro-list details p {
+  color: var(--lux-muted);
+}
+
+html[data-theme="dark"] body.cms-home-page .hero-booking-card,
+html[data-theme="dark"] body.cms-home-page .location-pro-card {
+  background: #201b19;
+}
+
+html[data-theme="dark"] body.cms-home-page .home-hero-media > img,
+html[data-theme="dark"] body.cms-home-page .doctor-visual {
+  background: #28211f;
+}

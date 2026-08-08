@@ -1,0 +1,93 @@
+/* =========================================================
+   PREMIUM V5 — FINAL ACCESSIBILITY CONTRAST GUARD
+   ---------------------------------------------------------
+   Keep the couture palette while ensuring small UI text meets WCAG AA.
+   This layer intentionally loads last in the V5 preview.
+   ========================================================= */
+
+/* Light mode: antique bronze needs enough depth against warm ivory. */
+html:not([data-theme="dark"]) body.release-v24 {
+  --v5-gold: #76502c;
+  --v5-gold-soft: #805a32;
+  --v5-muted: #6c6258;
+}
+
+html:not([data-theme="dark"]) body.release-v24 .brand small,
+html:not([data-theme="dark"]) body.release-v24 .breadcrumbs,
+html:not([data-theme="dark"]) body.release-v24 .breadcrumbs a,
+html:not([data-theme="dark"]) body.release-v24 .breadcrumbs span,
+html:not([data-theme="dark"]) body.release-v24 .breadcrumbs [aria-current="page"],
+html:not([data-theme="dark"]) body.release-v24 .page-hero-copy > nav,
+html:not([data-theme="dark"]) body.release-v24 .page-hero-copy > nav a,
+html:not([data-theme="dark"]) body.release-v24 .page-hero-copy > nav span {
+  color: #6a6056 !important;
+}
+
+/* V5 gold/champagne is used for very small editorial labels. On a light
+   surface use the deeper aged-bronze token so those labels remain readable. */
+html:not([data-theme="dark"]) body.cms-home-page .section-kicker,
+html:not([data-theme="dark"]) body.cms-home-page .quiet-label,
+html:not([data-theme="dark"]) body.cms-home-page .home-hero .eyebrow,
+html:not([data-theme="dark"]) body.cms-home-page .treatment-card .text-link,
+html:not([data-theme="dark"]) body.cms-home-page .concern-card .text-link,
+html:not([data-theme="dark"]) body.cms-home-page .v5-text-link,
+html:not([data-theme="dark"]) body.release-v24[data-page-slug="acne-treatment"] .page-hero-copy .eyebrow,
+html:not([data-theme="dark"]) body.release-v24[data-page-slug="acne-treatment"] .page-hero-copy .quiet-label,
+html:not([data-theme="dark"]) body.release-v24[data-page-slug="acne-treatment"] .v5-page-rail-title,
+html:not([data-theme="dark"]) body.release-v24[data-page-slug="acne-treatment"] .v5-results-kicker,
+html:not([data-theme="dark"]) body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .quiet-label {
+  color: #805a32 !important;
+}
+
+html:not([data-theme="dark"]) body.release-v24 .primary-nav > a.is-current,
+html:not([data-theme="dark"]) body.release-v24 .primary-nav > a:not(.button):hover,
+html:not([data-theme="dark"]) body.release-v24 .nav-item > button:hover,
+html:not([data-theme="dark"]) body.release-v24 .nav-item > button[aria-expanded="true"] {
+  color: #75502b !important;
+}
+
+/* Footer is intentionally dark in both themes. Do not let the global light
+   heading palette leak into it on inner pages. */
+body.release-v24 .site-footer,
+body.release-v24 .site-footer p,
+body.release-v24 .site-footer li,
+body.release-v24 .site-footer small {
+  color: #bfb5ab !important;
+}
+body.release-v24 .site-footer h1,
+body.release-v24 .site-footer h2,
+body.release-v24 .site-footer h3,
+body.release-v24 .site-footer h4,
+body.release-v24 .site-footer .brand strong {
+  color: #f4ece3 !important;
+}
+body.release-v24 .site-footer .brand small,
+body.release-v24 .brand-footer small {
+  color: #bfb5ab !important;
+}
+body.release-v24 .site-footer a {
+  color: #d8cec4 !important;
+}
+body.release-v24 .site-footer a:hover,
+body.release-v24 .site-footer a:focus-visible {
+  color: #fffaf5 !important;
+}
+
+/* Higher specificity than the light-mode header microcopy rule above. */
+html:not([data-theme="dark"]) body.release-v24 .site-footer .brand small,
+html:not([data-theme="dark"]) body.release-v24 .site-footer .brand-footer small,
+html:not([data-theme="dark"]) body.release-v24 .site-footer .brand-footer > span small {
+  color: #bfb5ab !important;
+}
+
+/* Dark mode retains the brighter champagne tone because contrast against the
+   espresso surfaces is already comfortably above AA. */
+html[data-theme="dark"] body.release-v24 .brand small {
+  color: #b9aea4 !important;
+}
+
+/* Keyboard focus is deliberately visible but still understated. */
+body.release-v24 :is(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--v5-gold) 85%, #ffffff 15%) !important;
+  outline-offset: 3px !important;
+}

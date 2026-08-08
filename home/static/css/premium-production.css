@@ -1,0 +1,743 @@
+/* =========================================================
+   AASTHA LUXURY DESIGN SYSTEM — PRODUCTION CANDIDATE
+   ---------------------------------------------------------
+   Final site-wide layer built from the approved V5 direction.
+   It deliberately styles semantic/Wagtail components rather than
+   one-off page HTML so new CMS content inherits the same system.
+   ========================================================= */
+
+body.release-v24 {
+  --luxury-bg: var(--v5-bg, #f2ede3);
+  --luxury-surface: var(--v5-surface, #faf6ee);
+  --luxury-surface-2: var(--v5-surface-2, #eee7dc);
+  --luxury-text: var(--v5-text, #171411);
+  --luxury-text-soft: var(--v5-text-soft, #3f3933);
+  --luxury-muted: var(--v5-muted, #766d64);
+  --luxury-wine: var(--v5-wine, #741d38);
+  --luxury-wine-deep: var(--v5-wine-deep, #531126);
+  --luxury-gold: var(--v5-gold, #9d7545);
+  --luxury-gold-soft: var(--v5-gold-soft, #bea078);
+  --luxury-line: var(--v5-line, rgba(99,71,40,.23));
+  --luxury-line-soft: var(--v5-line-soft, rgba(80,59,40,.12));
+  --luxury-serif: var(--v5-serif, "Iowan Old Style", Baskerville, Georgia, serif);
+  --luxury-sans: var(--v5-sans, Inter, ui-sans-serif, system-ui, sans-serif);
+  --luxury-max: var(--v5-max, 1320px);
+  --luxury-reading: 760px;
+  background: var(--luxury-bg);
+  color: var(--luxury-text);
+}
+
+/* ---------------------------------------------------------
+   Shared editorial page shell
+   --------------------------------------------------------- */
+body.release-v24:not(.cms-home-page) main#main-content {
+  overflow: clip;
+  background: var(--luxury-bg);
+  color: var(--luxury-text-soft);
+}
+body.release-v24:not(.cms-home-page) main#main-content > .section,
+body.release-v24:not(.cms-home-page) .journal-section {
+  background: var(--luxury-bg);
+}
+body.release-v24:not(.cms-home-page) .container {
+  width: min(calc(100% - 52px), var(--luxury-max));
+}
+body.release-v24:not(.cms-home-page) h1,
+body.release-v24:not(.cms-home-page) h2,
+body.release-v24:not(.cms-home-page) h3,
+body.release-v24:not(.cms-home-page) h4 {
+  color: var(--luxury-text);
+  font-family: var(--luxury-serif);
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+body.release-v24:not(.cms-home-page) .quiet-label,
+body.release-v24:not(.cms-home-page) .eyebrow,
+body.release-v24:not(.cms-home-page) .section-kicker {
+  color: var(--luxury-gold-soft);
+  font-family: var(--luxury-sans);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------
+   Heroes — used by treatments, conditions, doctor, clinic,
+   booking, contact and supporting pages.
+   --------------------------------------------------------- */
+body.release-v24:not(.cms-home-page) .page-hero,
+body.release-v24:not(.cms-home-page) .page-hero.page-hero--professional {
+  padding: clamp(34px, 4vw, 58px) 0 clamp(28px, 3.5vw, 46px);
+  border-bottom: 1px solid var(--luxury-line-soft);
+  background:
+    radial-gradient(circle at 72% 16%, color-mix(in srgb, var(--luxury-wine) 6%, transparent), transparent 34%),
+    var(--luxury-bg);
+}
+body.release-v24:not(.cms-home-page) .page-hero--professional > .container {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(360px, .78fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: center;
+}
+body.release-v24:not(.cms-home-page) .page-hero-copy {
+  max-width: 740px;
+  padding-block: 12px;
+}
+body.release-v24:not(.cms-home-page) .breadcrumbs {
+  margin: 0 0 17px;
+  color: var(--luxury-muted);
+  font-family: var(--luxury-sans);
+  font-size: .58rem;
+  letter-spacing: .07em;
+}
+body.release-v24:not(.cms-home-page) .breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+body.release-v24:not(.cms-home-page) .breadcrumbs a:hover { color: var(--luxury-gold-soft); }
+body.release-v24:not(.cms-home-page) .page-hero-copy h1 {
+  max-width: 760px;
+  margin-top: 10px;
+  font-size: clamp(3.2rem, 5.2vw, 5.8rem);
+  line-height: .94;
+  letter-spacing: -.055em;
+  text-wrap: balance;
+}
+body.release-v24:not(.cms-home-page) .page-hero-copy .lead {
+  max-width: 660px;
+  margin-top: 20px;
+  color: var(--luxury-muted);
+  font-size: clamp(.78rem, 1vw, .92rem);
+  line-height: 1.72;
+}
+body.release-v24:not(.cms-home-page) .page-hero-art {
+  min-height: clamp(340px, 38vw, 500px);
+  height: clamp(340px, 38vw, 500px);
+  overflow: hidden;
+  border: 1px solid var(--luxury-line);
+  border-radius: 1px;
+  background: var(--luxury-surface-2);
+}
+body.release-v24:not(.cms-home-page) .page-hero-art img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center 18%;
+  filter: saturate(.84) contrast(1.055);
+  transition: transform .8s cubic-bezier(.2,.72,.2,1), filter .45s ease;
+}
+body.release-v24:not(.cms-home-page) .page-hero-art img:not(.v3-real-photo) {
+  object-fit: contain;
+  padding: clamp(36px, 5vw, 70px);
+  filter: saturate(.72) contrast(1.02);
+}
+body.release-v24:not(.cms-home-page) .page-hero-art:hover img.v3-real-photo {
+  transform: scale(1.016);
+  filter: saturate(.9) contrast(1.07);
+}
+body.release-v24:not(.cms-home-page) .hero-actions {
+  gap: 9px;
+  margin-top: 24px;
+}
+
+/* ---------------------------------------------------------
+   Clinical pages — treatment + condition
+   --------------------------------------------------------- */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-proof-strip,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .v5-proof-strip {
+  width: min(calc(100% - 52px), var(--luxury-max));
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid var(--luxury-line);
+  background: var(--luxury-surface);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-proof-item,.v5-proof-item) {
+  min-height: 66px;
+  display: grid;
+  place-items: center;
+  padding: 12px 13px;
+  border-right: 1px solid var(--luxury-line-soft);
+  color: var(--luxury-text-soft);
+  font-size: .61rem;
+  line-height: 1.4;
+  text-align: center;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-proof-item,.v5-proof-item):last-child { border-right: 0; }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-proof-item,.v5-proof-item)::before {
+  content: "✦";
+  display: block;
+  margin-bottom: 5px;
+  color: var(--luxury-gold);
+  font-size: .82rem;
+}
+
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) main#main-content > .section { padding-block: 0; }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr) 292px;
+  gap: clamp(18px, 2.2vw, 30px);
+  align-items: start;
+  padding-top: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) {
+  position: sticky;
+  top: 84px;
+  align-self: start;
+  min-width: 0;
+  padding: 20px 16px 18px 4px;
+  border-right: 1px solid var(--luxury-line-soft);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail-title,.v5-page-rail-title) {
+  margin: 0 0 15px;
+  color: var(--luxury-gold-soft);
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) ol {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) ol::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  bottom: 7px;
+  width: 1px;
+  background: var(--luxury-line);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) li {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 18px;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) li::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 15px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--luxury-gold);
+  border-radius: 50%;
+  background: var(--luxury-bg);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) li:is(.luxury-active,.v5-active)::before { background: var(--luxury-gold); }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) a {
+  display: block;
+  padding: 9px 0;
+  color: var(--luxury-muted);
+  font-size: .58rem;
+  line-height: 1.35;
+  text-decoration: none;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) li:is(.luxury-active,.v5-active) a { color: var(--luxury-text); }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-rail-help,.v5-rail-help) {
+  margin-top: 24px;
+  padding: 14px;
+  border: 1px solid var(--luxury-line);
+  background: var(--luxury-surface);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-rail-help,.v5-rail-help) strong {
+  display: block;
+  font-family: var(--luxury-serif);
+  font-size: .82rem;
+  font-weight: 500;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-rail-help,.v5-rail-help) p {
+  margin: 7px 0 0;
+  color: var(--luxury-muted);
+  font-size: .56rem;
+  line-height: 1.45;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-rail-help,.v5-rail-help) a {
+  margin-top: 8px;
+  color: var(--luxury-gold-soft);
+  font-size: .57rem;
+}
+
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose {
+  max-width: none;
+  min-width: 0;
+  padding: 0 8px 54px;
+  color: var(--luxury-text-soft);
+  font-size: clamp(.72rem, .78vw, .82rem);
+  line-height: 1.68;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .article-toc { display: none; }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose > h2 {
+  margin: 0;
+  padding: 25px 0 10px;
+  border-top: 1px solid var(--luxury-line);
+  font-size: clamp(1.8rem, 2.35vw, 2.55rem);
+  line-height: 1.04;
+  scroll-margin-top: 92px;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose > h2:first-of-type { border-top: 0; }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose > h2::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 1px;
+  margin-top: 11px;
+  background: var(--luxury-gold);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose > h3 {
+  margin: 24px 0 9px;
+  font-size: 1.3rem;
+  line-height: 1.08;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose :is(ul,ol),
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .feature-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 14px;
+  border-top: 1px solid var(--luxury-line-soft);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose li,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .feature-list li {
+  min-height: 44px;
+  padding: 10px 8px 10px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--luxury-line-soft);
+  background: transparent;
+  color: var(--luxury-text-soft);
+}
+
+/* Consultation concierge — works with both legacy and builder markup. */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) {
+  position: sticky;
+  top: 84px;
+  padding: 21px;
+  border: 1px solid var(--luxury-line);
+  border-radius: 1px;
+  background: var(--luxury-surface);
+  box-shadow: none;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) h2 {
+  margin: 5px 0 10px;
+  font-size: 1.55rem;
+  line-height: 1.02;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) p,
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) :is(dt,dd) {
+  color: var(--luxury-muted);
+  font-size: .62rem;
+  line-height: 1.5;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .care-facts {
+  margin: 18px 0;
+  border-block: 1px solid var(--luxury-line-soft);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .care-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--luxury-line-soft);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .care-facts > div:last-child { border-bottom: 0; }
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card) .button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ---------------------------------------------------------
+   Long-form standard/blog pages
+   --------------------------------------------------------- */
+body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) .content-layout {
+  display: grid;
+  grid-template-columns: minmax(0, var(--luxury-reading)) minmax(260px, 310px);
+  justify-content: center;
+  gap: clamp(34px, 5vw, 78px);
+  align-items: start;
+}
+body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) .prose {
+  max-width: var(--luxury-reading);
+  padding-bottom: 64px;
+  font-size: .88rem;
+  line-height: 1.82;
+}
+body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) .prose > h2 {
+  margin-top: 42px;
+  padding-top: 22px;
+  border-top: 1px solid var(--luxury-line-soft);
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.04;
+}
+body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) :is(.care-sidebar-card,.sidebar-card) {
+  position: sticky;
+  top: 84px;
+  border: 1px solid var(--luxury-line);
+  border-radius: 1px;
+  background: var(--luxury-surface);
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------
+   Directory/index pages
+   --------------------------------------------------------- */
+body.release-v24[data-page-type="contentindexpage"] .journal-section {
+  padding: clamp(58px, 7vw, 104px) 0 clamp(78px, 9vw, 130px);
+}
+body.release-v24[data-page-type="contentindexpage"] .section-heading {
+  margin-bottom: clamp(38px, 5vw, 70px);
+}
+body.release-v24[data-page-type="contentindexpage"] .section-heading h2 {
+  max-width: 820px;
+  font-size: clamp(2.8rem, 4.8vw, 5.2rem);
+  line-height: .96;
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--luxury-line);
+  border-left: 1px solid var(--luxury-line);
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card {
+  display: grid;
+  grid-template-columns: minmax(150px, .42fr) minmax(0, .58fr);
+  min-height: 250px;
+  overflow: hidden;
+  border: 0;
+  border-right: 1px solid var(--luxury-line);
+  border-bottom: 1px solid var(--luxury-line);
+  border-radius: 0;
+  background: var(--luxury-surface);
+  box-shadow: none;
+  color: inherit;
+  text-decoration: none;
+  transition: background .3s ease, transform .35s cubic-bezier(.2,.72,.2,1);
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card:hover {
+  background: color-mix(in srgb, var(--luxury-surface) 87%, var(--luxury-gold) 13%);
+  transform: translateY(-2px);
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card > img {
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+  object-fit: cover;
+  border-radius: 0;
+  filter: saturate(.82) contrast(1.04);
+  transition: transform .7s cubic-bezier(.2,.72,.2,1);
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card:hover > img { transform: scale(1.018); }
+body.release-v24[data-page-type="contentindexpage"] .journal-card > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 40px);
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card span {
+  color: var(--luxury-gold-soft);
+  font-size: .57rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card h2 {
+  margin: 9px 0;
+  font-size: clamp(1.55rem, 2vw, 2.15rem);
+  line-height: 1.03;
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card p {
+  color: var(--luxury-muted);
+  font-size: .7rem;
+  line-height: 1.6;
+}
+body.release-v24[data-page-type="contentindexpage"] .journal-card strong {
+  margin-top: 14px;
+  color: var(--luxury-gold-soft);
+  font-size: .62rem;
+  font-weight: 650;
+}
+body.release-v24[data-page-type="contentindexpage"] .cms-pagination {
+  margin-top: 36px;
+  padding-top: 22px;
+  border-top: 1px solid var(--luxury-line);
+}
+
+/* ---------------------------------------------------------
+   Wagtail builder components — luxury defaults
+   --------------------------------------------------------- */
+body.release-v24 .cms-block {
+  color: var(--luxury-text-soft);
+}
+body.release-v24 .cms-block > h2,
+body.release-v24 .cms-block .cms-split-copy > h2 {
+  font-size: clamp(2.15rem, 3.7vw, 4rem);
+  line-height: .98;
+}
+body.release-v24 .cms-split-section {
+  width: min(calc(100% - 52px), var(--luxury-max));
+  margin-inline: auto;
+}
+body.release-v24 .cms-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(42px, 7vw, 112px);
+  align-items: center;
+}
+body.release-v24 .cms-split--media-left .cms-split-media { order: -1; }
+body.release-v24 .cms-split-copy { max-width: 590px; }
+body.release-v24 .cms-split-copy .prose { padding: 0; }
+body.release-v24 .cms-split-media {
+  overflow: hidden;
+  border: 1px solid var(--luxury-line);
+  border-radius: 1px;
+  background: var(--luxury-surface-2);
+}
+body.release-v24 .cms-split-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.86) contrast(1.04);
+  transition: transform .8s cubic-bezier(.2,.72,.2,1);
+}
+body.release-v24 .cms-split:hover .cms-split-media img { transform: scale(1.012); }
+
+body.release-v24 .cms-comparison-section {
+  width: min(calc(100% - 52px), var(--luxury-max));
+  margin-inline: auto;
+  position: relative;
+  padding: clamp(54px, 7vw, 104px) 0;
+  border-block: 1px solid var(--luxury-line-soft);
+}
+body.release-v24 .cms-comparison-section > h2 {
+  max-width: 760px;
+  margin-bottom: 10px;
+  font-size: clamp(2.4rem, 4.2vw, 4.7rem);
+  line-height: .96;
+}
+body.release-v24 .cms-comparison-section > .lead {
+  max-width: 610px;
+  margin-bottom: 28px;
+  color: var(--luxury-muted);
+  font-size: .8rem;
+  line-height: 1.65;
+}
+body.release-v24 .cms-comparison-grid {
+  border: 1px solid var(--luxury-line);
+  border-radius: 1px;
+  background: var(--luxury-surface-2);
+}
+body.release-v24 .cms-comparison-grid figure { margin: 0; }
+body.release-v24 .cms-comparison-grid figcaption {
+  position: absolute;
+  z-index: 5;
+  bottom: 12px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(7,9,10,.68);
+  color: #fff8ef;
+  font-family: var(--luxury-sans);
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+body.release-v24 .cms-comparison-grid figure:first-child figcaption { left: 12px; }
+body.release-v24 .cms-comparison-grid figure:nth-child(2) figcaption { right: 12px; }
+
+body.release-v24 .cms-card-grid,
+body.release-v24 .cms-feature-grid,
+body.release-v24 .cms-gallery-grid {
+  gap: 1px;
+  background: var(--luxury-line);
+}
+body.release-v24 :is(.cms-card,.cms-feature-card,.cms-gallery-item) {
+  border: 0;
+  border-radius: 0;
+  background: var(--luxury-surface);
+  box-shadow: none;
+}
+body.release-v24 details,
+body.release-v24 .cms-accordion details,
+body.release-v24 .cms-faq details {
+  border: 0;
+  border-bottom: 1px solid var(--luxury-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.release-v24 details > summary {
+  color: var(--luxury-text);
+  font-weight: 560;
+}
+
+/* Forms: concierge rather than SaaS dashboard. */
+body.release-v24 :is(input,select,textarea) {
+  border-color: var(--luxury-line);
+  border-radius: 1px;
+  background: var(--luxury-surface);
+  color: var(--luxury-text);
+  box-shadow: none;
+}
+body.release-v24 :is(input,select,textarea):focus {
+  border-color: var(--luxury-gold);
+  outline: 2px solid color-mix(in srgb, var(--luxury-gold) 18%, transparent);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+body.release-v24 label {
+  color: var(--luxury-text-soft);
+  font-family: var(--luxury-sans);
+  font-size: .69rem;
+  font-weight: 650;
+}
+
+/* ---------------------------------------------------------
+   Production reveal helpers. JS only assigns these classes;
+   with reduced motion they become static immediately.
+   --------------------------------------------------------- */
+body.release-v24 [data-luxury-reveal] {
+  --luxury-reveal-x: 0px;
+  --luxury-reveal-y: 24px;
+  opacity: 0;
+  transform: translate3d(var(--luxury-reveal-x), var(--luxury-reveal-y), 0);
+  filter: blur(2.5px);
+  transition:
+    opacity .62s cubic-bezier(.2,.72,.2,1),
+    transform .72s cubic-bezier(.2,.72,.2,1),
+    filter .5s ease;
+  transition-delay: var(--luxury-delay, 0ms);
+}
+body.release-v24 [data-luxury-reveal="left"] { --luxury-reveal-x: -38px; --luxury-reveal-y: 14px; }
+body.release-v24 [data-luxury-reveal="right"] { --luxury-reveal-x: 38px; --luxury-reveal-y: 14px; }
+body.release-v24 [data-luxury-reveal].luxury-visible {
+  opacity: 1;
+  transform: translate3d(0,0,0);
+  filter: blur(0);
+}
+body.release-v24 .luxury-image-reveal {
+  clip-path: inset(0 100% 0 0);
+  transform: scale(1.012);
+  transition: clip-path .9s cubic-bezier(.18,.78,.18,1), transform .88s cubic-bezier(.2,.72,.2,1);
+  transition-delay: var(--luxury-delay, 70ms);
+}
+body.release-v24 .luxury-image-reveal--right { clip-path: inset(0 0 0 100%); }
+body.release-v24 .luxury-image-reveal.luxury-visible {
+  clip-path: inset(0 0 0 0);
+  transform: scale(1);
+}
+
+body.release-v24 .luxury-reading-progress {
+  position: fixed;
+  z-index: 70;
+  top: 82px;
+  right: 9px;
+  width: 1px;
+  height: min(42vh, 340px);
+  background: var(--luxury-line-soft);
+  pointer-events: none;
+}
+body.release-v24 .luxury-reading-progress > span {
+  display: block;
+  width: 1px;
+  height: var(--luxury-progress, 0%);
+  background: var(--luxury-gold);
+  transition: height .08s linear;
+}
+
+/* ---------------------------------------------------------
+   Responsive behaviour
+   --------------------------------------------------------- */
+@media (max-width: 1100px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout {
+    grid-template-columns: minmax(0, 1fr) 270px;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-page-rail,.v5-page-rail) { display: none; }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card { grid-template-columns: 1fr; }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card > img { min-height: 200px; height: 220px; }
+}
+
+@media (max-width: 760px) {
+  body.release-v24:not(.cms-home-page) .container,
+  body.release-v24 .cms-split-section,
+  body.release-v24 .cms-comparison-section {
+    width: min(calc(100% - 30px), var(--luxury-max));
+  }
+  body.release-v24:not(.cms-home-page) .page-hero { padding: 28px 0 30px; }
+  body.release-v24:not(.cms-home-page) .page-hero--professional > .container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  body.release-v24:not(.cms-home-page) .page-hero-copy h1 {
+    font-size: clamp(2.7rem, 13vw, 4.25rem);
+  }
+  body.release-v24:not(.cms-home-page) .page-hero-art {
+    min-height: 320px;
+    height: 360px;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-proof-strip,.v5-proof-strip) {
+    width: calc(100% - 30px);
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-proof-item,.v5-proof-item) {
+    border-bottom: 1px solid var(--luxury-line-soft);
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout,
+  body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) .content-layout {
+    display: block;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose,
+  body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) .prose {
+    padding-inline: 0;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .prose :is(ul,ol),
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .feature-list {
+    grid-template-columns: 1fr;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.sidebar-card,.care-sidebar-card),
+  body.release-v24:is([data-page-type="standardpage"],[data-page-type="blogpage"]) :is(.sidebar-card,.care-sidebar-card) {
+    position: static;
+    margin: 26px 0 48px;
+  }
+  body.release-v24[data-page-type="contentindexpage"] .journal-grid { grid-template-columns: 1fr; }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card {
+    grid-template-columns: minmax(120px,.42fr) minmax(0,.58fr);
+    min-height: 210px;
+  }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card > img {
+    height: 100%;
+    min-height: 210px;
+  }
+  body.release-v24 .cms-split { grid-template-columns: 1fr; gap: 28px; }
+  body.release-v24 .cms-split--media-left .cms-split-media { order: 0; }
+  body.release-v24 .cms-split-media { order: -1 !important; }
+  body.release-v24 .cms-comparison-section { padding-block: 54px; }
+  body.release-v24 .luxury-reading-progress { display: none; }
+  body.release-v24 [data-luxury-reveal="left"],
+  body.release-v24 [data-luxury-reveal="right"] {
+    --luxury-reveal-x: 0px;
+    --luxury-reveal-y: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  body.release-v24[data-page-type="contentindexpage"] .journal-card { grid-template-columns: 1fr; }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card > img { height: 210px; min-height: 210px; }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.luxury-proof-strip,.v5-proof-strip) { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.release-v24 [data-luxury-reveal],
+  body.release-v24 .luxury-image-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: inset(0 0 0 0) !important;
+    transition: none !important;
+  }
+}

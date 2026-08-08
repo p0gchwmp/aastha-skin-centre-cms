@@ -1,0 +1,906 @@
+/* =========================================================
+   AASTHA PREMIUM V3 — PREVIEW ONLY
+   ---------------------------------------------------------
+   Final art-direction pass before production approval.
+
+   Principles:
+   - dermatologist credibility first; beauty luxury second
+   - photography and typography carry the brand
+   - warm mineral neutrals, charcoal, restrained clinic wine
+   - fewer boxes, fewer shadows, fewer competing CTAs
+   - editorial hierarchy and generous negative space
+   - inner clinical pages remain extremely readable
+   ========================================================= */
+
+body.release-v24 {
+  --v3-bone: #f3efe7;
+  --v3-paper: #faf8f3;
+  --v3-white: #fffdfa;
+  --v3-ink: #171412;
+  --v3-ink-soft: #2d2926;
+  --v3-muted: #6d6660;
+  --v3-wine: #681d35;
+  --v3-wine-deep: #4b1427;
+  --v3-brass: #a2875e;
+  --v3-line: rgba(23,20,18,.15);
+  --v3-line-soft: rgba(23,20,18,.085);
+  --v3-serif: "Iowan Old Style", Baskerville, "Palatino Linotype", Palatino, Georgia, serif;
+  --v3-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --v3-content: 1280px;
+  --v3-reading: 760px;
+}
+
+/* ---------- Global brand architecture ---------- */
+body.release-v24 .topbar {
+  background: #171412;
+  border: 0;
+}
+body.release-v24 .topbar-inner {
+  min-height: 30px;
+  color: rgba(255,255,255,.74);
+  font-size: .69rem;
+  letter-spacing: .035em;
+}
+body.release-v24 .topbar-inner strong {
+  color: #f0d7a5;
+  font-weight: 650;
+}
+body.release-v24 .topbar-contact a { color: rgba(255,255,255,.88); }
+body.release-v24 .topbar-social { opacity: .72; }
+
+body.release-v24 .site-header {
+  background: rgba(250,248,243,.94);
+  border-bottom: 1px solid var(--v3-line-soft);
+  box-shadow: none;
+  backdrop-filter: blur(20px) saturate(115%);
+  -webkit-backdrop-filter: blur(20px) saturate(115%);
+}
+body.release-v24 .nav-shell { min-height: 78px; }
+body.release-v24 .brand { gap: 12px; }
+body.release-v24 .brand strong {
+  font-family: var(--v3-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+body.release-v24 .brand small {
+  color: var(--v3-muted);
+  font-size: .67rem;
+  letter-spacing: .035em;
+}
+body.release-v24 .primary-nav { gap: 2px; }
+body.release-v24 .primary-nav > a,
+body.release-v24 .nav-item > button {
+  min-height: 42px;
+  padding-inline: 10px;
+  color: var(--v3-ink-soft);
+  border-radius: 0;
+  background: transparent;
+  font-size: .78rem;
+  font-weight: 620;
+  letter-spacing: -.005em;
+}
+body.release-v24 .primary-nav > a:hover,
+body.release-v24 .primary-nav > a.is-current,
+body.release-v24 .nav-item > button:hover,
+body.release-v24 .nav-item > button[aria-expanded="true"] {
+  color: var(--v3-wine);
+  background: transparent;
+}
+body.release-v24 .theme-toggle {
+  width: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  border: 1px solid var(--v3-line);
+  border-radius: 50%;
+  background: transparent;
+}
+body.release-v24 .theme-toggle .theme-label { display: none; }
+body.release-v24 .primary-nav .button.button-small {
+  margin-left: 7px;
+  min-height: 42px;
+  padding: 10px 17px;
+  border-radius: 2px;
+  background: var(--v3-wine);
+  border-color: var(--v3-wine);
+  box-shadow: none;
+  font-size: .74rem;
+}
+body.release-v24 .dropdown {
+  border: 1px solid var(--v3-line);
+  border-radius: 2px;
+  background: rgba(255,253,250,.985);
+  box-shadow: 0 26px 72px rgba(20,14,12,.10);
+}
+body.release-v24 .mega-intro h2,
+body.release-v24 .mega-column h3 { color: var(--v3-ink); }
+body.release-v24 .mega-column h3 {
+  font-family: var(--v3-sans);
+  font-size: .72rem;
+  font-weight: 720;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+body.release-v24 .dropdown a { border-radius: 0; }
+body.release-v24 .dropdown a:hover { background: #f4efe7; color: var(--v3-wine); }
+
+/* Footer: quieter and more editorial. */
+body.release-v24 .site-footer {
+  background: #171412;
+  border-top: 0;
+  color: rgba(255,255,255,.72);
+}
+body.release-v24 .site-footer h2 {
+  color: #f7f2e9;
+  font-family: var(--v3-sans);
+  font-size: .68rem;
+  font-weight: 720;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+body.release-v24 .site-footer a { color: rgba(255,255,255,.82); }
+body.release-v24 .site-footer a:hover { color: #fff; }
+body.release-v24 .footer-grid { gap: clamp(40px, 6vw, 88px); }
+body.release-v24 .footer-bottom { border-top-color: rgba(255,255,255,.13); }
+
+/* ---------- Homepage V3 refinement ---------- */
+body.cms-home-page .home-hero {
+  min-height: min(900px, calc(100svh - 108px));
+  padding-top: clamp(86px, 8.5vw, 142px);
+  padding-bottom: clamp(76px, 8vw, 118px);
+}
+body.cms-home-page .home-hero-grid {
+  grid-template-columns: minmax(0, .94fr) minmax(500px, 1.06fr);
+  gap: clamp(72px, 9vw, 154px);
+}
+body.cms-home-page .home-hero-copy { max-width: 700px; }
+body.cms-home-page .home-hero h1 {
+  max-width: 720px;
+  font-size: clamp(4.35rem, 6.15vw, 7.15rem);
+  line-height: .91;
+  letter-spacing: -.068em;
+}
+body.cms-home-page .home-hero .lead {
+  max-width: 535px;
+  margin-top: 34px;
+  font-size: clamp(.98rem, 1.1vw, 1.08rem);
+  line-height: 1.82;
+}
+body.cms-home-page .home-hero-media {
+  min-height: 650px;
+  position: relative;
+}
+body.cms-home-page .home-hero-media > img {
+  min-height: 650px;
+  max-height: 730px;
+  object-position: 50% 18%;
+  background: #e6dfd6;
+}
+/* CI illustrations stay elegant; real Wagtail photography gets a cinematic crop. */
+body.cms-home-page .home-hero-media > img:not(.v3-real-photo) {
+  object-fit: contain;
+  padding: clamp(42px, 6vw, 88px);
+  background: #e6dfd6;
+}
+body.cms-home-page .home-hero-media > img.v3-real-photo {
+  object-fit: cover;
+  padding: 0;
+  filter: saturate(.91) contrast(1.015);
+}
+body.cms-home-page .home-hero-media::after {
+  content: "Jammu · Dermatology · Laser · Aesthetic care";
+  position: absolute;
+  z-index: 3;
+  left: -1px;
+  bottom: -34px;
+  color: var(--lux-muted, var(--v3-muted));
+  font-size: .61rem;
+  font-weight: 680;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+body.cms-home-page .hero-booking-card {
+  right: -28px;
+  bottom: 28px;
+  width: min(292px, 70%);
+  padding: 20px;
+  background: rgba(255,253,250,.965);
+}
+body.cms-home-page .hero-booking-card strong { font-size: 1.02rem; }
+body.cms-home-page .hero-booking-card p,
+body.cms-home-page .hero-booking-card .fee { font-size: .76rem; }
+body.cms-home-page .hero-booking-card .button { min-height: 40px; }
+
+/* Trust rail loses visual icon noise and behaves like brand proof. */
+body.cms-home-page .trust-ribbon { margin-top: clamp(92px, 9vw, 136px); }
+body.cms-home-page .trust-item {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: center;
+  gap: 5px;
+}
+body.cms-home-page .trust-icon { display: none; }
+body.cms-home-page .trust-item strong {
+  font-family: var(--v3-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+body.cms-home-page .trust-item span { font-size: .66rem; }
+
+/* Slightly calmer section headings. */
+body.cms-home-page .section-heading h2 {
+  max-width: 850px;
+  font-size: clamp(3.15rem, 4.85vw, 5.45rem);
+}
+body.cms-home-page .section-heading p { max-width: 560px; }
+
+/* Concern index becomes almost typographic. */
+body.cms-home-page .concern-grid { gap: 0 54px; }
+body.cms-home-page .concern-card { min-height: 232px; }
+body.cms-home-page .concern-card .icon-bubble { margin-bottom: 26px; }
+body.cms-home-page .concern-card .icon-bubble svg { width: 24px; height: 24px; }
+body.cms-home-page .concern-card h3 { max-width: 280px; }
+
+/* Doctor section: treat the dermatologist as the brand, not another card. */
+body.cms-home-page .doctor-feature {
+  grid-template-columns: minmax(470px, 1.08fr) minmax(0, .92fr);
+  gap: clamp(84px, 9vw, 160px);
+}
+body.cms-home-page .doctor-visual {
+  min-height: 760px;
+  background: #292522;
+}
+body.cms-home-page .doctor-visual img {
+  width: 100%;
+  height: 760px;
+  max-height: none;
+  object-position: center 14%;
+}
+body.cms-home-page .doctor-visual img:not(.v3-real-photo) {
+  object-fit: contain;
+  padding: 90px 70px 0;
+  opacity: .94;
+}
+body.cms-home-page .doctor-visual img.v3-real-photo {
+  object-fit: cover;
+  padding: 0;
+  filter: saturate(.86) contrast(1.04);
+}
+body.cms-home-page .doctor-visual::after {
+  left: auto;
+  right: 22px;
+  bottom: 20px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: rgba(255,255,255,.72);
+  font-size: .62rem;
+  font-weight: 650;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+body.cms-home-page .doctor-copy h2 {
+  font-size: clamp(3.4rem, 5.2vw, 5.9rem);
+  line-height: .92;
+}
+body.cms-home-page .doctor-copy .doctor-role {
+  margin-top: 22px;
+  font-size: .72rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+body.cms-home-page .doctor-copy > p {
+  max-width: 560px;
+  margin-top: 28px;
+  line-height: 1.82;
+}
+body.cms-home-page .doctor-points {
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-top: 34px;
+  border-top: 1px solid rgba(255,255,255,.16);
+}
+body.cms-home-page .doctor-points li {
+  padding: 15px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.16);
+  border-radius: 0;
+  background: transparent;
+  font-size: .82rem;
+  font-weight: 560;
+}
+
+/* Treatments: editorial composition, no four-equal-card template feel. */
+body.cms-home-page .treatment-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(26px, 3vw, 44px);
+  align-items: start;
+}
+body.cms-home-page .treatment-card {
+  grid-column: span 6;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.cms-home-page .treatment-card:nth-child(1) { grid-column: 1 / span 7; }
+body.cms-home-page .treatment-card:nth-child(2) { grid-column: 9 / span 4; margin-top: 96px; }
+body.cms-home-page .treatment-card:nth-child(3) { grid-column: 2 / span 4; margin-top: 18px; }
+body.cms-home-page .treatment-card:nth-child(4) { grid-column: 7 / span 6; margin-top: -34px; }
+body.cms-home-page .treatment-card img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.38 / 1;
+  object-fit: cover;
+  background: #e8e1d8;
+  border-radius: 1px;
+}
+body.cms-home-page .treatment-card img:not(.v3-real-photo) {
+  object-fit: contain;
+  padding: clamp(24px, 3vw, 48px);
+}
+body.cms-home-page .treatment-card:nth-child(2) img,
+body.cms-home-page .treatment-card:nth-child(3) img { aspect-ratio: 1 / 1.12; }
+body.cms-home-page .treatment-card-body { padding: 20px 0 0; }
+body.cms-home-page .treatment-card h3 {
+  font-size: clamp(1.6rem, 2.25vw, 2.45rem);
+  line-height: 1.03;
+}
+body.cms-home-page .treatment-card p { max-width: 460px; font-size: .8rem; line-height: 1.7; }
+body.cms-home-page .treatment-card .text-link { font-size: .72rem; }
+
+/* Why Aastha: no boxed four-card strip. */
+body.cms-home-page .why-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 78px;
+  border-top: 1px solid var(--v3-line);
+}
+body.cms-home-page .why-card {
+  padding: 44px 0 54px;
+  border: 0;
+  border-bottom: 1px solid var(--v3-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.cms-home-page .why-card .why-number {
+  color: var(--v3-brass);
+  font-size: 1.15rem;
+  letter-spacing: .06em;
+}
+body.cms-home-page .why-card h3 { margin-top: 30px; font-size: 2rem; }
+body.cms-home-page .why-card p { max-width: 480px; }
+
+/* ---------- Inner pages: premium clinical editorial system ---------- */
+body.release-v24:not(.cms-home-page) {
+  background: var(--v3-paper);
+  color: var(--v3-ink);
+  font-family: var(--v3-sans);
+}
+body.release-v24:not(.cms-home-page) h1,
+body.release-v24:not(.cms-home-page) h2,
+body.release-v24:not(.cms-home-page) h3,
+body.release-v24:not(.cms-home-page) h4 {
+  font-family: var(--v3-serif);
+  color: var(--v3-ink);
+  font-weight: 500;
+  letter-spacing: -.04em;
+}
+body.release-v24:not(.cms-home-page) .container {
+  width: min(calc(100% - 72px), var(--v3-content));
+}
+
+/* Hero: editorial lead, minimal visual framing. */
+body.release-v24:not(.cms-home-page) .page-hero,
+body.release-v24:not(.cms-home-page) .page-hero.page-hero--professional {
+  padding: clamp(82px, 8.5vw, 138px) 0 clamp(72px, 7vw, 112px);
+  background: var(--v3-bone);
+  border-bottom: 1px solid var(--v3-line);
+}
+body.release-v24:not(.cms-home-page) .page-hero--professional .container {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 430px);
+  gap: clamp(70px, 9vw, 150px);
+  align-items: center;
+}
+body.release-v24:not(.cms-home-page) .breadcrumbs {
+  margin-bottom: 24px;
+  color: var(--v3-muted);
+  font-size: .65rem;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+body.release-v24:not(.cms-home-page) .breadcrumbs a { color: var(--v3-muted); }
+body.release-v24:not(.cms-home-page) .page-hero-copy .eyebrow,
+body.release-v24:not(.cms-home-page) .page-hero-copy .quiet-label {
+  color: var(--v3-wine);
+  font-size: .66rem;
+  font-weight: 720;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+body.release-v24:not(.cms-home-page) .page-hero-copy h1 {
+  max-width: 790px;
+  margin-top: 16px;
+  font-size: clamp(3.5rem, 5.25vw, 6rem);
+  line-height: .91;
+  letter-spacing: -.062em;
+  text-wrap: balance;
+}
+body.release-v24:not(.cms-home-page) .page-hero-copy .lead {
+  max-width: 650px;
+  margin-top: 28px;
+  color: #514a45;
+  font-size: clamp(.98rem, 1.1vw, 1.08rem);
+  line-height: 1.8;
+}
+body.release-v24:not(.cms-home-page) .page-hero-art {
+  min-height: 390px;
+  border: 0;
+  border-radius: 1px;
+  background: #e7dfd5;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) .page-hero-art img {
+  width: 100%;
+  height: 390px;
+  max-height: none;
+  object-fit: cover;
+  object-position: center 18%;
+  filter: none;
+}
+body.release-v24:not(.cms-home-page) .page-hero-art img:not(.v3-real-photo) {
+  object-fit: contain;
+  padding: 54px;
+}
+body.release-v24:not(.cms-home-page) .section-actions { margin-top: 30px; }
+
+/* Main reading column. */
+body.release-v24:not(.cms-home-page) .section {
+  padding-block: clamp(76px, 8vw, 118px);
+}
+body.release-v24:not(.cms-home-page) .content-layout {
+  grid-template-columns: minmax(0, var(--v3-reading)) minmax(250px, 300px);
+  justify-content: space-between;
+  gap: clamp(70px, 8vw, 130px);
+  align-items: start;
+}
+body.release-v24:not(.cms-home-page) .prose {
+  max-width: var(--v3-reading);
+  color: #403a36;
+  font-size: .98rem;
+  line-height: 1.82;
+}
+body.release-v24:not(.cms-home-page) .prose > p,
+body.release-v24:not(.cms-home-page) .prose > ul,
+body.release-v24:not(.cms-home-page) .prose > ol { margin-bottom: 1.4rem; }
+body.release-v24:not(.cms-home-page) .prose > h2 {
+  margin-top: clamp(3.4rem, 7vw, 5.7rem);
+  margin-bottom: 1.2rem;
+  padding-top: 0;
+  border: 0;
+  font-size: clamp(2.15rem, 3.4vw, 3.35rem);
+  line-height: 1.02;
+}
+body.release-v24:not(.cms-home-page) .prose > h2::after {
+  width: 42px;
+  height: 1px;
+  margin-top: 18px;
+  background: var(--v3-brass);
+}
+body.release-v24:not(.cms-home-page) .prose > h3 {
+  margin-top: 2.6rem;
+  color: var(--v3-ink);
+  font-family: var(--v3-serif);
+  font-size: 1.55rem;
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+body.release-v24:not(.cms-home-page) .prose a {
+  color: var(--v3-wine);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Medical lists: readable, not a mosaic of pink pills. */
+body.release-v24:not(.cms-home-page) .prose ul,
+body.release-v24:not(.cms-home-page) .prose ol,
+body.release-v24:not(.cms-home-page) .feature-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 34px;
+  border-top: 1px solid var(--v3-line-soft);
+}
+body.release-v24:not(.cms-home-page) .prose li,
+body.release-v24:not(.cms-home-page) .feature-list li {
+  min-height: 52px;
+  padding: 14px 8px 14px 25px;
+  border: 0;
+  border-bottom: 1px solid var(--v3-line-soft);
+  border-radius: 0;
+  background: transparent;
+  color: #403a36;
+  line-height: 1.55;
+}
+body.release-v24:not(.cms-home-page) .prose li::before,
+body.release-v24:not(.cms-home-page) .feature-list li::before {
+  left: 2px;
+  top: 18px;
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--v3-brass);
+}
+
+/* TOC becomes a reading guide rather than a UI component. */
+body.release-v24:not(.cms-home-page) .article-toc {
+  margin-bottom: 52px;
+  padding: 22px 0 24px;
+  border: 0;
+  border-top: 1px solid var(--v3-line);
+  border-bottom: 1px solid var(--v3-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) .article-toc strong,
+body.release-v24:not(.cms-home-page) .article-toc h2,
+body.release-v24:not(.cms-home-page) .article-toc h3 {
+  font-family: var(--v3-sans);
+  font-size: .66rem;
+  font-weight: 720;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+body.release-v24:not(.cms-home-page) .article-toc a {
+  color: var(--v3-muted);
+  font-size: .78rem;
+  font-weight: 550;
+}
+
+/* Consultation sidebar as a restrained concierge card. */
+body.release-v24:not(.cms-home-page) .sidebar-card {
+  top: 124px;
+  padding: 24px;
+  border: 1px solid var(--v3-line);
+  border-radius: 2px;
+  background: #fffdfa;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) .sidebar-card h2 {
+  margin-top: 0;
+  font-size: 1.7rem;
+  line-height: 1.02;
+}
+body.release-v24:not(.cms-home-page) .sidebar-card p,
+body.release-v24:not(.cms-home-page) .sidebar-card li,
+body.release-v24:not(.cms-home-page) .sidebar-card small {
+  color: var(--v3-muted);
+  font-size: .78rem;
+}
+body.release-v24:not(.cms-home-page) .sidebar-card .button {
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+/* Accordions / FAQs as ruled editorial disclosures. */
+body.release-v24:not(.cms-home-page) details,
+body.release-v24:not(.cms-home-page) .faq-pro-list details {
+  border: 0;
+  border-top: 1px solid var(--v3-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) details:last-child,
+body.release-v24:not(.cms-home-page) .faq-pro-list details:last-child {
+  border-bottom: 1px solid var(--v3-line);
+}
+body.release-v24:not(.cms-home-page) details summary,
+body.release-v24:not(.cms-home-page) .faq-pro-list summary {
+  padding: 20px 44px 20px 0;
+  color: var(--v3-ink);
+  font-family: var(--v3-sans);
+  font-size: .86rem;
+  font-weight: 620;
+  letter-spacing: -.005em;
+}
+body.release-v24:not(.cms-home-page) .faq-pro-list summary::after { right: 0; color: var(--v3-wine); }
+body.release-v24:not(.cms-home-page) details > :not(summary),
+body.release-v24:not(.cms-home-page) .faq-pro-list details p {
+  padding-left: 0;
+  padding-right: 24px;
+}
+
+/* Inline CTAs and disclaimers lose the template-card feel. */
+body.release-v24:not(.cms-home-page) .inline-cta {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 4rem 0;
+  padding: 28px 0;
+  border: 0;
+  border-top: 1px solid var(--v3-line);
+  border-bottom: 1px solid var(--v3-line);
+  border-radius: 0;
+  background: transparent;
+}
+body.release-v24:not(.cms-home-page) .notice,
+body.release-v24:not(.cms-home-page) .medical-disclaimer {
+  padding: 18px 20px;
+  border: 1px solid #d9ccb3;
+  border-left: 1px solid #d9ccb3;
+  border-radius: 1px;
+  background: #f5efe2;
+  color: #51493c;
+}
+
+/* Directory/index pages: luxury catalogue rather than cards. */
+body.release-v24:not(.cms-home-page) .directory-grid,
+body.release-v24:not(.cms-home-page) .card-grid,
+body.release-v24:not(.cms-home-page) .category-grid {
+  gap: 0 34px;
+}
+body.release-v24:not(.cms-home-page) .directory-link,
+body.release-v24:not(.cms-home-page) .card,
+body.release-v24:not(.cms-home-page) .location-card {
+  padding: 28px 0;
+  border: 0;
+  border-top: 1px solid var(--v3-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) .directory-link:hover,
+body.release-v24:not(.cms-home-page) .card:hover,
+body.release-v24:not(.cms-home-page) .location-card:hover {
+  padding-left: 10px;
+  border-color: var(--v3-line);
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+body.release-v24:not(.cms-home-page) .directory-link h2,
+body.release-v24:not(.cms-home-page) .directory-link h3,
+body.release-v24:not(.cms-home-page) .card h2,
+body.release-v24:not(.cms-home-page) .card h3 {
+  font-size: clamp(1.45rem, 2.1vw, 2.15rem);
+}
+
+/* Clinic choice cards on treatment pages. */
+body.release-v24:not(.cms-home-page) .location-pro-grid {
+  gap: 0 34px;
+}
+body.release-v24:not(.cms-home-page) .location-pro-card {
+  grid-template-columns: 130px 1fr;
+  min-height: 260px;
+  border: 1px solid var(--v3-line);
+  border-radius: 1px;
+  background: #fffdfa;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) .location-pro-card .location-art { background: #eee8df; }
+body.release-v24:not(.cms-home-page) .location-pro-card .location-copy { padding: 25px; }
+
+/* Appointment form: premium consultation desk, not generic form SaaS. */
+body.release-v24:not(.cms-home-page) .form-card,
+body.release-v24:not(.cms-home-page) .appointment-form {
+  border: 1px solid var(--v3-line);
+  border-radius: 1px;
+  background: #fffdfa;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) label {
+  color: var(--v3-ink);
+  font-size: .72rem;
+  font-weight: 680;
+  letter-spacing: .035em;
+}
+body.release-v24:not(.cms-home-page) input,
+body.release-v24:not(.cms-home-page) select,
+body.release-v24:not(.cms-home-page) textarea {
+  border: 0;
+  border-bottom: 1px solid var(--v3-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) input:focus,
+body.release-v24:not(.cms-home-page) select:focus,
+body.release-v24:not(.cms-home-page) textarea:focus {
+  border-bottom-color: var(--v3-wine);
+  box-shadow: 0 1px 0 var(--v3-wine);
+}
+
+/* Buttons on inner pages align with the restrained homepage system. */
+body.release-v24:not(.cms-home-page) .button,
+body.release-v24:not(.cms-home-page) a.button {
+  min-height: 46px;
+  padding: 11px 18px;
+  border-radius: 2px;
+  background: var(--v3-wine);
+  border-color: var(--v3-wine);
+  box-shadow: none;
+  font-size: .76rem;
+  font-weight: 680;
+}
+body.release-v24:not(.cms-home-page) .button:hover,
+body.release-v24:not(.cms-home-page) a.button:hover {
+  background: var(--v3-wine-deep);
+  border-color: var(--v3-wine-deep);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+body.release-v24:not(.cms-home-page) .button-secondary,
+body.release-v24:not(.cms-home-page) a.button-secondary {
+  color: var(--v3-ink) !important;
+  background: transparent;
+  border-color: var(--v3-line);
+}
+
+/* ---------- Dark mode ---------- */
+html[data-theme="dark"] body.release-v24 {
+  --v3-bone: #171412;
+  --v3-paper: #1d1917;
+  --v3-white: #231e1b;
+  --v3-ink: #f2ece4;
+  --v3-ink-soft: #ded5cc;
+  --v3-muted: #b1a69d;
+  --v3-wine: #d6879d;
+  --v3-wine-deep: #e09aae;
+  --v3-brass: #c5a776;
+  --v3-line: rgba(255,255,255,.18);
+  --v3-line-soft: rgba(255,255,255,.10);
+}
+html[data-theme="dark"] body.release-v24 .site-header {
+  background: rgba(25,21,19,.94);
+}
+html[data-theme="dark"] body.release-v24 .dropdown,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .sidebar-card,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .form-card,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .appointment-form,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .location-pro-card {
+  background: #231e1b;
+}
+html[data-theme="dark"] body.release-v24 .dropdown a:hover { background: #2d2723; }
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .page-hero-copy .lead,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .prose,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .prose li,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .feature-list li {
+  color: #d8cec5;
+}
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .notice,
+html[data-theme="dark"] body.release-v24:not(.cms-home-page) .medical-disclaimer {
+  background: #2b261e;
+  border-color: #5b4c33;
+  color: #dfd0b6;
+}
+
+/* ---------- Motion: almost imperceptible ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  body.release-v24 .v3-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .65s cubic-bezier(.2,.7,.2,1), transform .65s cubic-bezier(.2,.7,.2,1);
+  }
+  body.release-v24 .v3-reveal.v3-is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  body.release-v24 .topbar-social { display: none; }
+  body.cms-home-page .home-hero-grid {
+    grid-template-columns: minmax(0, .95fr) minmax(390px, 1.05fr);
+    gap: 54px;
+  }
+  body.cms-home-page .doctor-feature { grid-template-columns: minmax(360px, 1fr) 1fr; gap: 58px; }
+  body.release-v24:not(.cms-home-page) .content-layout { gap: 54px; }
+}
+
+@media (max-width: 900px) {
+  body.release-v24 .container,
+  body.cms-home-page .container,
+  body.release-v24:not(.cms-home-page) .container {
+    width: min(calc(100% - 42px), var(--v3-content));
+  }
+  body.cms-home-page .home-hero-grid,
+  body.cms-home-page .doctor-feature,
+  body.release-v24:not(.cms-home-page) .page-hero--professional .container,
+  body.release-v24:not(.cms-home-page) .content-layout {
+    grid-template-columns: 1fr;
+  }
+  body.cms-home-page .home-hero-media { min-height: 560px; }
+  body.cms-home-page .home-hero-media > img { min-height: 560px; max-height: 620px; }
+  body.cms-home-page .hero-booking-card { right: 16px; }
+  body.cms-home-page .doctor-visual,
+  body.cms-home-page .doctor-visual img { min-height: 620px; height: 620px; }
+  body.cms-home-page .treatment-card:nth-child(n) { grid-column: span 6; margin-top: 0; }
+  body.release-v24:not(.cms-home-page) .content-layout { gap: 54px; }
+  body.release-v24:not(.cms-home-page) .sidebar-card { position: relative; top: auto; }
+  body.release-v24:not(.cms-home-page) .page-hero-art { max-width: 520px; }
+}
+
+@media (max-width: 700px) {
+  body.release-v24 .topbar { display: none; }
+  body.release-v24 .nav-shell { min-height: 70px; }
+  body.release-v24 .brand strong { font-size: .95rem; }
+  body.release-v24 .brand small { display: none; }
+
+  body.cms-home-page .home-hero {
+    min-height: 0;
+    padding: 60px 0 70px;
+  }
+  body.cms-home-page .home-hero h1 {
+    font-size: clamp(3.25rem, 14.5vw, 4.8rem);
+    line-height: .92;
+  }
+  body.cms-home-page .home-hero .lead { margin-top: 24px; }
+  body.cms-home-page .home-hero-media { min-height: 500px; margin-top: 26px; }
+  body.cms-home-page .home-hero-media > img { min-height: 500px; height: 500px; }
+  body.cms-home-page .home-hero-media > img:not(.v3-real-photo) { padding: 42px; }
+  body.cms-home-page .home-hero-media::after { left: 0; bottom: -27px; font-size: .54rem; }
+  body.cms-home-page .hero-booking-card {
+    right: 14px;
+    bottom: 18px;
+    width: min(280px, calc(100% - 28px));
+  }
+  body.cms-home-page .trust-ribbon {
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 80px;
+  }
+  body.cms-home-page .trust-item { min-height: 92px; }
+  body.cms-home-page .section-heading h2 { font-size: clamp(2.55rem, 11vw, 4rem); }
+  body.cms-home-page .concern-grid { grid-template-columns: 1fr; }
+  body.cms-home-page .concern-card { min-height: 0; }
+  body.cms-home-page .doctor-visual,
+  body.cms-home-page .doctor-visual img { min-height: 540px; height: 540px; }
+  body.cms-home-page .doctor-visual img:not(.v3-real-photo) { padding: 56px 34px 0; }
+  body.cms-home-page .doctor-copy h2 { font-size: clamp(3rem, 13vw, 4.5rem); }
+  body.cms-home-page .treatment-grid { grid-template-columns: 1fr; gap: 54px; }
+  body.cms-home-page .treatment-card:nth-child(n) { grid-column: 1; margin: 0; }
+  body.cms-home-page .treatment-card img,
+  body.cms-home-page .treatment-card:nth-child(2) img,
+  body.cms-home-page .treatment-card:nth-child(3) img { aspect-ratio: 1.28 / 1; }
+  body.cms-home-page .why-grid { grid-template-columns: 1fr; }
+
+  body.release-v24:not(.cms-home-page) .page-hero,
+  body.release-v24:not(.cms-home-page) .page-hero.page-hero--professional {
+    padding: 58px 0 68px;
+  }
+  body.release-v24:not(.cms-home-page) .page-hero-copy h1 {
+    font-size: clamp(3rem, 13vw, 4.5rem);
+    line-height: .94;
+  }
+  body.release-v24:not(.cms-home-page) .page-hero-art,
+  body.release-v24:not(.cms-home-page) .page-hero-art img {
+    min-height: 310px;
+    height: 310px;
+  }
+  body.release-v24:not(.cms-home-page) .section { padding-block: 66px; }
+  body.release-v24:not(.cms-home-page) .prose { font-size: .95rem; }
+  body.release-v24:not(.cms-home-page) .prose > h2 { font-size: clamp(2rem, 9.5vw, 2.85rem); }
+  body.release-v24:not(.cms-home-page) .prose ul,
+  body.release-v24:not(.cms-home-page) .prose ol,
+  body.release-v24:not(.cms-home-page) .feature-list { grid-template-columns: 1fr; }
+  body.release-v24:not(.cms-home-page) .inline-cta { grid-template-columns: 1fr; }
+  body.release-v24:not(.cms-home-page) .location-pro-grid { grid-template-columns: 1fr; gap: 18px; }
+  body.release-v24:not(.cms-home-page) .location-pro-card { grid-template-columns: 96px 1fr; }
+}
+
+@media (max-width: 420px) {
+  body.release-v24 .container,
+  body.cms-home-page .container,
+  body.release-v24:not(.cms-home-page) .container { width: min(calc(100% - 30px), var(--v3-content)); }
+  body.cms-home-page .home-hero h1 { font-size: clamp(3rem, 15.3vw, 4.25rem); }
+  body.cms-home-page .home-hero-media,
+  body.cms-home-page .home-hero-media > img { min-height: 455px; height: 455px; }
+  body.cms-home-page .hero-booking-card { right: 10px; width: calc(100% - 20px); }
+  body.release-v24:not(.cms-home-page) .page-hero-copy h1 { font-size: clamp(2.8rem, 14vw, 4rem); }
+}

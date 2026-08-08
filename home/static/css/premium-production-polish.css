@@ -1,0 +1,152 @@
+/* Final production-candidate polish kept separate so late QA fixes remain easy to audit. */
+
+/* Clinical layout is progressive enhancement. The broad production stylesheet
+   defines the approved 3-column geometry, but the JS adapter only opts pages
+   into it when the retained exact-page DOM exposes distinct article/sidebar
+   grid items. Older structures deliberately fall back to a wide editorial
+   reading layout instead of being squeezed into an invalid column. */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready {
+  display: grid !important;
+  grid-template-columns: 168px minmax(0, 1fr) 292px !important;
+  gap: clamp(18px, 2.2vw, 30px) !important;
+  align-items: start !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-page-rail {
+  grid-column: 1;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-content {
+  grid-column: 2;
+  min-width: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-sidebar {
+  grid-column: 3;
+  min-width: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback {
+  display: block !important;
+  width: 100% !important;
+  max-width: 1040px !important;
+  margin-inline: auto !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback .prose {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin-inline: auto !important;
+  padding-inline: 0 !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback :is(.care-sidebar,.care-sidebar-card,.sidebar-card) {
+  position: static !important;
+  width: min(100%, 900px) !important;
+  max-width: 900px !important;
+  margin: 30px auto 52px !important;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-fallback :is(.release-toc,.article-toc) {
+  width: min(100%, 900px) !important;
+  max-width: 900px !important;
+  margin-inline: auto !important;
+}
+
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
+  display: grid;
+  gap: 0;
+  margin-top: 19px;
+  padding-top: 12px;
+  border-top: 1px solid var(--luxury-line-soft);
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust > div {
+  position: relative;
+  padding: 9px 0 9px 18px;
+  border-bottom: 1px solid var(--luxury-line-soft);
+  color: var(--luxury-muted);
+  font-family: var(--luxury-sans);
+  font-size: .57rem;
+  line-height: 1.45;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust > div:last-child {
+  border-bottom: 0;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust > div::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  color: var(--luxury-gold);
+  font-size: .62rem;
+}
+
+/* Keep generic clinical CTA and comparison copy aligned with the couture grid. */
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) :is(.article-cta,.cms-comparison-section) {
+  border-radius: 1px;
+  box-shadow: none;
+}
+body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .medical-disclaimer {
+  color: var(--luxury-muted);
+  font-size: .62rem;
+  line-height: 1.55;
+}
+
+/* Directory cards retain obvious keyboard focus without introducing chunky UI chrome. */
+body.release-v24[data-page-type="contentindexpage"] .journal-card:focus-visible,
+body.release-v24[data-page-type="contentindexpage"] .journal-card.luxury-focus {
+  outline: 2px solid var(--luxury-gold);
+  outline-offset: 3px;
+}
+
+/* Light-mode directory intro text needs a hair more contrast than the muted
+   beauty palette otherwise supplies. Keep the visual tone while clearing AA. */
+html:not([data-theme="dark"]) body.release-v24[data-page-type="contentindexpage"] .section-heading > div > p,
+html[data-theme="light"] body.release-v24[data-page-type="contentindexpage"] .section-heading > div > p {
+  color: #6f6268;
+}
+
+@media (max-width: 1100px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready {
+    grid-template-columns: minmax(0, 1fr) 270px !important;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-page-rail {
+    display: none !important;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-content {
+    grid-column: 1;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout.luxury-clinical-grid-ready > .luxury-clinical-sidebar {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .content-layout:is(.luxury-clinical-grid-ready,.luxury-clinical-grid-fallback) {
+    display: block !important;
+    width: 100% !important;
+  }
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 14px;
+  }
+
+  /* Mobile directory pages are intentionally editorial, not microscopic.
+     Keep every repeated card text class at or above 12px for comfortable
+     reading and Lighthouse's legible-font-size best-practice gate. */
+  body.release-v24[data-page-type="contentindexpage"] .journal-card p {
+    font-size: .8rem;
+    line-height: 1.58;
+  }
+  body.release-v24[data-page-type="contentindexpage"] .journal-card :is(span,strong) {
+    font-size: .75rem;
+  }
+  body.release-v24[data-page-type="contentindexpage"] :is(.quiet-label,.eyebrow,.section-kicker) {
+    font-size: .75rem;
+  }
+  body.release-v24[data-page-type="contentindexpage"] :is(.button,a.button) {
+    font-size: .75rem !important;
+  }
+  body.release-v24[data-page-type="contentindexpage"] .site-footer h2 {
+    font-size: .75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body.release-v24:is([data-page-type="treatmentpage"],[data-page-type="conditionpage"]) .luxury-sidebar-trust {
+    grid-template-columns: 1fr;
+  }
+}

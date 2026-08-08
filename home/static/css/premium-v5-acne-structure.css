@@ -1,0 +1,291 @@
+/* V5 acne structural correction for retained exact-page markup. */
+
+body.release-v24[data-page-slug="acne-treatment"] .release-toc {
+  display: none !important;
+}
+
+@media (min-width: 901px) {
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout {
+    grid-template-columns: 154px minmax(0, 1fr) 286px !important;
+    gap: 22px !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > .v5-page-rail { grid-column: 1; }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > .prose {
+    grid-column: 2;
+    min-width: 0;
+    width: auto !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > .care-sidebar {
+    grid-column: 3;
+    min-width: 0;
+    width: auto !important;
+  }
+}
+
+body.release-v24[data-page-slug="acne-treatment"] .prose.article-stack {
+  padding: 0 0 44px !important;
+}
+
+body.release-v24[data-page-slug="acne-treatment"] .article-section,
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive,
+body.release-v24[data-page-slug="acne-treatment"] .faq-section,
+body.release-v24[data-page-slug="acne-treatment"] .article-cta {
+  margin: 0 !important;
+}
+
+body.release-v24[data-page-slug="acne-treatment"] .article-section {
+  padding: 25px 0 27px !important;
+  border-top: 1px solid var(--v5-line) !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section:first-of-type {
+  border-top: 0 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section > h2,
+body.release-v24[data-page-slug="acne-treatment"] .faq-section > h2,
+body.release-v24[data-page-slug="acne-treatment"] .clinic-choice-section > h2 {
+  max-width: 710px !important;
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  color: var(--v5-text) !important;
+  font-family: var(--v5-serif) !important;
+  font-size: clamp(1.72rem, 2.25vw, 2.35rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.035em !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section > h2::after,
+body.release-v24[data-page-slug="acne-treatment"] .faq-section > h2::after,
+body.release-v24[data-page-slug="acne-treatment"] .clinic-choice-section > h2::after {
+  content: "";
+  display: block;
+  width: 31px;
+  height: 1px;
+  margin-top: 10px;
+  background: var(--v5-gold);
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section > h3 {
+  margin: 20px 0 8px !important;
+  color: var(--v5-text) !important;
+  font-family: var(--v5-serif) !important;
+  font-size: 1.18rem !important;
+  font-weight: 500 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section p,
+body.release-v24[data-page-slug="acne-treatment"] .article-section li,
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive p,
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive li {
+  color: var(--v5-text-soft) !important;
+  font-size: .69rem !important;
+  line-height: 1.62 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section > p {
+  max-width: 760px;
+  margin: 0 0 11px !important;
+}
+
+/* Signs + causes are paired like the approved editorial reference. */
+body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 28px;
+  border-top: 1px solid var(--v5-line);
+  border-bottom: 1px solid var(--v5-line);
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair > .article-section {
+  padding: 25px 0 27px !important;
+  border-top: 0 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair > .article-section:first-child {
+  padding-right: 28px !important;
+  border-right: 1px solid var(--v5-line-soft) !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair + .article-section {
+  border-top: 0 !important;
+}
+
+/* Compact ruled medical lists rather than oversized stacked blocks. */
+body.release-v24[data-page-slug="acne-treatment"] .article-section ul,
+body.release-v24[data-page-slug="acne-treatment"] .article-section ol,
+body.release-v24[data-page-slug="acne-treatment"] .care-principles ul {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0 18px !important;
+  margin: 13px 0 0 !important;
+  padding: 0 !important;
+  border-top: 1px solid var(--v5-line-soft) !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair ul,
+body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair ol {
+  grid-template-columns: 1fr !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .article-section li,
+body.release-v24[data-page-slug="acne-treatment"] .care-principles li {
+  min-height: 39px !important;
+  margin: 0 !important;
+  padding: 10px 8px 9px 18px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--v5-line-soft) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+/* Detailed treatment guidance appears as disciplined disclosure rows. */
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive {
+  border: 0 !important;
+  border-top: 1px solid var(--v5-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive:last-of-type {
+  border-bottom: 1px solid var(--v5-line) !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive > summary {
+  min-height: 48px;
+  padding: 14px 34px 14px 0 !important;
+  color: var(--v5-text) !important;
+  font-family: var(--v5-serif) !important;
+  font-size: 1.03rem !important;
+  font-weight: 500 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] details.deep-dive > :not(summary) {
+  padding-left: 0 !important;
+  padding-right: 18px !important;
+}
+
+/* Correct right-column consultation card from the retained markup. */
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar {
+  position: sticky !important;
+  top: 88px !important;
+  align-self: start !important;
+  height: fit-content !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card {
+  padding: 20px !important;
+  border: 1px solid var(--v5-line) !important;
+  border-radius: 1px !important;
+  background: var(--v5-surface) !important;
+  box-shadow: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .quiet-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--v5-gold-soft) !important;
+  font-size: .55rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card h2 {
+  margin: 0 !important;
+  color: var(--v5-text) !important;
+  font-family: var(--v5-serif) !important;
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+  line-height: 1.02 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card > p {
+  margin: 10px 0 14px !important;
+  color: var(--v5-muted) !important;
+  font-size: .61rem !important;
+  line-height: 1.52 !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-facts {
+  margin: 14px 0 !important;
+  border-top: 1px solid var(--v5-line-soft) !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-facts > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--v5-line-soft);
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-facts dt {
+  color: var(--v5-muted) !important;
+  font-size: .58rem !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-facts dd {
+  margin: 0;
+  color: var(--v5-text) !important;
+  font-family: var(--v5-serif);
+  font-size: .68rem !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .button {
+  width: 100% !important;
+  min-height: 39px !important;
+  margin-top: 8px !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .plain-link {
+  display: block;
+  margin-top: 12px;
+  color: var(--v5-gold-soft) !important;
+  font-size: .59rem;
+  text-align: center;
+  text-decoration: none;
+}
+body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card .v5-sidebar-trust {
+  margin-top: 15px;
+  padding-top: 8px;
+  border-top: 1px solid var(--v5-line-soft);
+}
+
+/* Results and location modules stay full width inside the editorial column. */
+body.release-v24[data-page-slug="acne-treatment"] .clinical-results,
+body.release-v24[data-page-slug="acne-treatment"] .clinic-choice-section,
+body.release-v24[data-page-slug="acne-treatment"] .faq-section,
+body.release-v24[data-page-slug="acne-treatment"] .article-cta {
+  width: 100% !important;
+  max-width: none !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .clinic-choice-section {
+  padding-top: 26px !important;
+}
+body.release-v24[data-page-slug="acne-treatment"] .faq-section {
+  padding-top: 27px !important;
+  border-top: 1px solid var(--v5-line) !important;
+}
+
+@media (max-width: 1120px) and (min-width: 901px) {
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout {
+    grid-template-columns: 120px minmax(0, 1fr) 236px !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout {
+    grid-template-columns: 1fr !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > .prose,
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout > .care-sidebar {
+    grid-column: 1 !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .care-sidebar {
+    position: relative !important;
+    top: auto !important;
+    order: 2;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair {
+    grid-template-columns: 1fr;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .v5-section-pair > .article-section:first-child {
+    padding-right: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--v5-line-soft) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  body.release-v24[data-page-slug="acne-treatment"] .article-section {
+    padding: 22px 0 24px !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .article-section ul,
+  body.release-v24[data-page-slug="acne-treatment"] .article-section ol,
+  body.release-v24[data-page-slug="acne-treatment"] .care-principles ul {
+    grid-template-columns: 1fr !important;
+  }
+  body.release-v24[data-page-slug="acne-treatment"] .care-sidebar-card {
+    padding: 18px !important;
+  }
+}
