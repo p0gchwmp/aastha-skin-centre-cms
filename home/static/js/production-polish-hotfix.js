@@ -1,5 +1,7 @@
 (() => {
   const qsa = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const isHome = () => document.body.classList.contains("cms-home-page");
+  const isAcne = () => document.body.dataset.pageSlug === "acne-treatment" || location.pathname === "/treatments/acne-treatment/";
 
   const fixDoctorLinks = (root = document) => {
     qsa('a[href="/doctor/dr-cheena-langer/"]', root).forEach(link => {
@@ -34,11 +36,24 @@
     });
   };
 
+  const flattenHomeLayout = () => {
+    if (!isHome()) return;
+
+    document.body.style.setProperty("--v5-hybrid-shift", "0px", "important");
+    qsa(".v5-home-rail").forEach(node => node.remove());
+
+    qsa(".concern-card, .treatment-card, .why-card, .location-pro-card").forEach(card => {
+      card.style.setProperty("margin-top", "0", "important");
+      card.style.setProperty("translate", "none", "important");
+      card.style.setProperty("transform", "none", "important");
+    });
+  };
+
   const cleanAcneNavigation = () => {
-    const acne = document.body.dataset.pageSlug === "acne-treatment" || location.pathname === "/treatments/acne-treatment/";
-    if (!acne) return;
+    if (!isAcne()) return;
 
     qsa(".release-toc, .article-toc").forEach(node => node.remove());
+    qsa(".luxury-page-rail, .luxury-rail-help").forEach(node => node.remove());
     qsa(".v5-reading-progress, .luxury-reading-progress, .v4-reading-progress").forEach(node => node.remove());
 
     const rails = qsa(".v5-page-rail");
@@ -58,6 +73,7 @@
   const run = (root = document) => {
     fixDoctorLinks(root);
     unlockContent(root);
+    flattenHomeLayout();
     cleanAcneNavigation();
     removeDecorativeChrome();
   };
@@ -74,6 +90,7 @@
       cleanupQueued = true;
       queueMicrotask(() => {
         cleanupQueued = false;
+        flattenHomeLayout();
         cleanAcneNavigation();
         removeDecorativeChrome();
       });
@@ -93,8 +110,9 @@
 
     window.addEventListener("load", () => {
       run();
-      window.setTimeout(run, 350);
-      window.setTimeout(run, 1200);
+      window.setTimeout(run, 250);
+      window.setTimeout(run, 800);
+      window.setTimeout(run, 1600);
     }, { once: true });
   };
 
