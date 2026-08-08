@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    paths:
-      - ".github/qa/run-quality"
-      - ".github/workflows/quality-gates.yml"
   workflow_dispatch:
 
 permissions:
