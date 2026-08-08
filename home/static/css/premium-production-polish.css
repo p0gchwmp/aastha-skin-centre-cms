@@ -1,5 +1,3 @@
-@import url("./production-polish-hotfix.css");
-
 /* Final production-candidate polish kept separate so late QA fixes remain easy to audit. */
 
 /* Clinical layout is progressive enhancement. The broad production stylesheet
