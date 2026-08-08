@@ -1,1 +1,0 @@
-First pass is intentionally CSS-only: responsive clinical layout, wrapping, list glyph, footer scale, mobile navigation/action bar, homepage fact density, directory headings, clinical gallery theming, FAQ geometry, and light-mode contrast. Production remains untouched until visual review.
