@@ -115,7 +115,7 @@
   <link rel="stylesheet" href="{% static 'css/production-polish-final.css' %}">
   {# V6 remains the approved public design authority; V7 only corrects stability regressions. #}
   <link rel="stylesheet" href="{% static 'css/premium-system-v6.css' %}">
-  <link rel="stylesheet" href="{% static 'css/premium-system-v7-stability.css' %}">
+  {% include "home/partials/premium_v7_stability_styles.html" %}
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
