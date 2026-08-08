@@ -13,26 +13,59 @@
     })();
   </script>
   <style>
+    /* Header markup is hydrated by deferred JavaScript. Reserve its final flow
+       height immediately so the page content never jumps after first paint. */
     [data-site-header] { display: block; min-height: 118px; }
-    @media (max-width: 700px) { [data-site-header] { min-height: 110px; } }
+    @media (max-width: 700px) {
+      [data-site-header] { min-height: 110px; }
+    }
+
+    /* The JavaScript header keeps its accessible clinic-name text and swaps
+       only the placeholder A mark for the logo selected in global settings. */
     .brand .brand-mark.brand-mark--image {
-      display: inline-flex; width: auto; min-width: 44px; max-width: 150px; height: 52px;
-      flex: 0 1 auto; align-items: center; justify-content: center; overflow: hidden;
-      padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+      display: inline-flex;
+      width: auto;
+      min-width: 44px;
+      max-width: 150px;
+      height: 52px;
+      flex: 0 1 auto;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
     .brand .brand-mark.brand-mark--image img {
-      display: block; width: auto; max-width: 100%; height: auto; max-height: 100%; object-fit: contain;
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
     }
-    .brand-footer .brand-mark.brand-mark--image { max-width: 170px; height: 44px; }
+    .brand-footer .brand-mark.brand-mark--image {
+      max-width: 170px;
+      height: 44px;
+    }
     @media (max-width: 700px) {
-      .brand .brand-mark.brand-mark--image { min-width: 40px; max-width: 105px; height: 44px; }
+      .brand .brand-mark.brand-mark--image {
+        min-width: 40px;
+        max-width: 105px;
+        height: 44px;
+      }
     }
   </style>
   <title>{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | {{ settings.home.SiteSettings.short_name }}{% endblock %}</title>
   <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ settings.home.SiteSettings.default_meta_description }}{% endif %}">
   {% block robots_meta %}{% if not site_is_public %}<meta name="robots" content="noindex,nofollow">{% elif page.noindex %}<meta name="robots" content="noindex,follow">{% else %}<meta name="robots" content="index,follow">{% endif %}{% endblock %}
   <link rel="canonical" href="{% if page.canonical_url_override %}{{ page.canonical_url_override }}{% else %}{{ canonical_url }}{% endif %}">
-  {% if brand_assets.favicon.url %}<link rel="icon" href="{{ brand_assets.favicon.url }}" sizes="64x64"><link rel="apple-touch-icon" href="{{ brand_assets.favicon.url }}">{% endif %}
+  {% if brand_assets.favicon.url %}
+    <link rel="icon" href="{{ brand_assets.favicon.url }}" sizes="64x64">
+    <link rel="apple-touch-icon" href="{{ brand_assets.favicon.url }}">
+  {% endif %}
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:locale" content="en_IN">
   <meta property="og:title" content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}">
@@ -53,7 +86,9 @@
   {% endif %}
   {% seo_schema page as page_structured_data_json %}
   {% if page_structured_data_json %}<script type="application/ld+json">{{ page_structured_data_json|safe }}</script>{% endif %}
-  {% if settings.home.SiteSettings.search_console_verification %}<meta name="google-site-verification" content="{{ settings.home.SiteSettings.search_console_verification }}">{% endif %}
+  {% if settings.home.SiteSettings.search_console_verification %}
+    <meta name="google-site-verification" content="{{ settings.home.SiteSettings.search_console_verification }}">
+  {% endif %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <link rel="stylesheet" href="{% static 'css/professional.css' %}">
   <link rel="stylesheet" href="{% static 'css/release-v24.css' %}">
@@ -66,6 +101,8 @@
   {% include "home/partials/accessibility_contrast_styles.html" %}
   {% include "home/partials/content_rhythm_styles.html" %}
   {% block extra_head %}{% endblock %}
+
+  {# Approved luxury system. These modules are centralized here so every Wagtail page type inherits the same art direction. #}
   <link rel="stylesheet" href="{% static 'css/premium-v3-preview.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-v4-final-preview.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-v5-reference.css' %}">
@@ -74,32 +111,50 @@
   <link rel="stylesheet" href="{% static 'css/premium-v5-content-interactions.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-production.css' %}">
   <link rel="stylesheet" href="{% static 'css/premium-production-polish.css' %}">
-  {# These two files are deliberately last: stability first, final visual overrides second. #}
   <link rel="stylesheet" href="{% static 'css/production-polish-hotfix.css' %}">
   <link rel="stylesheet" href="{% static 'css/production-polish-final.css' %}">
 </head>
-<body class="release-v24 {% block body_class %}{% endblock %}"
-  data-page-slug="{{ page.slug }}" data-page-type="{{ page.content_type.model|default:'' }}"
-  data-clinic-name="{{ settings.home.SiteSettings.clinic_name }}" data-clinic-short-name="{{ settings.home.SiteSettings.short_name }}"
-  data-logo-url="{{ brand_assets.logo.url }}" data-logo-width="{{ brand_assets.logo.width }}" data-logo-height="{{ brand_assets.logo.height }}"
-  data-logo-large-url="{{ brand_assets.logo_large.url }}" data-logo-large-width="{{ brand_assets.logo_large.width }}" data-logo-large-height="{{ brand_assets.logo_large.height }}"
-  data-consultation-fee="{{ settings.home.SiteSettings.consultation_fee|floatformat:"0" }}" data-currency-symbol="{{ settings.home.SiteSettings.currency_symbol }}"
-  data-follow-up-days="{{ settings.home.SiteSettings.follow_up_days }}" data-primary-mobile="{{ settings.home.SiteSettings.primary_mobile }}"
-  data-secondary-mobile="{{ settings.home.SiteSettings.secondary_mobile }}" data-whatsapp-mobile="{{ settings.home.SiteSettings.whatsapp_mobile }}"
-  data-whatsapp-url="{{ settings.home.SiteSettings.whatsapp_url }}" data-email="{{ settings.home.SiteSettings.email }}"
-  data-appointment-confirmation-text="{{ settings.home.SiteSettings.appointment_confirmation_text }}" data-emergency-note="{{ settings.home.SiteSettings.emergency_note }}"
-  data-instagram-url="{{ settings.home.SiteSettings.instagram_url }}" data-youtube-url="{{ settings.home.SiteSettings.youtube_url }}"
+<body
+  class="release-v24 {% block body_class %}{% endblock %}"
+  data-page-slug="{{ page.slug }}"
+  data-page-type="{{ page.content_type.model|default:'' }}"
+  data-clinic-name="{{ settings.home.SiteSettings.clinic_name }}"
+  data-clinic-short-name="{{ settings.home.SiteSettings.short_name }}"
+  data-logo-url="{{ brand_assets.logo.url }}"
+  data-logo-width="{{ brand_assets.logo.width }}"
+  data-logo-height="{{ brand_assets.logo.height }}"
+  data-logo-large-url="{{ brand_assets.logo_large.url }}"
+  data-logo-large-width="{{ brand_assets.logo_large.width }}"
+  data-logo-large-height="{{ brand_assets.logo_large.height }}"
+  data-consultation-fee="{{ settings.home.SiteSettings.consultation_fee|floatformat:"0" }}"
+  data-currency-symbol="{{ settings.home.SiteSettings.currency_symbol }}"
+  data-follow-up-days="{{ settings.home.SiteSettings.follow_up_days }}"
+  data-primary-mobile="{{ settings.home.SiteSettings.primary_mobile }}"
+  data-secondary-mobile="{{ settings.home.SiteSettings.secondary_mobile }}"
+  data-whatsapp-mobile="{{ settings.home.SiteSettings.whatsapp_mobile }}"
+  data-whatsapp-url="{{ settings.home.SiteSettings.whatsapp_url }}"
+  data-email="{{ settings.home.SiteSettings.email }}"
+  data-appointment-confirmation-text="{{ settings.home.SiteSettings.appointment_confirmation_text }}"
+  data-emergency-note="{{ settings.home.SiteSettings.emergency_note }}"
+  data-instagram-url="{{ settings.home.SiteSettings.instagram_url }}"
+  data-youtube-url="{{ settings.home.SiteSettings.youtube_url }}"
   data-facebook-url="{{ settings.home.SiteSettings.facebook_url }}"
-  data-analytics-enabled="{% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}true{% else %}false{% endif %}">
+  data-analytics-enabled="{% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}true{% else %}false{% endif %}"
+>
   {% wagtailuserbar %}
   {% include "home/partials/pastel_clay_sprite.html" %}
   {% with site_settings=settings.home.SiteSettings %}
     {% if site_settings.show_global_banner and site_settings.global_banner_text %}
-      <aside class="cms-site-banner">{% if site_settings.global_banner_link %}<a href="{{ site_settings.global_banner_link }}">{% endif %}{{ site_settings.global_banner_text }}{% if site_settings.global_banner_link %}</a>{% endif %}</aside>
+      <aside class="cms-site-banner">
+        {% if site_settings.global_banner_link %}<a href="{{ site_settings.global_banner_link }}">{% endif %}
+        {{ site_settings.global_banner_text }}
+        {% if site_settings.global_banner_link %}</a>{% endif %}
+      </aside>
     {% endif %}
     <div data-site-header></div>
     {% block content %}{% endblock %}
     <div data-site-footer>
+      {# Critical mobile actions are server-rendered so they paint immediately; site.js hydrates the full footer later. #}
       <div class="mobile-actions" aria-label="Quick contact">
         <a href="tel:+91{{ site_settings.primary_mobile }}">Call</a>
         <a href="{{ site_settings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
@@ -115,6 +170,8 @@
   <script src="{% static 'js/analytics-events.js' %}" defer></script>
   <script src="{% static 'js/appointment-form-controller.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
+
+  {# Site-wide approved luxury interactions; idempotent modules preserve legacy exact-page compatibility. #}
   <script src="{% static 'js/premium-v3-preview.js' %}" defer></script>
   <script src="{% static 'js/premium-v4-final-preview.js' %}" defer></script>
   <script src="{% static 'js/premium-v5-reference.js' %}" defer></script>
@@ -129,9 +186,12 @@
       (() => {
         const measurementId = "{{ settings.home.SiteSettings.analytics_id|escapejs }}";
         window.dataLayer = window.dataLayer || [];
-        window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+        window.gtag = window.gtag || function () {
+          window.dataLayer.push(arguments);
+        };
         window.gtag("js", new Date());
         window.gtag("config", measurementId, { send_page_view: true });
+
         let loaded = false;
         let scheduled;
         const loadAnalytics = () => {
@@ -143,10 +203,18 @@
           script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
           document.head.appendChild(script);
         };
-        const scheduleAnalytics = () => { scheduled = window.setTimeout(loadAnalytics, 4000); };
+        const scheduleAnalytics = () => {
+          scheduled = window.setTimeout(loadAnalytics, 4000);
+        };
+
         if (document.readyState === "complete") scheduleAnalytics();
         else window.addEventListener("load", scheduleAnalytics, { once: true });
-        ["pointerdown", "touchstart", "keydown"].forEach((eventName) => window.addEventListener(eventName, loadAnalytics, { once: true, passive: true }));
+        ["pointerdown", "touchstart", "keydown"].forEach((eventName) => {
+          window.addEventListener(eventName, loadAnalytics, {
+            once: true,
+            passive: true,
+          });
+        });
       })();
     </script>
   {% endif %}
