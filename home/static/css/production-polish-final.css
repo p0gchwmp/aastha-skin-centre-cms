@@ -1,0 +1,156 @@
+/* Final sitewide production polish. Loaded after every legacy/preview layer. */
+
+/* Architectural edges: premium, not app-like. */
+body.release-v24 :is(
+  .premium-summary-grid,
+  .premium-summary-item,
+  .release-toc,
+  .release-toc-links a,
+  .hub-category,
+  .hub-link,
+  .feature-card,
+  .benefit-card,
+  .process-card,
+  .process-step,
+  .step-card,
+  .value-card,
+  .about-story-card,
+  .contact-card,
+  .info-card,
+  .service-card,
+  .guide-card,
+  .support-card,
+  .appointment-card,
+  .clinic-location-card,
+  .location-contact-card,
+  .hours-card,
+  .clean-list--three li,
+  .deep-dive,
+  .faq-clean-list details
+) {
+  border-radius: 2px !important;
+}
+body.release-v24 :is([class*="badge"],[class*="pill"]) {
+  border-radius: 2px !important;
+}
+
+/* Directory pages do not need decorative bubble icons beside every category. */
+body.release-v24[data-page-type="contentindexpage"] .hub-icon {
+  display: none !important;
+}
+body.release-v24[data-page-type="contentindexpage"] .hub-category-heading {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 0 !important;
+}
+body.release-v24[data-page-type="contentindexpage"] .hub-category,
+body.release-v24[data-page-type="contentindexpage"] .hub-link {
+  border-radius: 2px !important;
+}
+body.release-v24[data-page-type="contentindexpage"] .hub-category-heading p,
+body.release-v24[data-page-type="contentindexpage"] .hub-link span {
+  font-size: .96rem !important;
+  line-height: 1.55 !important;
+}
+body.release-v24[data-page-type="contentindexpage"] .hub-link strong {
+  font-size: 1.02rem !important;
+  line-height: 1.35 !important;
+}
+
+/* Homepage artwork should read as a feature, not a tiny decoration. */
+body.cms-home-page .trust-icon,
+body.cms-home-page .trust-item .trust-icon.message-visual {
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+}
+body.cms-home-page .location-pro-card .location-art :is(img,svg) {
+  width: min(68%, 180px) !important;
+  max-width: 180px !important;
+  max-height: 160px !important;
+}
+
+/* Remove the small ornamental confirmation glyph beside the homepage note. */
+body.cms-home-page :is(.hero-note,.hero-assurance,.hero-availability,.appointment-note)::before,
+body.cms-home-page :is(.hero-note,.hero-assurance,.hero-availability,.appointment-note) > :first-child:empty {
+  display: none !important;
+  content: none !important;
+}
+body.cms-home-page :is(.hero-note,.hero-assurance,.hero-availability,.appointment-note) {
+  padding-left: 0 !important;
+}
+
+/* Never allow old choreography to reappear after dynamic stylesheet injection. */
+body.cms-home-page {
+  --v5-hybrid-shift: 0px !important;
+}
+body.cms-home-page .v5-home-rail {
+  display: none !important;
+}
+body.cms-home-page :is(.concern-card,.treatment-card,.why-card,.location-pro-card):nth-child(n) {
+  margin-top: 0 !important;
+  translate: none !important;
+  transform: none !important;
+}
+
+/* Theme control is a centred square on every viewport and inside the mobile drawer. */
+body.release-v24 .theme-toggle {
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  padding: 0 !important;
+  border-radius: 2px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+body.release-v24 .theme-toggle .theme-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+
+/* Wagtail's logged-in helper must never cover the public booking bar. */
+@media (max-width: 760px) {
+  wagtail-userbar,
+  #wagtail-userbar,
+  .wagtail-userbar,
+  [data-wagtail-userbar] {
+    right: 12px !important;
+    bottom: 96px !important;
+  }
+
+  /* Mobile pages read better without a second chip-style table of contents. */
+  body.release-v24 .release-toc {
+    display: none !important;
+  }
+
+  body.cms-home-page .trust-item,
+  body.cms-home-page .trust-item:nth-child(n) {
+    grid-template-columns: 58px minmax(0, 1fr) !important;
+  }
+  body.cms-home-page .trust-icon,
+  body.cms-home-page .trust-item .trust-icon.message-visual {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+  }
+  body.cms-home-page .location-pro-card .location-art :is(img,svg) {
+    width: min(52%, 150px) !important;
+    max-width: 150px !important;
+    max-height: 140px !important;
+  }
+
+  body.release-v24[data-page-type="contentindexpage"] .hub-category,
+  body.release-v24[data-page-type="contentindexpage"] .hub-link {
+    border-radius: 2px !important;
+  }
+}
