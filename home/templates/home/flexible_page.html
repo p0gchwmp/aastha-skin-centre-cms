@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static wagtailcore_tags exact_pages clinical_results %}
+{% load wagtailcore_tags exact_pages clinical_results %}
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
@@ -25,7 +25,4 @@
   </div></section>
 </main>
 {% endif %}
-{% endblock %}
-{% block extra_js %}
-  <script src="{% static 'js/production-polish-hotfix.js' %}" defer></script>
 {% endblock %}
