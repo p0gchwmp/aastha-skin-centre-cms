@@ -1,1 +1,0 @@
-Do not trigger heavy Actions during iteration. Branch pushes currently trigger no workflows; reserve any main-branch browser QA for a final deliberate gate.
