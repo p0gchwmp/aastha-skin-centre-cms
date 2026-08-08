@@ -34,6 +34,32 @@ body.release-v24 :is([class*="badge"],[class*="pill"]) {
   border-radius: 2px !important;
 }
 
+/* Decorative bullet discs added by older themes do not carry information. */
+body.release-v24 :is(
+  .clean-list,
+  .clean-list--three,
+  .premium-bullet-grid,
+  .care-principles,
+  .doctor-points
+) > li::before,
+body.release-v24 article.prose :is(ul,ol) > li::before {
+  display: none !important;
+  content: none !important;
+}
+body.release-v24 :is(
+  .clean-list,
+  .clean-list--three,
+  .premium-bullet-grid,
+  .care-principles,
+  .doctor-points
+) > li,
+body.release-v24 article.prose :is(ul,ol) > li {
+  padding-left: 0 !important;
+}
+body.release-v24 .clean-list--three > li {
+  padding: 16px 18px !important;
+}
+
 /* Directory pages do not need decorative bubble icons beside every category. */
 body.release-v24[data-page-type="contentindexpage"] .hub-icon {
   display: none !important;
