@@ -1,12 +1,11 @@
-# Preview QA checkpoints
+# QA cost policy
 
-Normal design commits should not run the full browser suites.
+Heavy browser suites should not run on every pull request commit.
 
-Touch only the matching trigger when evidence is intentionally needed:
+- Live domain smoke: main pushes or manual dispatch.
+- Mobile layout QA: main pushes or manual dispatch.
+- Lighthouse/accessibility: main pushes or manual dispatch.
+- Prelaunch parity: manual dispatch only.
+- Content-list audit remains path-filtered because it is cheap and narrowly scoped.
 
-- `run-preview` — light/dark screenshot capture
-- `run-mobile` — Chromium + WebKit mobile audit
-- `run-quality` — Lighthouse + accessibility
-- `run-parity` — full prelaunch parity suite
-
-This keeps GitHub Actions usage low while preserving full QA at deliberate checkpoints.
+For active visual-design branches, use dedicated checkpoint trigger files so screenshots and browser QA are run intentionally rather than on every CSS/JS change.
