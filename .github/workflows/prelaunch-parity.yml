@@ -1,10 +1,6 @@
 name: Prelaunch parity QA
 
 on:
-  pull_request:
-    paths:
-      - ".github/qa/run-parity"
-      - ".github/workflows/prelaunch-parity.yml"
   workflow_dispatch:
 
 permissions:
@@ -131,7 +127,6 @@ jobs:
           retention-days: 14
 
   deployed-render-audit:
-    if: github.event_name != 'pull_request'
     needs: local-branch-audit
     runs-on: ubuntu-latest
     timeout-minutes: 45
