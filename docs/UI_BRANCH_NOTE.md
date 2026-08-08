@@ -1,1 +1,0 @@
-Branch-only UI stabilization work. Do not merge until visually reviewed on representative mobile and desktop routes. Heavy QA should remain local/manual during iteration to conserve GitHub Actions minutes.
