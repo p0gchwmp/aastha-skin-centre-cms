@@ -116,6 +116,8 @@
   {# V6 remains the approved public design authority; V7 only corrects stability regressions. #}
   <link rel="stylesheet" href="{% static 'css/premium-system-v6.css' %}">
   {% include "home/partials/premium_v7_stability_styles.html" %}
+  {# V8 is the consolidated visual/interactivity correction authority. #}
+  <link rel="stylesheet" href="{% static 'css/premium-system-v8.css' %}">
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
@@ -185,6 +187,7 @@
   <script src="{% static 'js/premium-production.js' %}" defer></script>
   <script src="{% static 'js/production-polish-hotfix.js' %}" defer></script>
   <script src="{% static 'js/premium-system-v6.js' %}" defer></script>
+  <script src="{% static 'js/premium-system-v8.js' %}" defer></script>
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script>
       (() => {

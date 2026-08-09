@@ -7,6 +7,7 @@ from home.models import ExactPageLayout, HomePage, SiteSettings
 from home.templatetags.exact_pages import (
     apply_global_facts,
     normalise_path,
+    normalise_visible_punctuation,
     repair_orphaned_list_items,
 )
 from wagtail.models import Site
@@ -91,6 +92,21 @@ class ExactPageFactTests(SimpleTestCase):
         )
 
         self.assertEqual(repair_orphaned_list_items(source), source)
+
+    def test_visible_em_dashes_are_removed_without_mutating_attributes(self):
+        source = (
+            '<a href="/guide/diagnosis—and-care/" '
+            'data-label="plan—care">Diagnosis — not guesswork</a>'
+            '<script type="application/ld+json">{"name":"A—B"}</script>'
+        )
+
+        rendered = normalise_visible_punctuation(source)
+
+        self.assertIn('href="/guide/diagnosis—and-care/"', rendered)
+        self.assertIn('data-label="plan—care"', rendered)
+        self.assertIn(">Diagnosis, not guesswork</a>", rendered)
+        self.assertIn('{"name":"A—B"}', rendered)
+        self.assertNotIn(">Diagnosis — not guesswork</a>", rendered)
 
 
 class ExactPageRenderTests(TestCase):

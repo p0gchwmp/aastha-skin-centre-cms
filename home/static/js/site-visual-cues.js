@@ -335,6 +335,34 @@
 
   const buildImage = (element, cue, assets) => {
     const asset = assets[cue];
+    if (asset?.svg) {
+      const image = document.createElement('img');
+      image.className = 'message-visual__img message-visual__img--vector';
+      image.src = asset.svg;
+      image.width = 72;
+      image.height = 72;
+      image.alt = '';
+      image.loading = 'lazy';
+      image.fetchPriority = 'low';
+      image.decoding = 'async';
+      image.draggable = false;
+      image.setAttribute('aria-hidden', 'true');
+      return image;
+    }
+    if (asset?.source) {
+      const image = document.createElement('img');
+      image.className = 'message-visual__img message-visual__img--source';
+      image.src = asset.source;
+      image.width = 64;
+      image.height = 64;
+      image.alt = '';
+      image.loading = 'lazy';
+      image.fetchPriority = 'low';
+      image.decoding = 'async';
+      image.draggable = false;
+      image.setAttribute('aria-hidden', 'true');
+      return image;
+    }
     if (
       !asset?.['64'] ||
       !asset?.['128'] ||
