@@ -108,6 +108,20 @@ class ExactPageFactTests(SimpleTestCase):
         self.assertIn('{"name":"A—B"}', rendered)
         self.assertNotIn(">Diagnosis — not guesswork</a>", rendered)
 
+    def test_visible_jammu_area_labels_use_title_case(self):
+        source = (
+            '<ul class="nearby-list"><li>central Jammu</li>'
+            '<li>northern Jammu</li></ul>'
+            '<a href="/areas/central Jammu/" data-label="northern Jammu">Area</a>'
+        )
+
+        rendered = normalise_visible_punctuation(source)
+
+        self.assertIn("<li>Central Jammu</li>", rendered)
+        self.assertIn("<li>Northern Jammu</li>", rendered)
+        self.assertIn('href="/areas/central Jammu/"', rendered)
+        self.assertIn('data-label="northern Jammu"', rendered)
+
 
 class ExactPageRenderTests(TestCase):
     def setUp(self):

@@ -164,3 +164,49 @@ class MobileLayoutContractTests(SimpleTestCase):
 
     def test_layout_defects_are_fixed_not_hidden(self):
         self.assertNotIn("overflow-x: hidden", self.mobile_css)
+
+
+class PremiumSystemV9ContractTests(SimpleTestCase):
+    def setUp(self):
+        base_dir = Path(settings.BASE_DIR)
+        self.base_template = (
+            base_dir / "aastha_cms" / "templates" / "base.html"
+        ).read_text(encoding="utf-8")
+        self.css = (
+            base_dir / "home" / "static" / "css" / "premium-system-v9.css"
+        ).read_text(encoding="utf-8")
+        self.js = (
+            base_dir / "home" / "static" / "js" / "premium-system-v8.js"
+        ).read_text(encoding="utf-8")
+
+    def test_v9_is_the_final_visual_authority(self):
+        self.assertGreater(
+            self.base_template.index("premium-system-v9.css"),
+            self.base_template.index("premium-system-v8.css"),
+        )
+
+    def test_mobile_menu_lines_contrast_with_the_button(self):
+        self.assertIn(".nav-toggle span:not(.sr-only)", self.css)
+        self.assertIn("background: #fff8f3 !important", self.css)
+
+    def test_accordion_marker_has_a_fixed_grid_column(self):
+        self.assertIn(
+            "grid-template-columns: minmax(0, 1fr) 32px !important",
+            self.css,
+        )
+        self.assertIn("justify-self: center !important", self.css)
+
+    def test_article_rail_uses_scroll_position_tracking(self):
+        self.assertIn("const updateFromScroll", self.js)
+        self.assertIn('window.addEventListener("scroll", scheduleUpdate', self.js)
+        self.assertIn("documentBottom >= scrollHeight - 4", self.js)
+        self.assertIn("entry.heading.getClientRects().length > 0", self.js)
+        self.assertIn("if (disclosure && !disclosure.open) disclosure.open = true", self.js)
+        self.assertLess(
+            self.js.index("setupAccordions();\n    setupPageRail();"),
+            self.js.index("setupNumberedFeatures();", self.js.index("const boot")),
+        )
+
+    def test_clinical_images_are_contained_without_cropping(self):
+        self.assertIn(".clinical-results--hero .clinical-results__slide img", self.css)
+        self.assertIn("object-fit: contain !important", self.css)

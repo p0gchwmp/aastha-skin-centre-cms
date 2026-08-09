@@ -144,7 +144,7 @@ def optimise_image_delivery(source: str) -> str:
 
 
 def normalise_visible_punctuation(source: str) -> str:
-    """Remove em dashes from visible copy without touching markup values."""
+    """Normalise approved visible copy without touching markup values."""
 
     def replace(match: re.Match[str]) -> str:
         text = match.group("text")
@@ -153,6 +153,8 @@ def normalise_visible_punctuation(source: str) -> str:
         # values byte-for-byte intact by operating only between HTML tags.
         text = text.replace("â€”", "—")
         text = re.sub(r"\s*—\s*", ", ", text)
+        text = re.sub(r"\bcentral Jammu\b", "Central Jammu", text)
+        text = re.sub(r"\bnorthern Jammu\b", "Northern Jammu", text)
         return text
 
     parts: list[str] = []
