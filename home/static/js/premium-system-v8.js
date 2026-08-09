@@ -88,9 +88,14 @@
         link.textContent = entry.label;
         link.addEventListener("click", event => {
           event.preventDefault();
-          entry.heading.scrollIntoView({
-            behavior: reduceMotion.matches ? "auto" : "smooth",
-            block: "start",
+          const disclosure = entry.heading.closest("details");
+          if (disclosure && !disclosure.open) disclosure.open = true;
+          window.requestAnimationFrame(() => {
+            entry.heading.scrollIntoView({
+              behavior: reduceMotion.matches ? "auto" : "smooth",
+              block: "start",
+            });
+            activate(entry.id);
           });
           history.replaceState(null, "", `#${entry.id}`);
         });
@@ -116,7 +121,10 @@
     mobile.append(summary, makeList("v8-mobile-toc__list"));
     article.prepend(mobile);
 
-    const links = qsa('a[href^="#"]', rail);
+    const links = qsa(
+      '.v8-page-rail__list a[href^="#"], .v8-mobile-toc__list a[href^="#"]',
+      layout,
+    );
     const activate = id => {
       links.forEach(link => {
         const active = link.getAttribute("href") === `#${id}`;
@@ -124,20 +132,64 @@
         if (active) link.setAttribute("aria-current", "location");
         else link.removeAttribute("aria-current");
       });
+
+      const activeRailLink = rail.querySelector(`a[href="#${CSS.escape(id)}"]`);
+      if (!activeRailLink || rail.scrollHeight <= rail.clientHeight) return;
+      const linkTop = activeRailLink.offsetTop;
+      const linkBottom = linkTop + activeRailLink.offsetHeight;
+      const visibleTop = rail.scrollTop + 48;
+      const visibleBottom = rail.scrollTop + rail.clientHeight - 18;
+      if (linkTop < visibleTop || linkBottom > visibleBottom) {
+        rail.scrollTo({
+          top: Math.max(0, linkTop - rail.clientHeight * .42),
+          behavior: reduceMotion.matches ? "auto" : "smooth",
+        });
+      }
     };
     activate(entries[0].id);
 
-    if (!("IntersectionObserver" in window)) return;
-    const visible = new Map();
-    const observer = new IntersectionObserver(changes => {
-      changes.forEach(change => {
-        if (change.isIntersecting) visible.set(change.target.id, change.boundingClientRect.top);
-        else visible.delete(change.target.id);
+    /* A position-based tracker remains accurate between headings and at the
+       very end of long articles. Intersection-only tracking could lose every
+       candidate and leave the rail frozen. */
+    window.__aasthaV8RailAbort?.abort();
+    const railAbort = new AbortController();
+    window.__aasthaV8RailAbort = railAbort;
+    let scheduled = false;
+    const updateFromScroll = () => {
+      scheduled = false;
+      const marker = Math.max(150, Math.min(280, window.innerHeight * .32));
+      const positionedEntries = entries.filter(
+        entry => entry.heading.getClientRects().length > 0,
+      );
+      if (!positionedEntries.length) return;
+      let current = positionedEntries[0];
+      positionedEntries.forEach(entry => {
+        if (entry.heading.getBoundingClientRect().top <= marker) current = entry;
       });
-      const next = [...visible.entries()].sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]))[0];
-      if (next) activate(next[0]);
-    }, { rootMargin: "-18% 0px -66% 0px", threshold: [0, .08, .4] });
-    entries.forEach(entry => observer.observe(entry.heading));
+      const documentBottom = window.scrollY + window.innerHeight;
+      const scrollHeight = Math.max(document.body.scrollHeight, root.scrollHeight);
+      if (documentBottom >= scrollHeight - 4) current = positionedEntries.at(-1);
+      activate(current.id);
+    };
+    const scheduleUpdate = () => {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(updateFromScroll);
+    };
+    window.addEventListener("scroll", scheduleUpdate, {
+      passive: true,
+      signal: railAbort.signal,
+    });
+    window.addEventListener("resize", scheduleUpdate, {
+      passive: true,
+      signal: railAbort.signal,
+    });
+    qsa("details", article).forEach(details => {
+      details.addEventListener("toggle", scheduleUpdate, {
+        signal: railAbort.signal,
+      });
+    });
+    scheduleUpdate();
   };
 
   const setupNumberedFeatures = () => {
@@ -244,7 +296,7 @@
       });
     }, { threshold: .06, rootMargin: "0px 0px -6% 0px" });
     targets.forEach(node => observer.observe(node));
-    window.setTimeout(revealAll, 1800);
+    window.setTimeout(revealAll, 900);
   };
 
   const normaliseLivePunctuation = (scope = document.body) => {
@@ -301,9 +353,9 @@
 
   const boot = () => {
     removeLegacyChrome();
+    setupAccordions();
     setupPageRail();
     setupNumberedFeatures();
-    setupAccordions();
     setupClinicalResults();
     setupReveals();
     setupPrintDetails();
@@ -324,8 +376,8 @@
   window.addEventListener("load", () => {
     window.setTimeout(() => {
       removeLegacyChrome();
-      setupPageRail();
       setupAccordions();
+      setupPageRail();
       setupClinicalResults();
       normaliseLivePunctuation();
     }, 180);

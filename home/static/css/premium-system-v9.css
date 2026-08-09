@@ -1,0 +1,485 @@
+/* Aastha premium system V9
+   Post-deployment visual QA: geometry, disclosure alignment, readable lists,
+   resilient navigation, clinical media containment and compact section rhythm. */
+
+/* Header controls and intermediate-width navigation ------------------- */
+@media (min-width: 761px) {
+  body.release-v24 .primary-nav > .nav-item {
+    min-width: 0;
+  }
+
+  body.release-v24 .primary-nav .dropdown.compact {
+    width: max-content !important;
+    min-width: 238px !important;
+    max-width: min(340px, calc(100vw - 32px)) !important;
+    padding: 10px !important;
+  }
+
+  body.release-v24 .primary-nav .dropdown.compact a {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 11px 14px !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+  }
+}
+
+body.release-v24 .theme-toggle {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+body.release-v24 .theme-toggle .theme-icon {
+  display: grid !important;
+  width: 26px !important;
+  height: 26px !important;
+  place-items: center !important;
+  color: var(--v6-ink) !important;
+  font-family: Georgia, serif !important;
+  font-size: 1.35rem !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+html[data-theme="dark"] body.release-v24 .theme-toggle .theme-icon {
+  color: #fff7ec !important;
+}
+
+@media (max-width: 760px) {
+  body.release-v24 .nav-toggle {
+    display: grid !important;
+    width: 48px !important;
+    height: 48px !important;
+    padding: 12px !important;
+    place-content: center !important;
+    gap: 5px !important;
+    border: 1px solid var(--v6-wine) !important;
+    border-radius: 2px !important;
+    background: var(--v6-wine) !important;
+  }
+
+  body.release-v24 .nav-toggle span:not(.sr-only) {
+    display: block !important;
+    position: static !important;
+    width: 23px !important;
+    min-width: 23px !important;
+    height: 2px !important;
+    min-height: 2px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff8f3 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    transform: none;
+  }
+
+  body.release-v24 .nav-toggle[aria-expanded="true"] span:not(.sr-only):nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  body.release-v24 .nav-toggle[aria-expanded="true"] span:not(.sr-only):nth-child(2) {
+    opacity: 0 !important;
+  }
+
+  body.release-v24 .nav-toggle[aria-expanded="true"] span:not(.sr-only):nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+/* Homepage four-card and clinic-card symmetry ------------------------- */
+body.cms-home-page .why-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-auto-rows: 1fr !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid var(--v6-line) !important;
+  border-radius: 2px !important;
+  background: var(--v6-surface) !important;
+}
+
+body.cms-home-page .why-grid > .why-card {
+  display: grid !important;
+  grid-template-rows: auto minmax(2.65em, auto) 1fr !important;
+  min-width: 0 !important;
+  min-height: 100% !important;
+  height: 100% !important;
+  padding: clamp(26px, 2.8vw, 42px) !important;
+  align-content: start !important;
+  border: 0 !important;
+  border-right: 1px solid var(--v6-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+body.cms-home-page .why-grid > .why-card:last-child {
+  border-right: 0 !important;
+}
+
+body.cms-home-page .why-card .why-number {
+  margin: 0 0 clamp(28px, 3vw, 40px) !important;
+}
+
+body.cms-home-page .why-card h3 {
+  margin: 0 0 16px !important;
+  align-self: start !important;
+}
+
+body.cms-home-page .why-card p {
+  margin: 0 !important;
+  align-self: start !important;
+}
+
+body.cms-home-page .location-pro-grid {
+  grid-auto-rows: 1fr !important;
+}
+
+body.cms-home-page .location-pro-card {
+  min-height: 410px !important;
+}
+
+body.cms-home-page .location-pro-card .location-copy > address {
+  min-height: 4.9em;
+  font-size: clamp(1.08rem, 1.25vw, 1.18rem) !important;
+  line-height: 1.62 !important;
+}
+
+body.cms-home-page .location-pro-card .location-hours {
+  padding: 19px 22px !important;
+}
+
+@media (max-width: 980px) {
+  body.cms-home-page .why-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.cms-home-page .why-grid > .why-card:nth-child(2) {
+    border-right: 0 !important;
+  }
+
+  body.cms-home-page .why-grid > .why-card:nth-child(-n+2) {
+    border-bottom: 1px solid var(--v6-line) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body.cms-home-page .why-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.cms-home-page .why-grid > .why-card,
+  body.cms-home-page .why-grid > .why-card:nth-child(2) {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--v6-line) !important;
+  }
+
+  body.cms-home-page .why-grid > .why-card:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+/* Disclosure components: visible, balanced and aligned ---------------- */
+body.release-v24 :is(.faq-pro-list, .faq-list, .faq-clean-list, details.deep-dive),
+body.release-v24 :is(.faq-pro-list, .faq-list, .faq-clean-list) details,
+body.release-v24 :is(.faq-pro-list, .faq-list, .faq-clean-list) details > *,
+body.release-v24 details.deep-dive > * {
+  visibility: visible !important;
+}
+
+body.release-v24 section[aria-labelledby="faq-title"] :is(.section-heading, .faq-pro-list),
+body.release-v24 section[aria-labelledby="faq-title"] :is(.section-heading, .faq-pro-list) * {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary,
+body.release-v24.v8-ready details.deep-dive > summary {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 32px !important;
+  min-height: 66px !important;
+  padding: 18px 20px 18px 24px !important;
+  column-gap: 20px !important;
+  align-items: center !important;
+}
+
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary::after,
+body.release-v24.v8-ready details.deep-dive > summary::after {
+  display: grid !important;
+  position: static !important;
+  width: 32px !important;
+  height: 32px !important;
+  margin: 0 !important;
+  place-items: center !important;
+  justify-self: center !important;
+  align-self: center !important;
+  line-height: 1 !important;
+}
+
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) details > :not(summary),
+body.release-v24.v8-ready details.deep-dive > :not(summary) {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 20px 24px 24px !important;
+}
+
+body.release-v24 .faq-answer > :is(p, ul, ol),
+body.release-v24 :is(.faq-pro-list, .faq-list) details > :not(summary) {
+  max-width: 78ch !important;
+}
+
+body.release-v24 .faq-answer > p {
+  margin: 0 !important;
+}
+
+body.release-v24 .appointment-faq-section .faq-answer {
+  border-left: 2px solid color-mix(in srgb, var(--v6-gold) 66%, transparent) !important;
+  background: color-mix(in srgb, var(--v6-surface-2) 84%, transparent) !important;
+}
+
+/* Doctor, clinic and location geometry -------------------------------- */
+body.release-v24 .v8-article-content .focus-link-grid > a {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto 1fr !important;
+  min-height: 128px !important;
+  padding: 24px 26px !important;
+  gap: 10px !important;
+  align-content: center !important;
+  align-items: start !important;
+  justify-items: start !important;
+  justify-content: stretch !important;
+  text-align: left !important;
+}
+
+body.release-v24.v8-ready .v8-article-content .focus-link-grid > a > strong,
+body.release-v24.v8-ready .v8-article-content .focus-link-grid > a > span {
+  width: 100% !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+body.release-v24 .focus-link-grid > a > strong {
+  font-size: clamp(1.08rem, 1.45vw, 1.22rem) !important;
+  line-height: 1.3 !important;
+}
+
+body.release-v24 .focus-link-grid > a > span {
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+}
+
+body.release-v24 .clinic-choice-grid {
+  grid-auto-rows: 1fr !important;
+}
+
+body.release-v24 .clinic-choice-grid > article,
+body.release-v24 .clinic-choice-grid > .clinic-choice-card,
+body.release-v24 .contact-clinic-grid > article {
+  display: flex !important;
+  min-height: 100% !important;
+  height: 100% !important;
+  padding: clamp(26px, 3vw, 38px) !important;
+  flex-direction: column !important;
+  border: 1px solid var(--v6-line) !important;
+  border-radius: 2px !important;
+  background: var(--v6-surface) !important;
+  box-sizing: border-box !important;
+}
+
+body.release-v24 .clinic-choice-grid > article :is(h2, h3),
+body.release-v24 .clinic-choice-grid > .clinic-choice-card :is(h2, h3) {
+  font-size: clamp(1.6rem, 2.1vw, 2rem) !important;
+}
+
+body.release-v24 .clinic-choice-grid > article address,
+body.release-v24 .clinic-choice-grid > .clinic-choice-card address {
+  font-size: clamp(1.06rem, 1.2vw, 1.16rem) !important;
+  line-height: 1.62 !important;
+}
+
+body.release-v24 .clinic-choice-grid > article .inline-actions,
+body.release-v24 .clinic-choice-grid > .clinic-choice-card :is(.inline-actions, .button-row) {
+  margin-top: auto !important;
+  padding-top: 26px !important;
+}
+
+body.release-v24 .v8-article-content .clinic-choice-grid > article {
+  display: grid !important;
+  grid-template-rows: auto minmax(4.9em, auto) 1fr auto !important;
+}
+
+body.release-v24 .nearby-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)) !important;
+  gap: 10px !important;
+}
+
+body.release-v24 .nearby-list > li {
+  display: grid !important;
+  min-height: 48px !important;
+  padding: 10px 15px !important;
+  place-items: center !important;
+  border: 1px solid var(--v6-line) !important;
+  border-radius: 2px !important;
+  background: var(--v6-surface) !important;
+  text-align: center !important;
+}
+
+body.release-v24 .nearby-list > li::before {
+  content: none !important;
+  display: none !important;
+}
+
+body.release-v24 .related-care-links {
+  display: flex !important;
+  width: 100% !important;
+  padding: 14px !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+  flex-wrap: wrap !important;
+  border: 1px solid var(--v6-line) !important;
+  border-radius: 2px !important;
+  background: var(--v6-surface) !important;
+}
+
+body.release-v24 .related-care-links .quiet-label {
+  display: grid !important;
+  min-height: 56px !important;
+  padding: 0 10px !important;
+  place-items: center start !important;
+  flex: 0 0 auto !important;
+}
+
+body.release-v24 .related-care-links a {
+  display: grid !important;
+  min-height: 56px !important;
+  padding: 10px 14px !important;
+  place-items: center !important;
+  border: 1px solid var(--v6-line) !important;
+  border-radius: 2px !important;
+  background: var(--v6-surface-2) !important;
+  text-align: center !important;
+  flex: 1 1 180px !important;
+}
+
+/* Shared article list hierarchy and restrained emphasis --------------- */
+@media (min-width: 701px) {
+  body.release-v24.v8-ready .v8-article-content ul.clean-list:not(.v8-numbered-features) {
+    display: block !important;
+    columns: 2 !important;
+    column-count: 2 !important;
+    column-gap: 22px !important;
+  }
+}
+
+body.release-v24 .v8-article-content .article-section ul.clean-list:not(.v8-numbered-features) > li,
+body.release-v24 .v8-article-content .faq-answer ul.clean-list > li {
+  display: grid !important;
+  grid-template-columns: 12px minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 11px 0 !important;
+  gap: 12px !important;
+  align-items: start !important;
+  break-inside: avoid-column !important;
+}
+
+body.release-v24 .v8-article-content .article-section ul.clean-list:not(.v8-numbered-features) > li::before,
+body.release-v24 .v8-article-content .faq-answer ul.clean-list > li::before {
+  content: "" !important;
+  display: block !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin: .62em 0 0 1px !important;
+  border: 1px solid var(--v6-gold) !important;
+  border-radius: 0 !important;
+  background: color-mix(in srgb, var(--v6-gold) 42%, transparent) !important;
+  transform: rotate(45deg) !important;
+}
+
+body.release-v24 .v8-article-content .article-section :is(p, li) > strong,
+body.release-v24 .v8-article-content .article-section .list-lead strong {
+  color: color-mix(in srgb, var(--v6-gold) 76%, var(--v6-ink)) !important;
+}
+
+html[data-theme="dark"] body.release-v24 .v8-article-content .article-section :is(p, li) > strong,
+html[data-theme="dark"] body.release-v24 .v8-article-content .article-section .list-lead strong {
+  color: var(--v6-gold-soft) !important;
+}
+
+/* Clinical photographs keep every pixel, caption and control visible. */
+body.release-v24 .clinical-results--hero .clinical-results__inner {
+  overflow: visible !important;
+}
+
+body.release-v24 .clinical-results--hero .clinical-results__viewport,
+body.release-v24 .clinical-results--hero .clinical-results__slide {
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  aspect-ratio: 4 / 3 !important;
+}
+
+body.release-v24 .clinical-results--hero .clinical-results__slide img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+body.release-v24 .clinical-results :is(.clinical-results__controls, .clinical-results__counter, .clinical-results__note, .clinical-results__load-error) {
+  visibility: visible !important;
+  opacity: 1 !important;
+  clip-path: none !important;
+}
+
+body.release-v24 .clinical-results__note {
+  margin: 14px 0 0 !important;
+  padding: 0 2px 2px !important;
+  color: var(--v6-muted) !important;
+  font-size: .92rem !important;
+  line-height: 1.55 !important;
+}
+
+/* Tighter rhythm for the About and clinic article families. */
+body.release-v24:is([data-page-type="doctorpage"], [data-page-type="clinicpage"]) .section:has(.content-layout) {
+  padding-block: clamp(34px, 4vw, 58px) !important;
+}
+
+body.release-v24:is([data-page-type="doctorpage"], [data-page-type="clinicpage"]) .article-section {
+  padding-block: clamp(32px, 3.8vw, 50px) !important;
+}
+
+@media (max-width: 700px) {
+  body.cms-home-page .location-pro-card .location-copy > address {
+    min-height: 0 !important;
+  }
+
+  body.release-v24 .v8-article-content .clinic-choice-grid > article {
+    grid-template-rows: auto auto 1fr auto !important;
+  }
+
+  body.release-v24 .related-care-links {
+    flex-direction: column !important;
+  }
+
+  body.release-v24 .related-care-links .quiet-label {
+    place-items: center !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.release-v24 .nav-toggle span,
+  body.release-v24 .related-care-links a,
+  body.release-v24 .nearby-list > li {
+    transition: none !important;
+  }
+}
