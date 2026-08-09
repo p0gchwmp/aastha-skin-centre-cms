@@ -85,8 +85,12 @@ body.cms-home-page .v5-hero-card.v5-hero-card--accent .v5-card-kicker {
   color: #f0d3a6 !important;
 }
 
-/* Header booking button: white on burgundy, not the inherited brown text. */
-body.release-v24 .primary-nav .button.button-small {
+/* Header booking button: white on burgundy, including its current-page state.
+   The older V5 a11y rule has deliberately high specificity and otherwise turns
+   the active booking link bronze on the booking page. */
+body.release-v24 .primary-nav .button.button-small,
+html:not([data-theme="dark"]) body.release-v24 .primary-nav > a.button.button-small,
+html:not([data-theme="dark"]) body.release-v24 .primary-nav > a.button.button-small.is-current {
   color: #fff8f3 !important;
 }
 
@@ -414,8 +418,12 @@ body.cms-home-page .v6-stats {
     min-height: 176px !important;
   }
 
-  body.release-v24[data-page-type="contentindexpage"] .hub-category-heading h2 {
+  /* Every hub-style category heading uses the same mobile scale. `/about/`
+     shares this component but is not a ContentIndexPage, so the previous
+     page-type-scoped selector missed its two category headings. */
+  body.release-v24 .hub-category-heading h2 {
     font-size: clamp(1.5rem, 7vw, 1.9rem) !important;
+    line-height: 1.12 !important;
   }
 
   body.release-v24[data-page-type="contentindexpage"] .hub-category {
@@ -545,7 +553,7 @@ body.cms-home-page .v6-stats {
     border: 1px solid var(--v6-line-strong) !important;
     border-radius: 2px !important;
     background: var(--v6-surface) !important;
-    box-shadow: 0 24px 70px -48px rgba(0, 0, 0, .72) !important;
+    box-shadow: 0 24px 70px -48px rgba(0,0,0,.72) !important;
   }
 
   body.release-v24 .primary-nav > a:not([href="/book-appointment/"]),
