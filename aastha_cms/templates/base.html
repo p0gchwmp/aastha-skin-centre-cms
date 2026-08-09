@@ -113,8 +113,9 @@
   <link rel="stylesheet" href="{% static 'css/premium-production-polish.css' %}">
   <link rel="stylesheet" href="{% static 'css/production-polish-hotfix.css' %}">
   <link rel="stylesheet" href="{% static 'css/production-polish-final.css' %}">
-  {# V6 is the single final public design authority: geometry, type, artwork and motion. #}
+  {# V6 remains the approved public design authority; V7 only corrects stability regressions. #}
   <link rel="stylesheet" href="{% static 'css/premium-system-v6.css' %}">
+  {% include "home/partials/premium_v7_stability_styles.html" %}
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
@@ -223,4 +224,3 @@
   {% endif %}
 </body>
 </html>
-
