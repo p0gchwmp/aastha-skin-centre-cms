@@ -89,6 +89,10 @@ class SiteVisualCueTests(SimpleTestCase):
         )
         self.assertIn('id="visual-cue-assets"', self.asset_manifest)
         self.assertNotIn("<svg", self.asset_manifest)
+        self.assertEqual(
+            self.asset_manifest.count('"svg": "{% static \'icons/message-visuals/'),
+            8,
+        )
         self.assertLess(
             self.base_template.index("css/mobile-layout-qa.css"),
             self.base_template.index("css/site-visual-cues.css"),
@@ -142,6 +146,10 @@ class SiteVisualCueTests(SimpleTestCase):
 
     def test_script_uses_responsive_images_and_fallbacks(self):
         self.assertIn("message-visual__img", self.script)
+        self.assertIn("asset?.svg", self.script)
+        self.assertIn("message-visual__img--vector", self.script)
+        self.assertIn("asset?.source", self.script)
+        self.assertIn("message-visual__img--source", self.script)
         self.assertIn("image.srcset", self.script)
         self.assertIn("64w", self.script)
         self.assertIn("128w", self.script)

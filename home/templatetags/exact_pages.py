@@ -20,6 +20,11 @@ DECODING_ATTR = re.compile(r"\sdecoding\s*=\s*([\"']).*?\1", re.IGNORECASE)
 FETCHPRIORITY_ATTR = re.compile(
     r"\sfetchpriority\s*=\s*([\"']).*?\1", re.IGNORECASE
 )
+VISIBLE_TEXT_NODE = re.compile(r"(?<=>)(?P<text>[^<]+)(?=<)")
+PROTECTED_TEXT_BLOCK = re.compile(
+    r"<(?:script|style|code|pre)\b[^>]*>.*?</(?:script|style|code|pre)>",
+    re.IGNORECASE | re.DOTALL,
+)
 LIST_THEN_PARAGRAPH = re.compile(
     r'(?P<list><(?P<tag>ul|ol)\b[^>]*\bclass=(?P<quote>["\'])'
     r'[^"\']*\bclean-list\b[^"\']*(?P=quote)[^>]*>.*?</(?P=tag)>)'
@@ -138,6 +143,28 @@ def optimise_image_delivery(source: str) -> str:
     return IMG_TAG.sub(replace, source)
 
 
+def normalise_visible_punctuation(source: str) -> str:
+    """Remove em dashes from visible copy without touching markup values."""
+
+    def replace(match: re.Match[str]) -> str:
+        text = match.group("text")
+        # The verified snapshots contain both the real character and the
+        # historical UTF-8 mojibake form. Keep URLs, attributes and structured
+        # values byte-for-byte intact by operating only between HTML tags.
+        text = text.replace("â€”", "—")
+        text = re.sub(r"\s*—\s*", ", ", text)
+        return text
+
+    parts: list[str] = []
+    cursor = 0
+    for protected in PROTECTED_TEXT_BLOCK.finditer(source):
+        parts.append(VISIBLE_TEXT_NODE.sub(replace, source[cursor:protected.start()]))
+        parts.append(protected.group(0))
+        cursor = protected.end()
+    parts.append(VISIBLE_TEXT_NODE.sub(replace, source[cursor:]))
+    return "".join(parts)
+
+
 def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
     """Replace centrally managed facts without changing the verified layout."""
 
@@ -174,7 +201,7 @@ def apply_global_facts(source: str, site_settings: SiteSettings) -> str:
         ("within 10 days", f"within {follow_up_days} days"),
         ("10-day period", f"{follow_up_days}-day period"),
     ]
-    output = repair_orphaned_list_items(source)
+    output = normalise_visible_punctuation(repair_orphaned_list_items(source))
     for current, replacement in replacements:
         output = output.replace(current, _safe(replacement))
     return optimise_image_delivery(output)
