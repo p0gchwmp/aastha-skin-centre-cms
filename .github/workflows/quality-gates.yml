@@ -1,9 +1,6 @@
 name: Lighthouse and accessibility QA
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -119,11 +116,11 @@ jobs:
         if: always()
         run: cp /tmp/aastha-quality.log audit-artifacts/quality-server.log || true
 
-      - name: Upload quality evidence
-        if: always()
+      - name: Upload quality evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-accessibility-${{ github.sha }}
           path: audit-artifacts/
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 1

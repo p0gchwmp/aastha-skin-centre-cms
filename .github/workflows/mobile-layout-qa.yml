@@ -1,9 +1,6 @@
 name: Mobile layout QA
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -82,14 +79,14 @@ jobs:
             --site http://127.0.0.1:8000 \
             --output audit-artifacts/reported-mobile-regressions-local
 
-      - name: Upload mobile evidence
-        if: always()
+      - name: Upload mobile evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: mobile-layout-local-${{ github.sha }}
           path: audit-artifacts/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
 
   live-mobile-layout:
     needs: local-mobile-layout
@@ -149,11 +146,11 @@ jobs:
             --site https://www.aasthaskincentre.in \
             --output audit-artifacts/reported-mobile-regressions-live
 
-      - name: Upload live mobile evidence
-        if: always()
+      - name: Upload live mobile evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: mobile-layout-live-${{ github.sha }}
           path: audit-artifacts/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1

@@ -117,14 +117,14 @@ jobs:
         if: always()
         run: cp /tmp/aastha-local.log audit-artifacts/local-server.log || true
 
-      - name: Upload local parity evidence
-        if: always()
+      - name: Upload local parity evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: local-parity-${{ github.sha }}
           path: audit-artifacts/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
 
   deployed-render-audit:
     needs: local-branch-audit
@@ -195,11 +195,11 @@ jobs:
             --cms https://aastha-skin-centre-cms.onrender.com \
             --output audit-artifacts/deployed-performance
 
-      - name: Upload deployed parity evidence
-        if: always()
+      - name: Upload deployed parity evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: deployed-parity-${{ github.sha }}
           path: audit-artifacts/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1

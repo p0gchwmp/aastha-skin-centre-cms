@@ -39,9 +39,11 @@ jobs:
       - name: Audit all exact-page lists
         run: python tools/audit_content_list_quality.py
 
-      - name: Upload content-quality evidence
+      - name: Upload content-quality evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: content-list-quality-${{ github.sha }}
           path: audit-artifacts/content-list-quality/
-          retention-days: 14
+          if-no-files-found: warn
+          retention-days: 1

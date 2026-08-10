@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - ".github/workflows/**"
+      - "**/*.md"
 
 permissions:
   contents: read
@@ -121,11 +124,11 @@ jobs:
             --base https://www.aasthaskincentre.in \
             --output audit-artifacts/live-domain/seo-foundation
 
-      - name: Upload live-domain evidence
-        if: always()
+      - name: Upload live-domain evidence on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: live-domain-smoke-${{ github.sha }}
           path: audit-artifacts/live-domain/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1

@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - ".github/qa/run-preview"
-      - ".github/workflows/premium-preview-screenshots.yml"
   workflow_dispatch:
 
 permissions:
@@ -76,4 +75,4 @@ jobs:
           name: premium-v4-preview-${{ github.sha }}
           path: audit-artifacts/premium-v4-preview/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
