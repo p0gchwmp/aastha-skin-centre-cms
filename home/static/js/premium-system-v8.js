@@ -135,8 +135,13 @@
 
       const activeRailLink = rail.querySelector(`a[href="#${CSS.escape(id)}"]`);
       if (!activeRailLink || rail.scrollHeight <= rail.clientHeight) return;
-      const linkTop = activeRailLink.offsetTop;
-      const linkBottom = linkTop + activeRailLink.offsetHeight;
+      /* offsetTop is relative to each positioned list item, so it is often
+         close to zero and used to pull a long rail back to the beginning.
+         Measure the link inside the rail's own scroll coordinate system. */
+      const railRect = rail.getBoundingClientRect();
+      const linkRect = activeRailLink.getBoundingClientRect();
+      const linkTop = linkRect.top - railRect.top + rail.scrollTop;
+      const linkBottom = linkTop + linkRect.height;
       const visibleTop = rail.scrollTop + 48;
       const visibleBottom = rail.scrollTop + rail.clientHeight - 18;
       if (linkTop < visibleTop || linkBottom > visibleBottom) {

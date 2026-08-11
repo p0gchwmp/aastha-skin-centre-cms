@@ -120,6 +120,8 @@
   <link rel="stylesheet" href="{% static 'css/premium-system-v8.css' %}">
   {# V9 closes the post-deployment visual QA findings without altering clinical copy. #}
   <link rel="stylesheet" href="{% static 'css/premium-system-v9.css' %}">
+  {# V10 unifies article, iPad, gallery, accordion and navigation geometry. #}
+  <link rel="stylesheet" href="{% static 'css/premium-system-v10.css' %}?v=10.6">
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
@@ -180,7 +182,8 @@
 
   {# Site-wide approved luxury interactions; idempotent modules preserve legacy exact-page compatibility. #}
   <script src="{% static 'js/premium-v3-preview.js' %}" defer></script>
-  <script src="{% static 'js/premium-v4-final-preview.js' %}" defer></script>
+  <script src="{% static 'js/premium-system-v10.js' %}" defer></script>
+  <script src="{% static 'js/premium-v4-final-preview.js' %}?v=10" defer></script>
   <script src="{% static 'js/premium-v5-reference.js' %}" defer></script>
   <script src="{% static 'js/premium-v5-mobile-carousel.js' %}" defer></script>
   <script src="{% static 'js/premium-v5-hybrid.js' %}" defer></script>
@@ -189,7 +192,7 @@
   <script src="{% static 'js/premium-production.js' %}" defer></script>
   <script src="{% static 'js/production-polish-hotfix.js' %}" defer></script>
   <script src="{% static 'js/premium-system-v6.js' %}" defer></script>
-  <script src="{% static 'js/premium-system-v8.js' %}" defer></script>
+  <script src="{% static 'js/premium-system-v8.js' %}?v=10" defer></script>
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script>
       (() => {

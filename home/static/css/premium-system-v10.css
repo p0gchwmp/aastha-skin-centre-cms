@@ -1,0 +1,449 @@
+/*
+ * Aastha premium system V10
+ * Shared article, tablet, gallery and disclosure correction authority.
+ */
+
+body.release-v24 {
+  --v10-section-space: clamp(38px, 4.2vw, 60px);
+  --v10-article-space: clamp(30px, 3.2vw, 46px);
+  --v10-card-radius: 2px;
+}
+
+/* Keep the navigation visually attached to the brand on wide screens. */
+@media (min-width: 761px) {
+  body.release-v24 .primary-nav {
+    justify-content: flex-start !important;
+  }
+
+  body.release-v24 .primary-nav > a:first-child {
+    margin-left: 0 !important;
+  }
+
+  body.release-v24 .primary-nav > .button[href="/book-appointment/"] {
+    margin-left: auto !important;
+  }
+}
+
+/* The base navigation changes to its menu pattern at tablet widths. Extend
+   the polished mobile controls to the same breakpoint so iPads never show a
+   hamburger and a compressed desktop row at the same time. */
+@media (min-width: 761px) and (max-width: 1100px) {
+  body.release-v24 .site-header .nav-shell {
+    min-height: 76px !important;
+    justify-content: space-between !important;
+  }
+
+  body.release-v24 .site-header .brand {
+    flex: 0 1 auto !important;
+  }
+
+  body.release-v24 .nav-toggle {
+    display: grid !important;
+    width: 48px !important;
+    height: 48px !important;
+    padding: 12px !important;
+    place-content: center !important;
+    gap: 5px !important;
+    border: 1px solid var(--v6-wine) !important;
+    border-radius: 2px !important;
+    background: var(--v6-wine) !important;
+  }
+
+  body.release-v24 .nav-toggle span:not(.sr-only) {
+    display: block !important;
+    position: static !important;
+    width: 23px !important;
+    min-width: 23px !important;
+    height: 2px !important;
+    min-height: 2px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff8f3 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+  }
+
+  body.release-v24 .nav-toggle[aria-expanded="true"] span:not(.sr-only):nth-child(1) {
+    transform: translateY(7px) rotate(45deg) !important;
+  }
+
+  body.release-v24 .nav-toggle[aria-expanded="true"] span:not(.sr-only):nth-child(2) {
+    opacity: 0 !important;
+  }
+
+  body.release-v24 .nav-toggle[aria-expanded="true"] span:not(.sr-only):nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg) !important;
+  }
+
+  body.release-v24 .primary-nav {
+    display: none !important;
+    position: fixed !important;
+    z-index: 120 !important;
+    top: 94px !important;
+    right: 20px !important;
+    left: 20px !important;
+    max-height: calc(100vh - 118px) !important;
+    padding: 18px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    border: 1px solid var(--v6-line) !important;
+    border-radius: 2px !important;
+    background: var(--v6-surface) !important;
+    box-shadow: var(--v8-shadow-hover) !important;
+  }
+
+  body.release-v24 .primary-nav.is-open {
+    display: flex !important;
+  }
+
+  body.release-v24 .primary-nav > :is(a, .nav-item),
+  body.release-v24 .primary-nav > .nav-item > button {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  body.release-v24 .primary-nav > .button[href="/book-appointment/"] {
+    margin-left: 0 !important;
+  }
+}
+
+/* Shared rhythm: headings stay connected to their content. */
+body.release-v24 :is(.section, .home-section, .hub-section) {
+  padding-block: var(--v10-section-space) !important;
+}
+
+body.release-v24 .article-section {
+  padding-block: var(--v10-article-space) !important;
+}
+
+body.release-v24 .article-section > h2 {
+  margin-bottom: clamp(16px, 1.8vw, 24px) !important;
+}
+
+body.release-v24 .article-section > :last-child,
+body.release-v24 .section-heading > :last-child {
+  margin-bottom: 0 !important;
+}
+
+body.release-v24 .page-hero + :is(.section, .hub-section, .home-section) {
+  padding-top: var(--v10-section-space) !important;
+}
+
+/* Architectural geometry for article callouts and cards. */
+body.release-v24 :is(
+  .deep-dive-cta,
+  .article-cta,
+  .notice,
+  .hub-notice,
+  .care-sidebar-card,
+  .service-link-grid > a,
+  .focus-link-grid > a,
+  .clinic-choice-card,
+  .clinic-location-card
+) {
+  border-radius: var(--v10-card-radius) !important;
+}
+
+body.release-v24 .deep-dive-cta {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  box-sizing: border-box !important;
+}
+
+body.release-v24 .primary-nav .theme-toggle .theme-label {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+/* Service cards share one alignment, height and readable type scale. */
+body.release-v24 .v8-article-content .service-link-grid {
+  grid-auto-rows: 1fr !important;
+  align-items: stretch !important;
+}
+
+body.release-v24 .v8-article-content .service-link-grid > a {
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  min-height: 132px !important;
+  height: 100% !important;
+  padding: 24px 26px !important;
+  gap: 10px !important;
+  align-content: center !important;
+  align-items: start !important;
+  justify-items: start !important;
+  text-align: left !important;
+}
+
+body.release-v24 .v8-article-content .service-link-grid > a > strong {
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: clamp(1.08rem, 1.35vw, 1.22rem) !important;
+  line-height: 1.3 !important;
+}
+
+body.release-v24 .v8-article-content .service-link-grid > a > span {
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+}
+
+/* Disclosure markers occupy a predictable final track and remain centered. */
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary,
+body.release-v24.v8-ready details.deep-dive > summary {
+  grid-template-columns: minmax(0, 1fr) 26px !important;
+  min-height: 70px !important;
+  padding: 18px 22px 18px 24px !important;
+  column-gap: 18px !important;
+  align-items: center !important;
+}
+
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary::after,
+body.release-v24.v8-ready details.deep-dive > summary::after {
+  display: grid !important;
+  position: static !important;
+  width: 26px !important;
+  height: 26px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  place-items: center !important;
+  justify-self: center !important;
+  align-self: center !important;
+  font-size: 1.18rem !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  transform: none !important;
+}
+
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) details > :not(summary),
+body.release-v24.v8-ready details.deep-dive > :not(summary) {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 20px 24px 24px !important;
+  box-sizing: border-box !important;
+}
+
+body.release-v24 .appointment-faq-section .faq-answer,
+body.release-v24 .appointment-faq-section .faq-answer > :is(p, ul, ol) {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* The rail title stays put while its complete section list scrolls beneath. */
+@media (min-width: 1240px) {
+  body.release-v24 .v8-page-rail__title {
+    position: sticky !important;
+    z-index: 2 !important;
+    top: -18px !important;
+    margin: -18px 0 10px !important;
+    padding: 18px 0 12px !important;
+    background: var(--v6-bg) !important;
+  }
+}
+
+/* Clinical media uses its intrinsic ratio. No fixed black letterbox. */
+body.release-v24 .clinical-results,
+body.release-v24 .clinical-results__inner,
+body.release-v24 .clinical-results__viewport,
+body.release-v24 .clinical-results__track,
+body.release-v24 .clinical-results__slide {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  box-sizing: border-box !important;
+}
+
+body.release-v24 .clinical-results__inner {
+  display: block !important;
+  overflow: visible !important;
+}
+
+body.release-v24 .clinical-results__viewport {
+  overflow: hidden !important;
+  background: var(--v6-surface-2) !important;
+}
+
+body.release-v24 .clinical-results.clinical-results--hero .clinical-results__viewport,
+body.release-v24 .clinical-results.clinical-results--hero .clinical-results__slide {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+}
+
+body.release-v24 .clinical-results__slide {
+  display: none !important;
+  position: static !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+body.release-v24 .clinical-results__slide.is-active,
+body.release-v24 .clinical-results__slide[aria-hidden="false"] {
+  display: block !important;
+}
+
+body.release-v24 .page-hero-art .clinical-results__slide img,
+body.release-v24 .clinical-results__slide img {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+body.release-v24 .clinical-results__note,
+body.release-v24 .clinical-results__caption {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 14px 0 0 !important;
+}
+
+/* Tablet: a single readable article track prevents narrow-word collapse. */
+@media (min-width: 761px) and (max-width: 1100px) {
+  body.release-v24 .content-layout.v8-content-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 30px !important;
+  }
+
+  body.release-v24 .v8-article-content,
+  body.release-v24 .v8-care-sidebar {
+    grid-column: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body.release-v24 .v8-care-sidebar {
+    position: static !important;
+  }
+
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout.v8-content-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.release-v24[data-page-slug="acne-treatment"] :is(.v8-article-content, .v8-care-sidebar) {
+    grid-column: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body.release-v24.v8-ready .content-layout.v8-content-layout > .v8-article-content,
+  body.release-v24.v8-ready .content-layout.v8-content-layout > .care-sidebar.v8-care-sidebar {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.release-v24 .v8-article-content :is(p, li, dd, dt) {
+    font-size: 1rem !important;
+    line-height: 1.7 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout.v8-content-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.release-v24[data-page-slug="acne-treatment"].v8-ready .content-layout.v8-content-layout > .v8-article-content,
+  body.release-v24[data-page-slug="acne-treatment"].v8-ready .content-layout.v8-content-layout > .care-sidebar.v8-care-sidebar {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body.release-v24 .primary-nav .theme-toggle {
+    display: grid !important;
+    align-self: center !important;
+    margin: 14px auto 16px !important;
+    padding: 0 !important;
+    place-content: center !important;
+    place-items: center !important;
+  }
+
+  body.release-v24 .primary-nav .theme-toggle .theme-icon {
+    margin: 0 !important;
+    place-self: center !important;
+  }
+
+  body.release-v24 .primary-nav {
+    overflow-x: hidden !important;
+  }
+
+  body.release-v24 .primary-nav > * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  body.release-v24 .v8-article-content :is(.service-link-grid, .focus-link-grid) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary,
+  body.release-v24.v8-ready details.deep-dive > summary {
+    grid-template-columns: minmax(0, 1fr) 24px !important;
+    min-height: 64px !important;
+    padding: 16px 16px 16px 18px !important;
+    column-gap: 12px !important;
+  }
+
+  body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary::after,
+  body.release-v24.v8-ready details.deep-dive > summary::after {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+/* Cached acne markup can never reintroduce its old grid or tiny type. */
+body.release-v24[data-page-slug="acne-treatment"] .content-layout.v8-content-layout {
+  width: var(--v6-content) !important;
+  max-width: 1320px !important;
+}
+
+body.release-v24[data-page-slug="acne-treatment"] .v8-article-content :is(p, li, dd, dt) {
+  font-size: 1rem !important;
+  line-height: 1.72 !important;
+}
+
+@media print {
+  body.release-v24[data-page-slug="acne-treatment"] .content-layout,
+  body.release-v24[data-page-slug="acne-treatment"] .prose.article-stack,
+  body.release-v24[data-page-slug="acne-treatment"] .article-section,
+  body.release-v24[data-page-slug="acne-treatment"] .faq-section,
+  body.release-v24[data-page-slug="acne-treatment"] details.deep-dive {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding-inline: 0 !important;
+    columns: auto !important;
+    column-count: 1 !important;
+  }
+
+  body.release-v24[data-page-slug="acne-treatment"] :is(p, li, dd, dt, summary, span, strong, h1, h2, h3) {
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+  }
+}

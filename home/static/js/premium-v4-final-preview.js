@@ -221,26 +221,6 @@
   }
 })();
 
-/* Load the retained-markup structure correction only on the acne preview. */
-(() => {
-  if (location.pathname !== "/treatments/acne-treatment/") return;
-
-  if (!document.querySelector('link[data-v5-acne-structure]')) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/assets/css/premium-v5-acne-structure.css";
-    link.dataset.v5AcneStructure = "true";
-    document.head.appendChild(link);
-  }
-
-  if (!document.querySelector('script[data-v5-acne-structure]')) {
-    const script = document.createElement("script");
-    script.src = "/assets/js/premium-v5-acne-structure.js";
-    script.dataset.v5AcneStructure = "true";
-    document.body.appendChild(script);
-  }
-})();
-
 /* V5 content-driven interactions: comparison slider, alternating reveals,
    image masks and animated disclosures. Loaded once for every preview page. */
 (() => {
