@@ -22,15 +22,10 @@ SIZES = (64, 128, 256, 512)
 # Hair deliberately remains in the original approved core set. The curated
 # hair source produced the black/glitched artwork reported on iPhone Safari.
 CURATED_CUES = {
-    "acne": "acne-care",
-    "pigmentation": "pigmentation-care",
-    "infection": "fungal-infection-care",
-    "allergy": "allergy-inflammatory-rashes",
     "growths": "moles-growths-nails",
     "scars": "scars-texture-skin-quality",
     "children": "childrens-dermatology",
     "dermatosurgery": "minor-dermatosurgery",
-    "ageing": "skin-quality-ageing",
 }
 
 

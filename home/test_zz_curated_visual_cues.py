@@ -8,15 +8,10 @@ from PIL import Image
 
 class CuratedVisualCueTests(SimpleTestCase):
     CUES = {
-        "acne": "acne-care",
-        "pigmentation": "pigmentation-care",
-        "infection": "fungal-infection-care",
-        "allergy": "allergy-inflammatory-rashes",
         "growths": "moles-growths-nails",
         "scars": "scars-texture-skin-quality",
         "children": "childrens-dermatology",
         "dermatosurgery": "minor-dermatosurgery",
-        "ageing": "skin-quality-ageing",
     }
     SIZES = (128, 256, 512)
 

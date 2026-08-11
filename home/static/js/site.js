@@ -366,10 +366,39 @@
     const toggle = document.querySelector(".theme-toggle");
     if (!toggle) return;
 
+    const icon = toggle.querySelector(".theme-icon");
+    const manifest = document.getElementById("visual-cue-assets");
+    let themeAssets = {};
+    try {
+      themeAssets = JSON.parse(manifest?.textContent || "{}");
+    } catch (_) {
+      themeAssets = {};
+    }
+
+    const image = document.createElement("img");
+    image.className = "theme-icon-image";
+    image.alt = "";
+    image.width = 64;
+    image.height = 64;
+    image.decoding = "async";
+    image.draggable = false;
+    image.setAttribute("aria-hidden", "true");
+
     const update = () => {
       const dark = document.documentElement.dataset.theme === "dark";
       toggle.setAttribute("aria-pressed", String(dark));
-      toggle.querySelector(".theme-icon").textContent = dark ? "☀" : "☾";
+      const asset = dark ? themeAssets.themeLight : themeAssets.themeDark;
+      if (icon && asset?.["64"]) {
+        image.src = asset["64"];
+        image.srcset = [
+          `${asset["64"]} 64w`,
+          asset["128"] ? `${asset["128"]} 128w` : ""
+        ].filter(Boolean).join(", ");
+        image.sizes = "36px";
+        icon.replaceChildren(image);
+      } else if (icon) {
+        icon.textContent = dark ? "☀" : "☾";
+      }
       toggle.querySelector(".theme-label").textContent = dark ? "Light" : "Dark";
     };
 

@@ -26,6 +26,29 @@ class SiteVisualCueTests(SimpleTestCase):
         "dermatosurgery": "minor-dermatosurgery",
         "ageing": "skin-quality-ageing",
         "infection": "fungal-infection-care",
+        "directions": "clinic-directions",
+        "booking": "appointment-booking",
+        "themeDark": "theme-dark",
+        "themeLight": "theme-light",
+    }
+    APPROVED_ASSETS = {
+        "acne",
+        "pigmentation",
+        "hair",
+        "diagnosis",
+        "experience",
+        "locations",
+        "complete",
+        "plan",
+        "laser",
+        "clinical",
+        "allergy",
+        "ageing",
+        "infection",
+        "directions",
+        "booking",
+        "themeDark",
+        "themeLight",
     }
     SIZES = (64, 128, 256, 512)
 
@@ -52,6 +75,14 @@ class SiteVisualCueTests(SimpleTestCase):
         self.assertIsNotNone(js_path)
         self.stylesheet = Path(css_path).read_text(encoding="utf-8")
         self.script = Path(js_path).read_text(encoding="utf-8")
+        self.site_script = (
+            self.root / "home" / "static" / "js" / "site.js"
+        ).read_text(encoding="utf-8")
+        approved_css_path = finders.find("css/approved-visual-assets.css")
+        self.assertIsNotNone(approved_css_path)
+        self.approved_stylesheet = Path(approved_css_path).read_text(
+            encoding="utf-8"
+        )
 
         self.base_template = (
             self.root / "aastha_cms" / "templates" / "base.html"
@@ -89,23 +120,21 @@ class SiteVisualCueTests(SimpleTestCase):
         )
         self.assertIn('id="visual-cue-assets"', self.asset_manifest)
         self.assertNotIn("<svg", self.asset_manifest)
-        self.assertEqual(
-            self.asset_manifest.count('"svg": "{% static \'icons/message-visuals/'),
-            8,
-        )
+        self.assertNotIn('"svg":', self.asset_manifest)
+        self.assertNotIn('"source":', self.asset_manifest)
+        self.assertIn("css/approved-visual-assets.css", self.base_template)
         self.assertLess(
             self.base_template.index("css/mobile-layout-qa.css"),
             self.base_template.index("css/site-visual-cues.css"),
         )
 
-    def test_build_restores_original_core_then_installs_curated_specialists(self):
+    def test_builds_approved_high_resolution_set_then_curated_specialists(self):
         self.assertIn("SOURCE_DIR", self.generator)
-        self.assertIn("STANDALONE_SOURCES", self.generator)
-        self.assertIn("SPRITE_SOURCES", self.generator)
-        self.assertIn("group-a-128.webp", self.generator)
-        self.assertIn("group-b-128.webp", self.generator)
+        self.assertIn("approved-2026", self.generator)
+        self.assertIn("APPROVED_SOURCES", self.generator)
+        self.assertIn("1024, 1024", self.generator)
         self.assertIn("Image.Resampling.LANCZOS", self.generator)
-        self.assertIn("lossless=True", self.generator)
+        self.assertIn("quality=92", self.generator)
         self.assertNotIn("ImageDraw", self.generator)
         self.assertNotIn("ImageFilter", self.generator)
 
@@ -124,13 +153,20 @@ class SiteVisualCueTests(SimpleTestCase):
                     with Image.open(asset_path) as image:
                         self.assertEqual(image.format, "WEBP")
                         self.assertEqual(image.size, (size, size))
-                        self.assertIn("A", image.getbands())
-                        alpha = image.getchannel("A")
-                        self.assertEqual(alpha.getextrema(), (0, 255))
-                        self.assertEqual(alpha.getpixel((0, 0)), 0)
-                        transparent = sum(pixel == 0 for pixel in alpha.getdata())
-                        self.assertGreater(transparent, size * size * 0.20)
+                        if cue in self.APPROVED_ASSETS:
+                            self.assertNotIn("A", image.getbands())
+                        else:
+                            self.assertIn("A", image.getbands())
+                            alpha = image.getchannel("A")
+                            self.assertEqual(alpha.getextrema(), (0, 255))
+                            self.assertEqual(alpha.getpixel((0, 0)), 0)
                     self.assertIn(relative, self.asset_manifest)
+
+        source_dir = self.root / "home" / "static_src" / "visual-cues" / "approved-2026"
+        self.assertEqual(len(list(source_dir.glob("*.jpg"))), 16)
+        for source_path in source_dir.glob("*.jpg"):
+            with Image.open(source_path) as source:
+                self.assertEqual(source.size, (1024, 1024))
 
     def test_original_approved_core_asset_names_are_preserved(self):
         for slug in (
@@ -163,6 +199,11 @@ class SiteVisualCueTests(SimpleTestCase):
         self.assertIn("restoreOriginal(element)", self.script)
         self.assertNotIn("createElementNS", self.script)
         self.assertNotIn("message-visual__svg", self.script)
+        self.assertLess(
+            self.script.index("asset?.['64']"),
+            self.script.index("asset?.source"),
+        )
+        self.assertIn("message-visual__img--framed", self.script)
 
     def test_existing_placeholders_only_are_upgraded(self):
         self.assertIn("const PLACEHOLDER_SELECTOR", self.script)
@@ -212,6 +253,17 @@ class SiteVisualCueTests(SimpleTestCase):
         ):
             self.assertIn(f"'{cue}'", self.script)
         self.assertIn(".trust-item .trust-icon", self.script)
+
+    def test_new_contextual_and_theme_artwork_is_wired(self):
+        for cue in ("directions", "booking"):
+            self.assertIn(f"'{cue}'", self.script)
+        self.assertIn("approved-location-art", self.script)
+        self.assertIn("approved-booking-art", self.script)
+        self.assertIn("assets.directions", self.script)
+        self.assertIn("assets.booking", self.script)
+        self.assertIn("themeAssets.themeDark", self.site_script)
+        self.assertIn("themeAssets.themeLight", self.site_script)
+        self.assertIn("theme-icon-image", self.site_script)
 
     def test_css_removes_forced_tile_treatment(self):
         self.assertIn(
@@ -269,6 +321,13 @@ class SiteVisualCueTests(SimpleTestCase):
             "grid-template-columns: 96px",
         ):
             self.assertNotIn(forbidden, self.stylesheet)
+
+        for size in ("80px", "58px", "70px", "62px"):
+            self.assertIn(size, self.approved_stylesheet)
+        self.assertIn("message-visual--framed", self.approved_stylesheet)
+        self.assertIn("theme-icon-image", self.approved_stylesheet)
+        self.assertIn("approved-location-art", self.approved_stylesheet)
+        self.assertIn("approved-booking-art", self.approved_stylesheet)
 
     def test_reduced_motion_preserves_artwork(self):
         self.assertIn("prefers-reduced-motion", self.stylesheet)
