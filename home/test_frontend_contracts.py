@@ -210,3 +210,90 @@ class PremiumSystemV9ContractTests(SimpleTestCase):
     def test_clinical_images_are_contained_without_cropping(self):
         self.assertIn(".clinical-results--hero .clinical-results__slide img", self.css)
         self.assertIn("object-fit: contain !important", self.css)
+
+
+class PremiumSystemV10ContractTests(SimpleTestCase):
+    def setUp(self):
+        base_dir = Path(settings.BASE_DIR)
+        self.base_template = (
+            base_dir / "aastha_cms" / "templates" / "base.html"
+        ).read_text(encoding="utf-8")
+        self.css = (
+            base_dir / "home" / "static" / "css" / "premium-system-v10.css"
+        ).read_text(encoding="utf-8")
+        self.js = (
+            base_dir / "home" / "static" / "js" / "premium-system-v10.js"
+        ).read_text(encoding="utf-8")
+        self.rail_js = (
+            base_dir / "home" / "static" / "js" / "premium-system-v8.js"
+        ).read_text(encoding="utf-8")
+        self.acne_css = (
+            base_dir / "home" / "static" / "css" / "premium-v5-acne-structure.css"
+        ).read_text(encoding="utf-8")
+        self.acne_js = (
+            base_dir / "home" / "static" / "js" / "premium-v5-acne-structure.js"
+        ).read_text(encoding="utf-8")
+
+    def test_v10_assets_are_loaded_after_v9_and_before_cached_v4_loader(self):
+        self.assertGreater(
+            self.base_template.index("premium-system-v10.css"),
+            self.base_template.index("premium-system-v9.css"),
+        )
+        self.assertLess(
+            self.base_template.index("premium-system-v10.js"),
+            self.base_template.index("premium-v4-final-preview.js"),
+        )
+
+    def test_acne_uses_the_shared_article_system(self):
+        self.assertNotIn("grid-template-columns", self.acne_css)
+        self.assertNotIn("loadResultsStyles", self.acne_js)
+        self.assertNotIn("moveClinicalResultIntoStory", self.acne_js)
+        self.assertIn("premium-v5-acne-structure", self.js)
+        self.assertIn("premium-v5-acne-results", self.js)
+
+    def test_tablet_articles_collapse_to_one_readable_track(self):
+        self.assertIn(
+            "@media (min-width: 761px) and (max-width: 1100px)",
+            self.css,
+        )
+        self.assertIn(
+            ".content-layout.v8-content-layout > .care-sidebar.v8-care-sidebar",
+            self.css,
+        )
+        self.assertIn("grid-column: 1 / -1 !important", self.css)
+
+    def test_rail_scroll_measurement_uses_rail_coordinates(self):
+        self.assertIn("const railRect = rail.getBoundingClientRect()", self.rail_js)
+        self.assertIn(
+            "const linkTop = linkRect.top - railRect.top + rail.scrollTop",
+            self.rail_js,
+        )
+        self.assertIn("keepActiveRailLinkVisible", self.js)
+
+    def test_clinical_media_has_no_fixed_letterbox_or_image_padding(self):
+        self.assertIn(
+            ".clinical-results.clinical-results--hero .clinical-results__viewport",
+            self.css,
+        )
+        self.assertIn("aspect-ratio: auto !important", self.css)
+        self.assertIn("padding: 0 !important", self.css)
+        self.assertIn("background: transparent !important", self.css)
+
+    def test_disclosures_use_a_centered_marker_and_full_width_answer(self):
+        self.assertIn(
+            "grid-template-columns: minmax(0, 1fr) 26px !important",
+            self.css,
+        )
+        self.assertIn(
+            ".appointment-faq-section .faq-answer > :is(p, ul, ol)",
+            self.css,
+        )
+        self.assertIn("max-width: none !important", self.css)
+
+    def test_mobile_theme_control_has_one_centered_visual_item(self):
+        self.assertIn(
+            ".primary-nav .theme-toggle .theme-label",
+            self.css,
+        )
+        self.assertIn("clip-path: inset(50%) !important", self.css)
+        self.assertIn("place-self: center !important", self.css)

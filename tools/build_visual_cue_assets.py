@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Build the original approved core visual cues at responsive sizes.
+"""Build the approved 2026 clay artwork into responsive WebP assets.
 
-The clinic's first ten approved icons live in two standalone source files and
-two compact source strips. Render builds expand those source artworks into the
-responsive WebP files referenced by the Django manifest. A separate curated
-pass then installs only the newer specialist-category artwork.
+The source set is kept at its supplied 1024px resolution. Render and local
+builds generate the smaller files used by the site so cards never upscale a
+thumbnail and browsers never need to download the full source JPEG.
 """
 
 from __future__ import annotations
@@ -12,68 +11,48 @@ from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_DIR = ROOT / "home" / "static_src" / "visual-cues"
+SOURCE_DIR = ROOT / "home" / "static_src" / "visual-cues" / "approved-2026"
 OUTPUT_DIR = ROOT / "home" / "static" / "images" / "visual-cues"
 SIZES = (64, 128, 256, 512)
 
-STANDALONE_SOURCES = {
-    "acne-care": "acne-care-256.webp",
-    "advanced-laser-care": "advanced-laser-care-256.webp",
+# Multiple semantic placements may deliberately share one approved artwork.
+APPROVED_SOURCES = {
+    "acne-care": "acne-care.jpg",
+    "pigmentation-care": "pigmentation-care.jpg",
+    "hair-scalp-care": "hair-scalp-care.jpg",
+    "fungal-infection-care": "fungal-infection-care.jpg",
+    "allergy-inflammatory-rashes": "allergy-inflammatory-rashes.jpg",
+    "skin-quality-ageing": "skin-quality-ageing.jpg",
+    "dermatologist-diagnosis": "dermatologist-diagnosis.jpg",
+    "medical-experience": "medical-experience.jpg",
+    "two-clinic-locations": "two-clinic-locations.jpg",
+    "complete-care": "complete-care.jpg",
+    "advanced-laser-care": "complete-care.jpg",
+    "personalised-plan": "personalised-plan.jpg",
+    "clinical-skin-care": "clinical-skin-care.jpg",
+    "clinic-directions": "clinic-directions.jpg",
+    "appointment-booking": "appointment-booking.jpg",
+    "theme-dark": "theme-dark.jpg",
+    "theme-light": "theme-light.jpg",
 }
 
-SPRITE_SOURCES = {
-    "group-a-128.webp": (
-        "clinical-skin-care",
-        "complete-care",
-        "dermatologist-diagnosis",
-        "hair-scalp-care",
-    ),
-    "group-b-128.webp": (
-        "medical-experience",
-        "personalised-plan",
-        "pigmentation-care",
-        "two-clinic-locations",
-    ),
-}
 
-
-def _rgba_image(path: Path) -> Image.Image:
+def _source_image(filename: str) -> Image.Image:
+    path = SOURCE_DIR / filename
     if not path.is_file():
-        raise FileNotFoundError(f"Missing visual-cue source asset: {path}")
+        raise FileNotFoundError(f"Missing approved visual-cue source: {path}")
     with Image.open(path) as image:
-        return image.convert("RGBA")
-
-
-def _source_icons() -> dict[str, Image.Image]:
-    icons: dict[str, Image.Image] = {}
-
-    for slug, filename in STANDALONE_SOURCES.items():
-        image = _rgba_image(SOURCE_DIR / filename)
-        if image.size != (256, 256):
-            raise ValueError(
-                f"{filename} must be 256x256, received {image.width}x{image.height}"
-            )
-        icons[slug] = image
-
-    for filename, slugs in SPRITE_SOURCES.items():
-        strip = _rgba_image(SOURCE_DIR / filename)
-        expected = (128 * len(slugs), 128)
-        if strip.size != expected:
-            raise ValueError(
-                f"{filename} must be {expected[0]}x{expected[1]}, "
-                f"received {strip.width}x{strip.height}"
-            )
-        for index, slug in enumerate(slugs):
-            left = index * 128
-            icons[slug] = strip.crop((left, 0, left + 128, 128))
-
-    if len(icons) != 10:
-        raise RuntimeError(f"Expected 10 visual cues, built {len(icons)}")
-    return icons
+        source = ImageOps.exif_transpose(image).convert("RGB")
+    if source.size != (1024, 1024):
+        raise ValueError(
+            f"{filename} must be 1024x1024, received "
+            f"{source.width}x{source.height}"
+        )
+    return source
 
 
 def _webp_bytes(image: Image.Image) -> bytes:
@@ -81,9 +60,8 @@ def _webp_bytes(image: Image.Image) -> bytes:
     image.save(
         buffer,
         format="WEBP",
-        lossless=True,
+        quality=92,
         method=6,
-        exact=True,
     )
     return buffer.getvalue()
 
@@ -97,26 +75,25 @@ def _write_if_changed(path: Path, data: bytes) -> bool:
 
 
 def build_assets() -> list[Path]:
-    """Generate the ten original responsive icons and return changed paths."""
+    """Generate the responsive approved set and return changed paths."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     expected_names: set[str] = set()
     changed: list[Path] = []
+    source_cache: dict[str, Image.Image] = {}
 
-    for slug, source in sorted(_source_icons().items()):
+    for slug, filename in sorted(APPROVED_SOURCES.items()):
+        if filename not in source_cache:
+            source_cache[filename] = _source_image(filename)
+        source = source_cache[filename]
         for size in SIZES:
             expected_names.add(f"{slug}-{size}.webp")
-            rendered = (
-                source.copy()
-                if source.size == (size, size)
-                else source.resize((size, size), Image.Resampling.LANCZOS)
-            )
+            rendered = source.resize((size, size), Image.Resampling.LANCZOS)
             output = OUTPUT_DIR / f"{slug}-{size}.webp"
             if _write_if_changed(output, _webp_bytes(rendered)):
                 changed.append(output)
 
-    # Specialist cues are installed immediately afterwards by
-    # install_curated_visual_cue_assets.py. Removing stale files here keeps the
-    # fallback pass deterministic without changing the final build contract.
+    # Specialist transparent cues are restored immediately afterwards by
+    # install_curated_visual_cue_assets.py.
     for stale in OUTPUT_DIR.glob("*.webp"):
         if stale.name not in expected_names:
             stale.unlink()
@@ -132,7 +109,7 @@ def main() -> int:
         if changed
         else "already current"
     )
-    print(f"Visual cue assets: {status} in {OUTPUT_DIR}")
+    print(f"Approved visual cue assets: {status} in {OUTPUT_DIR}")
     return 0
 
 

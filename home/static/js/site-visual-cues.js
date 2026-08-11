@@ -19,7 +19,9 @@
     'children',
     'dermatosurgery',
     'ageing',
-    'infection'
+    'infection',
+    'directions',
+    'booking'
   ]);
 
   /* Match only the nearest heading. Child links must never change the meaning
@@ -55,12 +57,31 @@
     ['visit our clinics in jammu', 'locations'],
     ['karan nagar clinic', 'locations'],
     ['paloura clinic', 'locations'],
+    ['clinic directions', 'directions'],
+    ['get directions', 'directions'],
+    ['request an appointment', 'booking'],
+    ['book an appointment', 'booking'],
+    ['book appointment', 'booking'],
     ['complete care', 'complete'],
     ['personalised plans', 'plan'],
     ['personalized plans', 'plan']
   ]);
 
   const LABEL_RULES = [
+    {
+      cue: 'booking',
+      terms: [
+        'book appointment', 'book an appointment', 'request appointment',
+        'request an appointment', 'appointment booking', 'choose a date'
+      ]
+    },
+    {
+      cue: 'directions',
+      terms: [
+        'directions', 'find the clinic', 'clinic map', 'how to reach',
+        'getting here'
+      ]
+    },
     {
       cue: 'allergy',
       terms: [
@@ -178,7 +199,7 @@
       cue: 'plan',
       terms: [
         'doctor led', 'personalised', 'personalized', 'treatment plan',
-        'care plan', 'care pathway', 'next steps', 'appointment', 'follow up'
+        'care plan', 'care pathway', 'next steps', 'follow up'
       ]
     }
   ];
@@ -325,65 +346,54 @@
   };
 
   const displaySizeFor = element => {
-    if (element.matches('.trust-icon')) return '42px';
+    if (element.matches('.trust-icon')) return '58px';
     if (element.matches('.hub-icon')) {
-      return '(max-width: 700px) 46px, 54px';
+      return '(max-width: 700px) 62px, 70px';
     }
-    if (element.matches('.icon-bubble')) return '54px';
-    return '48px';
+    if (element.matches('.icon-bubble')) return '80px';
+    return '62px';
   };
 
   const buildImage = (element, cue, assets) => {
     const asset = assets[cue];
-    if (asset?.svg) {
-      const image = document.createElement('img');
-      image.className = 'message-visual__img message-visual__img--vector';
-      image.src = asset.svg;
-      image.width = 72;
-      image.height = 72;
-      image.alt = '';
-      image.loading = 'lazy';
-      image.fetchPriority = 'low';
-      image.decoding = 'async';
-      image.draggable = false;
-      image.setAttribute('aria-hidden', 'true');
-      return image;
-    }
-    if (asset?.source) {
-      const image = document.createElement('img');
+    let image = null;
+
+    if (
+      asset?.['64'] &&
+      asset?.['128'] &&
+      asset?.['256'] &&
+      asset?.['512']
+    ) {
+      image = document.createElement('img');
+      image.className = 'message-visual__img';
+      image.src = asset['64'];
+      image.srcset = [
+        `${asset['64']} 64w`,
+        `${asset['128']} 128w`,
+        `${asset['256']} 256w`,
+        `${asset['512']} 512w`
+      ].join(', ');
+      image.sizes = displaySizeFor(element);
+      image.width = 64;
+      image.height = 64;
+    } else if (asset?.source) {
+      image = document.createElement('img');
       image.className = 'message-visual__img message-visual__img--source';
       image.src = asset.source;
       image.width = 64;
       image.height = 64;
-      image.alt = '';
-      image.loading = 'lazy';
-      image.fetchPriority = 'low';
-      image.decoding = 'async';
-      image.draggable = false;
-      image.setAttribute('aria-hidden', 'true');
-      return image;
-    }
-    if (
-      !asset?.['64'] ||
-      !asset?.['128'] ||
-      !asset?.['256'] ||
-      !asset?.['512']
-    ) {
-      return null;
+    } else if (asset?.svg) {
+      image = document.createElement('img');
+      image.className = 'message-visual__img message-visual__img--vector';
+      image.src = asset.svg;
+      image.width = 72;
+      image.height = 72;
     }
 
-    const image = document.createElement('img');
-    image.className = 'message-visual__img';
-    image.src = asset['64'];
-    image.srcset = [
-      `${asset['64']} 64w`,
-      `${asset['128']} 128w`,
-      `${asset['256']} 256w`,
-      `${asset['512']} 512w`
-    ].join(', ');
-    image.sizes = displaySizeFor(element);
-    image.width = 64;
-    image.height = 64;
+    if (!image) return null;
+    if (asset?.surface === 'framed') {
+      image.classList.add('message-visual__img--framed');
+    }
     image.alt = '';
     image.loading = 'lazy';
     image.fetchPriority = 'low';
@@ -407,6 +417,10 @@
       .forEach(name => element.classList.remove(name));
 
     element.classList.add('message-visual', `message-visual--${cue}`);
+    element.classList.toggle(
+      'message-visual--framed',
+      assets[cue]?.surface === 'framed'
+    );
     element.dataset.clayCue = cue;
     element.setAttribute('aria-hidden', 'true');
     element.setAttribute('role', 'presentation');
@@ -445,11 +459,57 @@
       if (element.matches('.trust-item .trust-icon')) return;
 
       const requested = normalise(element.dataset.visualCue || '');
-      const cue = CUE_NAMES.has(requested)
+      const cue = element.matches('.location-icon')
+        ? 'directions'
+        : CUE_NAMES.has(requested)
         ? requested
         : cueForLabel(headingLabel(element));
       if (cue) applyCue(element, cue, assets);
     });
+  };
+
+  const applyResponsiveAsset = (image, asset, sizes) => {
+    if (!image || !asset?.['64'] || !asset?.['128'] || !asset?.['256']) {
+      return false;
+    }
+    image.src = asset['128'];
+    image.srcset = [
+      `${asset['64']} 64w`,
+      `${asset['128']} 128w`,
+      `${asset['256']} 256w`,
+      asset['512'] ? `${asset['512']} 512w` : ''
+    ].filter(Boolean).join(', ');
+    image.sizes = sizes;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.draggable = false;
+    return true;
+  };
+
+  const installHomepageArtwork = assets => {
+    document.querySelectorAll('.location-pro-card .location-art img').forEach(
+      image => {
+        if (!applyResponsiveAsset(image, assets.directions, '(max-width: 700px) 88px, 170px')) {
+          return;
+        }
+        image.classList.add('approved-location-art');
+        image.alt = 'Clinic location and directions illustration';
+      }
+    );
+
+    const bookingCard = document.querySelector('.v5-hero-card--accent') ||
+      (document.readyState === 'complete'
+        ? document.querySelector('.hero-booking-card')
+        : null);
+    if (bookingCard && !bookingCard.querySelector('.approved-booking-art')) {
+      const image = document.createElement('img');
+      if (applyResponsiveAsset(image, assets.booking, '58px')) {
+        image.className = 'approved-booking-art';
+        image.alt = '';
+        image.setAttribute('aria-hidden', 'true');
+        bookingCard.prepend(image);
+      }
+    }
   };
 
   const install = () => {
@@ -457,6 +517,14 @@
     if (!Object.keys(assets).length) return;
     installTrustRibbon(assets);
     installExistingPlaceholders(assets);
+    installHomepageArtwork(assets);
+    if (document.readyState !== 'complete') {
+      window.addEventListener(
+        'load',
+        () => installHomepageArtwork(assets),
+        { once: true }
+      );
+    }
   };
 
   if (document.readyState === 'loading') {
