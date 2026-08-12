@@ -11,7 +11,7 @@ from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,8 +36,14 @@ APPROVED_SOURCES = {
     "clinical-skin-care": "clinical-skin-care.jpg",
     "clinic-directions": "clinic-directions.jpg",
     "appointment-booking": "appointment-booking.jpg",
-    "theme-dark": "theme-dark.jpg",
-    "theme-light": "theme-light.jpg",
+    "theme-dark": "theme-dark-v2.png",
+    "theme-light": "theme-light-v2.png",
+    # The specialist directory cues now reuse the same approved high-resolution
+    # artwork family instead of the older miniature/emoji-like derivatives.
+    "moles-growths-nails": "clinical-skin-care.jpg",
+    "scars-texture-skin-quality": "acne-care.jpg",
+    "childrens-dermatology": "dermatologist-diagnosis.jpg",
+    "minor-dermatosurgery": "complete-care.jpg",
 }
 
 
@@ -46,13 +52,47 @@ def _source_image(filename: str) -> Image.Image:
     if not path.is_file():
         raise FileNotFoundError(f"Missing approved visual-cue source: {path}")
     with Image.open(path) as image:
-        source = ImageOps.exif_transpose(image).convert("RGB")
+        source = ImageOps.exif_transpose(image).convert("RGBA")
     if source.size != (1024, 1024):
         raise ValueError(
             f"{filename} must be 1024x1024, received "
             f"{source.width}x{source.height}"
         )
     return source
+
+
+def _remove_connected_white_canvas(source: Image.Image) -> Image.Image:
+    """Remove only the white canvas connected to the image boundary.
+
+    The illustrations contain legitimate ivory and white details, so a global
+    colour-key would damage the subject. Flood filling from every edge removes
+    the supplied studio canvas while preserving enclosed highlights.
+    """
+    if source.getchannel("A").getextrema()[0] == 0:
+        return source
+
+    flood = source.convert("RGB")
+    key = (0, 255, 0)
+    for seed in (
+        (0, 0),
+        (flood.width - 1, 0),
+        (0, flood.height - 1),
+        (flood.width - 1, flood.height - 1),
+    ):
+        ImageDraw.floodfill(flood, seed, key, thresh=28)
+
+    # Convert exact flood-fill green to an alpha mask using Pillow's native
+    # image operations. This avoids a Python loop over every source pixel.
+    difference = ImageChops.difference(flood, Image.new("RGB", flood.size, key))
+    background = difference.convert("L").point(lambda value: 255 if value == 0 else 0)
+
+    # A one-pixel soft matte removes the remaining white antialias halo without
+    # eroding gold edges or transparent shadows.
+    background = background.filter(ImageFilter.GaussianBlur(.65))
+    alpha = ImageOps.invert(background)
+    rendered = source.copy()
+    rendered.putalpha(alpha)
+    return rendered
 
 
 def _webp_bytes(image: Image.Image) -> bytes:
@@ -83,7 +123,9 @@ def build_assets() -> list[Path]:
 
     for slug, filename in sorted(APPROVED_SOURCES.items()):
         if filename not in source_cache:
-            source_cache[filename] = _source_image(filename)
+            source_cache[filename] = _remove_connected_white_canvas(
+                _source_image(filename)
+            )
         source = source_cache[filename]
         for size in SIZES:
             expected_names.add(f"{slug}-{size}.webp")
@@ -92,8 +134,8 @@ def build_assets() -> list[Path]:
             if _write_if_changed(output, _webp_bytes(rendered)):
                 changed.append(output)
 
-    # Specialist transparent cues are restored immediately afterwards by
-    # install_curated_visual_cue_assets.py.
+    # Remove obsolete generated variants so an old thumbnail can never be
+    # selected in place of the approved high-resolution set.
     for stale in OUTPUT_DIR.glob("*.webp"):
         if stale.name not in expected_names:
             stale.unlink()

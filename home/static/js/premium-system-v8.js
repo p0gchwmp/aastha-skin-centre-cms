@@ -67,7 +67,7 @@
     article.classList.add("v8-article-content");
     layout.querySelector(":scope > .care-sidebar")?.classList.add("v8-care-sidebar");
 
-    const headings = qsa(".article-section > h2", article)
+    const headings = qsa(".article-section > :is(h2, h3)", article)
       .filter(heading => !heading.closest(".article-cta") && heading.textContent.trim());
     if (headings.length < 2) return;
 

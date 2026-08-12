@@ -122,7 +122,6 @@ Run the same production-like asset build before auditing:
 
 ```bash
 python tools/build_visual_cue_assets.py
-python tools/install_curated_visual_cue_assets.py
 python tools/generate_responsive_clinical_images.py
 python tools/audit_clinical_result_images.py
 python tools/verify_exact_page_snapshots.py

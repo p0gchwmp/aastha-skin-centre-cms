@@ -19,14 +19,9 @@ class CuratedVisualCueTests(SimpleTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root = Path(__file__).resolve().parents[1]
-        cls.sources = (
-            cls.root / "home" / "static" / "images" / "visual-cue-sources"
-        )
+        cls.sources = cls.root / "home" / "static_src" / "visual-cues" / "approved-2026"
         cls.outputs = cls.root / "home" / "static" / "images" / "visual-cues"
         cls.generator = cls.root / "tools" / "build_visual_cue_assets.py"
-        cls.installer = (
-            cls.root / "tools" / "install_curated_visual_cue_assets.py"
-        )
         subprocess.run(
             [sys.executable, str(cls.generator)],
             cwd=cls.root,
@@ -34,47 +29,29 @@ class CuratedVisualCueTests(SimpleTestCase):
             capture_output=True,
             text=True,
         )
-        subprocess.run(
-            [sys.executable, str(cls.installer)],
-            cwd=cls.root,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
 
-    def test_build_runs_curated_pass_after_core_generator(self):
+    def test_build_uses_one_approved_generator(self):
         build = (self.root / "build.sh").read_text(encoding="utf-8")
         generator = "python tools/build_visual_cue_assets.py"
-        installer = "python tools/install_curated_visual_cue_assets.py"
         self.assertIn(generator, build)
-        self.assertIn(installer, build)
-        self.assertLess(build.index(generator), build.index(installer))
 
-    def test_hair_is_not_replaced_by_curated_override(self):
-        installer_source = self.installer.read_text(encoding="utf-8")
-        curated_block = installer_source.split("CURATED_CUES = {", 1)[1].split(
-            "}", 1
-        )[0]
-        self.assertNotIn('"hair"', curated_block)
-        self.assertIn("black/glitched artwork", installer_source)
+        compatibility = (
+            self.root / "tools" / "install_curated_visual_cue_assets.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Compatibility no-op", compatibility)
+        self.assertNotIn("CURATED_CUES", compatibility)
+
+    def test_specialists_are_generated_from_high_resolution_sources(self):
+        generator = self.generator.read_text(encoding="utf-8")
+        for slug in self.CUES.values():
+            self.assertIn(f'"{slug}"', generator)
 
     def test_curated_sources_and_responsive_outputs_are_transparent(self):
-        installer_source = self.installer.read_text(encoding="utf-8")
-        self.assertIn("CURATED_CUES", installer_source)
-        self.assertIn("Image.Resampling.LANCZOS", installer_source)
-        self.assertIn("lossless=True", installer_source)
+        generator_source = self.generator.read_text(encoding="utf-8")
+        self.assertIn("_remove_connected_white_canvas", generator_source)
+        self.assertIn("Image.Resampling.LANCZOS", generator_source)
 
         for cue, slug in self.CUES.items():
-            with self.subTest(cue=cue, kind="source"):
-                source = self.sources / f"{cue}.webp"
-                self.assertTrue(source.is_file())
-                with Image.open(source) as image:
-                    self.assertEqual(image.format, "WEBP")
-                    self.assertIn("A", image.getbands())
-                    alpha = image.getchannel("A")
-                    self.assertEqual(alpha.getextrema(), (0, 255))
-                    self.assertEqual(alpha.getpixel((0, 0)), 0)
-
             for size in self.SIZES:
                 with self.subTest(cue=cue, size=size):
                     output = self.outputs / f"{slug}-{size}.webp"
