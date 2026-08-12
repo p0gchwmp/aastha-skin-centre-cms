@@ -364,13 +364,13 @@ def _controls(count: int, *, compact: bool) -> str:
     if count <= 1:
         return ""
     if compact:
-        previous_content = '<span aria-hidden="true">←</span>'
-        next_content = '<span aria-hidden="true">→</span>'
+        previous_content = '<span aria-hidden="true">&#8592;</span>'
+        next_content = '<span aria-hidden="true">&#8594;</span>'
     else:
         previous_content = (
-            '<span aria-hidden="true">←</span><span>Previous</span>'
+            '<span aria-hidden="true">&#8592;</span><span>Previous</span>'
         )
-        next_content = '<span>Next</span><span aria-hidden="true">→</span>'
+        next_content = '<span>Next</span><span aria-hidden="true">&#8594;</span>'
 
     return (
         '<div class="clinical-results__controls" data-clinical-controls hidden>'

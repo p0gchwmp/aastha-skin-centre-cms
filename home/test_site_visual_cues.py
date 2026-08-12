@@ -56,10 +56,7 @@ class SiteVisualCueTests(SimpleTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root = Path(__file__).resolve().parents[1]
-        for script in (
-            "build_visual_cue_assets.py",
-            "install_curated_visual_cue_assets.py",
-        ):
+        for script in ("build_visual_cue_assets.py",):
             subprocess.run(
                 [sys.executable, str(cls.root / "tools" / script)],
                 cwd=cls.root,
@@ -98,9 +95,6 @@ class SiteVisualCueTests(SimpleTestCase):
         self.generator = (
             self.root / "tools" / "build_visual_cue_assets.py"
         ).read_text(encoding="utf-8")
-        self.installer = (
-            self.root / "tools" / "install_curated_visual_cue_assets.py"
-        ).read_text(encoding="utf-8")
         self.dark_mode_audit = (
             self.root / "tools" / "audit_dark_mode_readability.py"
         ).read_text(encoding="utf-8")
@@ -128,21 +122,14 @@ class SiteVisualCueTests(SimpleTestCase):
             self.base_template.index("css/site-visual-cues.css"),
         )
 
-    def test_builds_approved_high_resolution_set_then_curated_specialists(self):
+    def test_builds_one_transparent_high_resolution_set(self):
         self.assertIn("SOURCE_DIR", self.generator)
         self.assertIn("approved-2026", self.generator)
         self.assertIn("APPROVED_SOURCES", self.generator)
         self.assertIn("1024, 1024", self.generator)
         self.assertIn("Image.Resampling.LANCZOS", self.generator)
         self.assertIn("quality=92", self.generator)
-        self.assertNotIn("ImageDraw", self.generator)
-        self.assertNotIn("ImageFilter", self.generator)
-
-        self.assertIn("CURATED_CUES", self.installer)
-        curated_block = self.installer.split("CURATED_CUES = {", 1)[1].split(
-            "}", 1
-        )[0]
-        self.assertNotIn('"hair"', curated_block)
+        self.assertIn("_remove_connected_white_canvas", self.generator)
 
         for cue, slug in self.ASSETS.items():
             for size in self.SIZES:
@@ -153,17 +140,15 @@ class SiteVisualCueTests(SimpleTestCase):
                     with Image.open(asset_path) as image:
                         self.assertEqual(image.format, "WEBP")
                         self.assertEqual(image.size, (size, size))
-                        if cue in self.APPROVED_ASSETS:
-                            self.assertNotIn("A", image.getbands())
-                        else:
-                            self.assertIn("A", image.getbands())
-                            alpha = image.getchannel("A")
-                            self.assertEqual(alpha.getextrema(), (0, 255))
-                            self.assertEqual(alpha.getpixel((0, 0)), 0)
+                        self.assertIn("A", image.getbands())
+                        alpha = image.getchannel("A")
+                        self.assertEqual(alpha.getextrema(), (0, 255))
+                        self.assertEqual(alpha.getpixel((0, 0)), 0)
                     self.assertIn(relative, self.asset_manifest)
 
         source_dir = self.root / "home" / "static_src" / "visual-cues" / "approved-2026"
         self.assertEqual(len(list(source_dir.glob("*.jpg"))), 16)
+        self.assertEqual(len(list(source_dir.glob("theme-*-v2.png"))), 2)
         for source_path in source_dir.glob("*.jpg"):
             with Image.open(source_path) as source:
                 self.assertEqual(source.size, (1024, 1024))
@@ -324,7 +309,8 @@ class SiteVisualCueTests(SimpleTestCase):
 
         for size in ("80px", "58px", "70px", "62px"):
             self.assertIn(size, self.approved_stylesheet)
-        self.assertIn("message-visual--framed", self.approved_stylesheet)
+        self.assertIn("background: transparent !important", self.approved_stylesheet)
+        self.assertNotIn("message-visual--framed", self.approved_stylesheet)
         self.assertIn("theme-icon-image", self.approved_stylesheet)
         self.assertIn("approved-location-art", self.approved_stylesheet)
         self.assertIn("approved-booking-art", self.approved_stylesheet)

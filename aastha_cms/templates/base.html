@@ -124,6 +124,8 @@
   <link rel="stylesheet" href="{% static 'css/premium-system-v10.css' %}?v=10.6">
   {# Approved high-resolution clay artwork and final icon sizing. #}
   <link rel="stylesheet" href="{% static 'css/approved-visual-assets.css' %}?v=1.0">
+  {# V11 closes the August 12 shared responsive, gallery and disclosure QA pass. #}
+  <link rel="stylesheet" href="{% static 'css/premium-system-v11.css' %}?v=11.1">
 </head>
 <body
   class="release-v24 {% block body_class %}{% endblock %}"
@@ -195,6 +197,7 @@
   <script src="{% static 'js/production-polish-hotfix.js' %}" defer></script>
   <script src="{% static 'js/premium-system-v6.js' %}" defer></script>
   <script src="{% static 'js/premium-system-v8.js' %}?v=10" defer></script>
+  <script src="{% static 'js/premium-system-v11.js' %}?v=11.1" defer></script>
   {% if site_is_public and settings.home.SiteSettings.analytics_id and not request.in_preview_panel %}
     <script>
       (() => {

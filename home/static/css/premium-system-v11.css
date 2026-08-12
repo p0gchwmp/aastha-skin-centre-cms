@@ -1,0 +1,216 @@
+/* Aastha premium system V11: shared August 12 correction authority. */
+body.release-v24 {
+  --v11-section-space: clamp(32px, 3.2vw, 50px);
+  --v11-article-space: clamp(24px, 2.6vw, 38px);
+  --v11-edge: 2px;
+}
+
+@media (min-width: 1101px) {
+  body.release-v24 .site-header .nav-shell {
+    display: grid !important;
+    grid-template-columns: minmax(250px, auto) minmax(0, 1fr) !important;
+    gap: clamp(30px, 3.5vw, 68px) !important;
+    align-items: center !important;
+  }
+  body.release-v24 .primary-nav {
+    display: flex !important;
+    width: 100% !important;
+    gap: clamp(4px, .55vw, 11px) !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+  }
+  body.release-v24 .primary-nav > .button[href="/book-appointment/"] {
+    margin-left: 0 !important;
+  }
+  body.release-v24 .primary-nav > :is(a, .nav-item > button) {
+    padding-inline: clamp(10px, .8vw, 15px) !important;
+  }
+}
+
+body.release-v24 :is(.hub-category,.hub-link,.clinic-choice-card,.clinic-location-card,.location-contact-card,.location-pro-card,.care-sidebar-card,.notice,.hub-notice,.medical-disclaimer,.related-care-links,.related-care-links > a,.nearby-list > li,.article-section.related-knowledge,.article-section.source-note) {
+  border-radius: var(--v11-edge) !important;
+}
+
+body.release-v24 :is(.section, .home-section, .hub-section) {
+  padding-block: var(--v11-section-space) !important;
+}
+body.release-v24 .v8-article-content .article-section {
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding-block: var(--v11-article-space) !important;
+}
+body.release-v24 .v8-article-content .article-section + .article-section { margin-top: 0 !important; }
+body.release-v24 .v8-article-content .article-section > :is(h2, h3) {
+  max-width: 30ch !important;
+  margin: 0 0 clamp(14px, 1.5vw, 22px) !important;
+  font-family: var(--font-display, Georgia, serif) !important;
+  font-weight: 500 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -.025em !important;
+  scroll-margin-top: 118px !important;
+}
+body.release-v24 .v8-article-content .article-section > h2 { font-size: clamp(2rem, 3.4vw, 3.25rem) !important; }
+body.release-v24 .v8-article-content .article-section > h3 { font-size: clamp(1.55rem, 2.35vw, 2.35rem) !important; }
+body.release-v24 .v8-article-content .article-section > :is(h2, h3) + :is(p, ul, ol, div) { margin-top: 0 !important; }
+
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary,
+body.release-v24.v8-ready details.deep-dive > summary,
+body.release-v24 .cms-faq summary,
+body.release-v24 .cms-accordion summary {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 30px !important;
+  min-height: 72px !important;
+  padding: 18px 20px 18px 24px !important;
+  gap: 16px !important;
+  align-items: center !important;
+  line-height: 1.35 !important;
+}
+body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary::after,
+body.release-v24.v8-ready details.deep-dive > summary::after,
+body.release-v24 .cms-faq summary::after,
+body.release-v24 .cms-accordion summary::after {
+  display: inline-grid !important;
+  position: static !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  place-items: center !important;
+  justify-self: center !important;
+  align-self: center !important;
+  font-size: 1.2rem !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+body.release-v24 :is(.faq-section, .appointment-faq-section) {
+  margin-block: 0 !important;
+  padding-block: var(--v11-section-space) !important;
+}
+body.release-v24 :is(.faq-section, .appointment-faq-section) > :is(h2, .section-heading) { margin-bottom: clamp(18px, 2vw, 28px) !important; }
+body.release-v24 :is(.faq-section, .appointment-faq-section) + section { margin-top: 0 !important; }
+
+body.release-v24 .page-hero:has(.clinical-results--hero),
+body.release-v24 .page-hero:has(.clinical-results--hero) :is(.page-hero-grid, .page-hero-art) {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+body.release-v24 .clinical-results--hero :is(.clinical-results__inner,.clinical-results__viewport,.clinical-results__slide) {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  aspect-ratio: auto !important;
+}
+body.release-v24 .clinical-results__controls:not([hidden]) {
+  display: grid !important;
+  grid-template-columns: 46px minmax(0, 1fr) 46px !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+body.release-v24 .clinical-results__button {
+  width: 46px !important;
+  min-width: 46px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+  border-radius: var(--v11-edge) !important;
+}
+
+body.release-v24 .clinical-before-after {
+  --clinical-compare: 50%;
+  position: relative;
+  width: min(100%, 620px);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--v6-line-strong);
+  background: var(--v6-surface-2);
+}
+body.release-v24 .clinical-before-after__layer { position: absolute; inset: 0; overflow: hidden; }
+body.release-v24 .clinical-before-after__layer--before { clip-path: inset(0 calc(100% - var(--clinical-compare)) 0 0); }
+body.release-v24 .clinical-before-after__image {
+  position: absolute !important;
+  top: 0 !important;
+  width: 200% !important;
+  max-width: none !important;
+  height: 100% !important;
+  object-fit: fill !important;
+}
+body.release-v24 .clinical-before-after__layer--before .clinical-before-after__image { left: 0 !important; }
+body.release-v24 .clinical-before-after__layer--after .clinical-before-after__image { right: 0 !important; }
+body.release-v24 .clinical-before-after__range { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; margin: 0; cursor: ew-resize; opacity: 0; }
+body.release-v24 .clinical-before-after__divider {
+  position: absolute; z-index: 3; top: 0; bottom: 0; left: var(--clinical-compare);
+  width: 2px; background: #fff; box-shadow: 0 0 0 1px rgba(74,28,48,.38);
+  transform: translateX(-1px); pointer-events: none;
+}
+body.release-v24 .clinical-before-after__divider::after {
+  content: "\2039  \203A"; display: grid; position: absolute; top: 50%; left: 50%; width: 46px; height: 46px;
+  place-items: center; border: 1px solid var(--v6-gold-soft); border-radius: 50%;
+  background: rgba(28,18,23,.9); color: #fff; font-weight: 800; transform: translate(-50%,-50%);
+}
+body.release-v24 .clinical-before-after__label {
+  position: absolute; z-index: 2; top: 12px; padding: 7px 9px; background: rgba(20,13,16,.82);
+  color: #fff; font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+}
+body.release-v24 .clinical-before-after__label--before { left: 12px; }
+body.release-v24 .clinical-before-after__label--after { right: 12px; }
+
+body.release-v24 .related-knowledge .related-care-links {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+  padding: 0 !important;
+  gap: 12px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+body.release-v24 .related-knowledge .related-care-links > a {
+  display: flex !important;
+  min-height: 78px !important;
+  height: auto !important;
+  padding: 18px 20px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+body.release-v24 .v8-article-content .service-link-grid > a,
+body.release-v24 .service-link-grid > a {
+  padding: 22px 24px !important;
+  align-content: center !important;
+  justify-items: start !important;
+  text-align: left !important;
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  body.release-v24 .content-layout.v8-content-layout { grid-template-columns: minmax(0, 1fr) !important; gap: 24px !important; }
+  body.release-v24 :is(.v8-article-content,.v8-care-sidebar) { grid-column: 1 !important; width: 100% !important; max-width: 100% !important; }
+  body.release-v24 .v8-care-sidebar { position: static !important; }
+  body.release-v24 :is(.service-link-grid,.focus-link-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  body.release-v24 :is(.trust-ribbon,.premium-trust-ribbon) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 760px) {
+  body.release-v24 { --v11-section-space: 36px; --v11-article-space: 25px; }
+  body.release-v24.v8-ready :is(.faq-pro-list, .faq-list, .faq-clean-list) summary,
+  body.release-v24.v8-ready details.deep-dive > summary,
+  body.release-v24 .cms-faq summary,
+  body.release-v24 .cms-accordion summary {
+    grid-template-columns: minmax(0, 1fr) 28px !important;
+    min-height: 66px !important;
+    padding: 16px 14px 16px 18px !important;
+    gap: 10px !important;
+  }
+  body.release-v24 :is(.service-link-grid,.focus-link-grid),
+  body.release-v24 .related-knowledge .related-care-links { grid-template-columns: minmax(0, 1fr) !important; }
+  body.release-v24 .v8-article-content .service-link-grid > a,
+  body.release-v24 .service-link-grid > a,
+  body.release-v24 .related-knowledge .related-care-links > a { min-height: 0 !important; height: auto !important; padding: 18px !important; }
+  body.release-v24 .clinical-results--hero .clinical-results__inner { padding: 0 !important; }
+  body.release-v24 .clinical-before-after { width: min(100%, 430px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.release-v24 .clinical-before-after__divider,
+  body.release-v24 .clinical-before-after__layer { transition: none !important; }
+}

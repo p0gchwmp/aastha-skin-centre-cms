@@ -20,14 +20,11 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("LHCI_FORM_FACTOR: mobile", workflow)
         self.assertIn("LHCI_FORM_FACTOR: desktop", workflow)
         self.assertIn("tools/audit_accessibility.mjs", workflow)
-        self.assertIn("retention-days: 30", workflow)
+        self.assertIn("retention-days: 1", workflow)
 
     def test_workflow_matches_render_asset_build_before_collectstatic(self):
         workflow = self.read(".github/workflows/quality-gates.yml")
         build_visuals = workflow.index("python tools/build_visual_cue_assets.py")
-        install_curated = workflow.index(
-            "python tools/install_curated_visual_cue_assets.py"
-        )
         responsive_clinical = workflow.index(
             "python tools/generate_responsive_clinical_images.py"
         )
@@ -39,8 +36,7 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         )
         collectstatic = workflow.index("python manage.py collectstatic --no-input")
 
-        self.assertLess(build_visuals, install_curated)
-        self.assertLess(install_curated, responsive_clinical)
+        self.assertLess(build_visuals, responsive_clinical)
         self.assertLess(responsive_clinical, audit_clinical)
         self.assertLess(audit_clinical, verify_snapshots)
         self.assertLess(verify_snapshots, collectstatic)
