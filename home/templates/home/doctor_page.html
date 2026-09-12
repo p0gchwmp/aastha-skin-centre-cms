@@ -1,84 +1,15 @@
 {% extends "home/flexible_page.html" %}
-{% load static wagtailimages_tags %}
-
-{% block title %}Dr. Cheena Langer – Dermatologist in Jammu | Aastha{% endblock %}
-
+{% load wagtailimages_tags %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/doctor-profile-v2.css' %}">
+{% if page.doctor %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "ProfilePage",
-      "@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#webpage",
-      "url": "https://www.aasthaskincentre.in/dr-cheena-langer/",
-      "name": "Dr. Cheena Langer – Dermatologist in Jammu | Aastha",
-      "description": "Consult Dr. Cheena Langer, MBBS, MD Dermatology, for skin, hair, laser and procedural care in Jammu at Karan Nagar or Paloura Chowk.",
-      "mainEntity": {"@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#physician"},
-      "about": {"@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#physician"},
-      "breadcrumb": {"@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#breadcrumb"},
-      "inLanguage": "en-IN"
-    },
-    {
-      "@type": "Physician",
-      "@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#physician",
-      "name": "Dr. Cheena Langer",
-      "honorificPrefix": "Dr.",
-      "honorificSuffix": "MBBS, MD Dermatology",
-      "jobTitle": "Consultant Dermatologist",
-      "url": "https://www.aasthaskincentre.in/dr-cheena-langer/",
-      "description": "Dr. Cheena Langer is an MBBS and MD Dermatology qualified Consultant Dermatologist at Aastha Skin & Dermato-Cosmetic Centre in Jammu, with more than 20 years in medicine.",
-      "medicalSpecialty": ["Dermatology", "Laser Dermatology", "Hair and Scalp Disorders", "Aesthetic Dermatology"],
-      "telephone": ["+91-7006613362", "+91-9796676541"],
-      "workLocation": [
-        {"@id": "https://www.aasthaskincentre.in/locations/karan-nagar/#clinic"},
-        {"@id": "https://www.aasthaskincentre.in/locations/paloura/#clinic"}
-      ]
-    },
-    {
-      "@type": "MedicalClinic",
-      "@id": "https://www.aasthaskincentre.in/locations/karan-nagar/#clinic",
-      "name": "Aastha Skin & Dermato-Cosmetic Centre - Karan Nagar",
-      "url": "https://www.aasthaskincentre.in/locations/karan-nagar/",
-      "telephone": ["+91-7006613362", "+91-9796676541"],
-      "address": {"@type": "PostalAddress", "streetAddress": "Lane 2, Karan Nagar, near Amphalla Chowk", "addressLocality": "Jammu", "addressRegion": "Jammu and Kashmir", "postalCode": "180005", "addressCountry": "IN"}
-    },
-    {
-      "@type": "MedicalClinic",
-      "@id": "https://www.aasthaskincentre.in/locations/paloura/#clinic",
-      "name": "Aastha Skin & Dermato-Cosmetic Centre - Paloura Chowk",
-      "url": "https://www.aasthaskincentre.in/locations/paloura/",
-      "telephone": ["+91-7006613362", "+91-9796676541"],
-      "address": {"@type": "PostalAddress", "streetAddress": "Top Paloura, opposite Government Senior Secondary School", "addressLocality": "Jammu", "addressRegion": "Jammu and Kashmir", "postalCode": "181121", "addressCountry": "IN"}
-    },
-    {
-      "@type": "FAQPage",
-      "@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#faq",
-      "mainEntity": [
-        {"@type":"Question","name":"Is Dr. Cheena Langer a dermatologist?","acceptedAnswer":{"@type":"Answer","text":"Yes. Dr. Cheena Langer is MBBS and MD Dermatology qualified and practises as a Consultant Dermatologist at Aastha Skin & Dermato-Cosmetic Centre in Jammu."}},
-        {"@type":"Question","name":"How much experience does Dr. Cheena Langer have?","acceptedAnswer":{"@type":"Answer","text":"Dr. Cheena Langer has more than 20 years in medicine."}},
-        {"@type":"Question","name":"What skin conditions does Dr. Cheena Langer treat?","acceptedAnswer":{"@type":"Answer","text":"She evaluates medical skin conditions, acne, pigmentation concerns, infections, allergy-related problems, nail concerns and selected aesthetic or procedural indications."}},
-        {"@type":"Question","name":"Does Dr. Cheena Langer treat acne and acne scars?","acceptedAnswer":{"@type":"Answer","text":"Yes. Acne and acne-scar assessment are among her clinical areas of focus."}},
-        {"@type":"Question","name":"Does Dr. Cheena Langer treat hair loss?","acceptedAnswer":{"@type":"Answer","text":"Yes. Hair fall, thinning and scalp concerns are assessed to identify the likely cause before treatment is selected."}},
-        {"@type":"Question","name":"Does Dr. Cheena Langer perform laser procedures?","acceptedAnswer":{"@type":"Answer","text":"Laser dermatology is part of her professional scope. Suitability is assessed before treatment."}},
-        {"@type":"Question","name":"Where does Dr. Cheena Langer consult in Jammu?","acceptedAnswer":{"@type":"Answer","text":"She consults at Aastha Skin & Dermato-Cosmetic Centre in Karan Nagar and at the Paloura Chowk branch in Jammu."}},
-        {"@type":"Question","name":"How much is a consultation with Dr. Cheena Langer?","acceptedAnswer":{"@type":"Answer","text":"The consultation fee is ₹500 at either clinic. One follow-up consultation for the same concern is included within 10 days."}}
-      ]
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": "https://www.aasthaskincentre.in/dr-cheena-langer/#breadcrumb",
-      "itemListElement": [
-        {"@type":"ListItem","position":1,"name":"Home","item":"https://www.aasthaskincentre.in/"},
-        {"@type":"ListItem","position":2,"name":"Dr. Cheena Langer","item":"https://www.aasthaskincentre.in/dr-cheena-langer/"}
-      ]
-    }
-  ]
+  "@type": "Physician",
+  "name": "{{ page.doctor.name|escapejs }}",
+  "description": "{{ page.doctor.short_bio|escapejs }}",
+  "medicalSpecialty": "Dermatology"
 }
 </script>
-{% endblock %}
-
-{% block content %}
-{% include "home/partials/doctor_profile_content_v2.html" %}
+{% endif %}
 {% endblock %}
