@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags exact_pages clinical_results %}
+{% block extra_head %}{% include "home/partials/editorial_v37_assets.html" %}{% endblock %}
 {% block content %}
 {% exact_page_main as exact_main %}
 {% if exact_main %}
