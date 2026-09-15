@@ -1,6 +1,7 @@
 {% extends "home/flexible_page.html" %}
 {% load wagtailimages_tags %}
 {% block extra_head %}
+{{ block.super }}
 {% if page.doctor %}
 <script type="application/ld+json">
 {
