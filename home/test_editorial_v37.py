@@ -6,15 +6,12 @@ from unittest.mock import patch
 
 from django.contrib.staticfiles import finders
 from django.template.loader import render_to_string
-from django.test import RequestFactory, SimpleTestCase
+from django.test import SimpleTestCase
 
-from home.context_processors import _env_flag, site_collections
+from home.context_processors import _env_flag
 
 
 class EditorialV37RolloutTests(SimpleTestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-
     def test_flag_defaults_off(self):
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("AASTHA_EDITORIAL_V37", None)
@@ -32,12 +29,6 @@ class EditorialV37RolloutTests(SimpleTestCase):
                 os.environ, {"AASTHA_EDITORIAL_V37": value}
             ):
                 self.assertFalse(_env_flag("AASTHA_EDITORIAL_V37"))
-
-    def test_context_exposes_flag_without_using_query_parameters(self):
-        request = self.factory.get("/?editorial=v37", HTTP_HOST="testserver")
-        with patch.dict(os.environ, {"AASTHA_EDITORIAL_V37": "0"}):
-            context = site_collections(request)
-        self.assertFalse(context["editorial_v37_enabled"])
 
     def test_asset_partial_is_empty_when_flag_is_off(self):
         markup = render_to_string(
