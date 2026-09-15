@@ -35,8 +35,7 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "home/partials/editorial_v37_assets.html",
             {"editorial_v37_enabled": False},
         )
-        self.assertNotIn("editorial-v37.css", markup)
-        self.assertNotIn("editorial-v37.js", markup)
+        self.assertNotIn("editorial-v37", markup)
         self.assertNotIn("editorialVersion", markup)
 
     def test_asset_partial_loads_versioned_skin_when_flag_is_on(self):
@@ -44,13 +43,12 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "home/partials/editorial_v37_assets.html",
             {"editorial_v37_enabled": True},
         )
-        for asset in (
-            "editorial-v37.css",
-            "editorial-v37-home.css",
-            "editorial-v37.js",
-            "editorial-v37-home.js",
-        ):
-            self.assertIn(asset, markup)
+        # Production static storage fingerprints filenames, e.g.
+        # editorial-v37.<hash>.css, so assert the logical stem + extension.
+        self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.css")
+        self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.css")
+        self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.js")
+        self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.js")
         self.assertIn("editorialVersion='37'", markup)
         self.assertIn("Cormorant+Garamond", markup)
         self.assertIn("Manrope", markup)
