@@ -44,24 +44,62 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "home/partials/editorial_v37_assets.html",
             {"editorial_v37_enabled": True},
         )
-        self.assertIn("editorial-v37.css", markup)
-        self.assertIn("editorial-v37.js", markup)
+        for asset in (
+            "editorial-v37.css",
+            "editorial-v37-home.css",
+            "editorial-v37.js",
+            "editorial-v37-home.js",
+        ):
+            self.assertIn(asset, markup)
         self.assertIn("editorialVersion='37'", markup)
         self.assertIn("Cormorant+Garamond", markup)
         self.assertIn("Manrope", markup)
 
     def test_editorial_assets_exist_and_are_scoped(self):
-        css_path = finders.find("css/editorial-v37.css")
-        js_path = finders.find("js/editorial-v37.js")
-        self.assertTrue(css_path)
-        self.assertTrue(js_path)
+        assets = {
+            "css/editorial-v37.css": "html.editorial-v37",
+            "css/editorial-v37-home.css": "html.editorial-v37",
+            "js/editorial-v37.js": 'classList.contains("editorial-v37")',
+            "js/editorial-v37-home.js": 'classList.contains("editorial-v37")',
+        }
+        for path, scope in assets.items():
+            with self.subTest(path=path):
+                file_path = finders.find(path)
+                self.assertTrue(file_path)
+                source = Path(file_path).read_text(encoding="utf-8")
+                self.assertIn(scope, source)
 
-        css = Path(css_path).read_text(encoding="utf-8")
-        js = Path(js_path).read_text(encoding="utf-8")
-        self.assertIn("html.editorial-v37", css)
-        self.assertIn('classList.contains("editorial-v37")', js)
+        css = Path(finders.find("css/editorial-v37.css")).read_text(encoding="utf-8")
         self.assertIn("prefers-reduced-motion", css)
         self.assertIn("clinical-result", css)
+
+    def test_homepage_switch_preserves_legacy_renderer_as_rollback(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
+        source = (root / "home_page.html").read_text(encoding="utf-8")
+        self.assertIn("{% if editorial_v37_enabled %}", source)
+        self.assertIn('home/editorial_v37/homepage.html', source)
+        self.assertIn("{% exact_page_main as exact_main %}", source)
+        self.assertIn("premium-minimal-preview.js", source)
+        self.assertIn("{% if not editorial_v37_enabled %}", source)
+
+    def test_editorial_homepage_uses_production_routes_and_restored_care_story(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
+        source = (root / "editorial_v37" / "homepage.html").read_text(encoding="utf-8")
+        self.assertNotIn("/concept/", source)
+        self.assertIn('/treatments/acne-treatment/', source)
+        self.assertIn('/dr-cheena-langer/', source)
+        self.assertIn('/book-appointment/', source)
+        self.assertIn('id="approach"', source)
+        self.assertIn('class="process-stage"', source)
+        self.assertIn("The treatment should follow the diagnosis.", source)
+        self.assertIn("Educational navigation only", source)
+
+    def test_editorial_homepage_avoids_prohibited_marketing_claims(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
+        source = (root / "editorial_v37" / "homepage.html").read_text(encoding="utf-8").lower()
+        for prohibited in ("best dermatologist", "no. 1", "number 1", "guaranteed", "100% success"):
+            with self.subTest(prohibited=prohibited):
+                self.assertNotIn(prohibited, source)
 
     def test_specialised_templates_keep_parent_extra_head(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
