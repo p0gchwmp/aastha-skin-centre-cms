@@ -2,33 +2,42 @@
 {% load static wagtailcore_tags exact_pages %}
 {% block body_class %}cms-home-page{% endblock %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'css/premium-icons.css' %}">
-  <link rel="stylesheet" href="{% static 'css/premium-minimal-preview.css' %}">
-  <link rel="stylesheet" href="{% static 'css/premium-minimal-preview-v2.css' %}">
-  <link rel="stylesheet" href="{% static 'css/premium-minimal-preview-a11y.css' %}">
-  {% include "home/partials/editorial_v37_assets.html" %}
+  {% if editorial_v37_enabled %}
+    {% include "home/partials/editorial_v37_assets.html" %}
+  {% else %}
+    <link rel="stylesheet" href="{% static 'css/premium-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/premium-minimal-preview.css' %}">
+    <link rel="stylesheet" href="{% static 'css/premium-minimal-preview-v2.css' %}">
+    <link rel="stylesheet" href="{% static 'css/premium-minimal-preview-a11y.css' %}">
+  {% endif %}
 {% endblock %}
 {% block content %}
-{% exact_page_main as exact_main %}
-{% if exact_main %}
-  {% exact_page_with_editor_sections exact_main %}
+{% if editorial_v37_enabled %}
+  {% include "home/editorial_v37/homepage.html" %}
 {% else %}
-<main id="main-content" class="home-main">
-  {% if page.body %}
-    {% include_block page.body %}
+  {% exact_page_main as exact_main %}
+  {% if exact_main %}
+    {% exact_page_with_editor_sections exact_main %}
   {% else %}
-    {% include "home/partials/page_hero.html" %}
-    <section class="section"><div class="container">
-      <div class="section-heading"><div><span class="quiet-label">Website editor ready</span><h2>Add homepage sections without code</h2><p>Open this page in the admin and add heroes, cards, galleries, videos, carousels, doctors, clinics and calls to action.</p></div></div>
-    </div></section>
+  <main id="main-content" class="home-main">
+    {% if page.body %}
+      {% include_block page.body %}
+    {% else %}
+      {% include "home/partials/page_hero.html" %}
+      <section class="section"><div class="container">
+        <div class="section-heading"><div><span class="quiet-label">Website editor ready</span><h2>Add homepage sections without code</h2><p>Open this page in the admin and add heroes, cards, galleries, videos, carousels, doctors, clinics and calls to action.</p></div></div>
+      </div></section>
+    {% endif %}
+    {% if page.layout_mode == "hybrid" and page.layout_additions %}
+      {% include_block page.layout_additions %}
+    {% endif %}
+  </main>
   {% endif %}
-  {% if page.layout_mode == "hybrid" and page.layout_additions %}
-    {% include_block page.layout_additions %}
-  {% endif %}
-</main>
 {% endif %}
 {% endblock %}
 {% block extra_js %}
-  <script src="{% static 'js/premium-minimal-preview.js' %}" defer></script>
-  <script src="{% static 'js/premium-v5-home-contrast.js' %}" defer></script>
+  {% if not editorial_v37_enabled %}
+    <script src="{% static 'js/premium-minimal-preview.js' %}" defer></script>
+    <script src="{% static 'js/premium-v5-home-contrast.js' %}" defer></script>
+  {% endif %}
 {% endblock %}
