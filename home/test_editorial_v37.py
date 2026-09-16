@@ -44,8 +44,6 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "home/partials/editorial_v37_assets.html",
             {"editorial_v37_enabled": True},
         )
-        # Production static storage fingerprints filenames, e.g.
-        # editorial-v37.<hash>.css, so assert logical stems + extensions.
         self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.css")
@@ -100,8 +98,12 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "acne-treatment",
             "acne-scar-treatment",
             "pigmentation-treatment",
+            "melasma-treatment",
+            "fungal-infection-treatment",
             "hair-fall-treatment",
+            "hair-transplant",
             "laser-hair-reduction",
+            "botulinum-toxin-dermal-fillers",
             "dr-cheena-langer",
             "karan-nagar",
             "paloura",
@@ -120,8 +122,12 @@ class EditorialV37RolloutTests(SimpleTestCase):
             root / "treatments" / "acne-treatment.html",
             root / "treatments" / "acne-scar-treatment.html",
             root / "treatments" / "pigmentation-treatment.html",
+            root / "treatments" / "melasma-treatment.html",
+            root / "treatments" / "fungal-infection-treatment.html",
             root / "treatments" / "hair-fall-treatment.html",
+            root / "treatments" / "hair-transplant.html",
             root / "treatments" / "laser-hair-reduction.html",
+            root / "treatments" / "botulinum-toxin-dermal-fillers.html",
         ]
         for template_path in templates:
             source = template_path.read_text(encoding="utf-8")
