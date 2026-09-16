@@ -44,13 +44,21 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "home/partials/editorial_v37_assets.html",
             {"editorial_v37_enabled": True},
         )
-        self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.css")
-        self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.css")
-        self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.css")
-        self.assertRegex(markup, r"editorial-v37-conversion(?:\.[0-9a-f]+)?\.css")
-        self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.js")
-        self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.js")
-        self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.js")
+        for asset in (
+            "editorial-v37",
+            "editorial-v37-home",
+            "editorial-v37-detail",
+            "editorial-v37-conversion",
+            "editorial-v37-shell",
+        ):
+            self.assertRegex(markup, rf"{asset}(?:\.[0-9a-f]+)?\.css")
+        for asset in (
+            "editorial-v37",
+            "editorial-v37-home",
+            "editorial-v37-detail",
+            "editorial-v37-shell",
+        ):
+            self.assertRegex(markup, rf"{asset}(?:\.[0-9a-f]+)?\.js")
         self.assertIn("editorialVersion='37'", markup)
         self.assertIn("Cormorant+Garamond", markup)
         self.assertIn("Manrope", markup)
@@ -61,9 +69,11 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "css/editorial-v37-home.css": "html.editorial-v37",
             "css/editorial-v37-detail.css": "html.editorial-v37",
             "css/editorial-v37-conversion.css": "html.editorial-v37",
+            "css/editorial-v37-shell.css": "html.editorial-v37",
             "js/editorial-v37.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-home.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-detail.js": 'classList.contains("editorial-v37")',
+            "js/editorial-v37-shell.js": 'classList.contains("editorial-v37")',
         }
         for path, scope in assets.items():
             with self.subTest(path=path):
@@ -74,9 +84,13 @@ class EditorialV37RolloutTests(SimpleTestCase):
 
         css = Path(finders.find("css/editorial-v37.css")).read_text(encoding="utf-8")
         detail_css = Path(finders.find("css/editorial-v37-detail.css")).read_text(encoding="utf-8")
+        shell_js = Path(finders.find("js/editorial-v37-shell.js")).read_text(encoding="utf-8")
         self.assertIn("prefers-reduced-motion", css)
         self.assertIn("clinical-result", css)
         self.assertIn("prefers-reduced-motion", detail_css)
+        self.assertIn("Find your route", shell_js)
+        self.assertIn("Book consultation", shell_js)
+        self.assertIn("data-v37-explore-trigger", shell_js)
 
     def test_homepage_switch_preserves_legacy_renderer_as_rollback(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
