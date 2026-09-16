@@ -1,0 +1,17 @@
+{% load wagtailcore_tags clinical_results %}
+{% if page.layout_mode == "hybrid" and page.layout_additions or page.show_clinic_choices or page.show_medical_disclaimer %}
+<section class="v37-cms-tail">
+  <div class="v37-detail-shell">
+    {% if page.layout_mode == "hybrid" and page.layout_additions %}
+      {% include_block page.layout_additions %}
+    {% endif %}
+    {% clinical_result_gallery %}
+    {% if page.show_clinic_choices %}{% include "home/partials/clinic_choices.html" %}{% endif %}
+    {% if page.show_medical_disclaimer %}
+      <p class="v37-medical-note"><strong>Medical disclaimer:</strong> {{ settings.home.SiteSettings.medical_disclaimer }}</p>
+    {% endif %}
+  </div>
+</section>
+{% else %}
+  {% clinical_result_gallery %}
+{% endif %}
