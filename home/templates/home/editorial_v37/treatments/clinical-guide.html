@@ -1,0 +1,52 @@
+{% load static wagtailimages_tags editorial_v37 %}
+{% editorial_v37_guide_for page as guide %}
+<main id="main-content" class="v37-detail v37-treatment-page v37-clinical-guide">
+  <section class="v37-detail-hero">
+    <div class="v37-detail-hero-grid">
+      <div class="v37-detail-hero-copy">
+        <span class="v37-kicker">{{ guide.kicker }}</span>
+        <h1>{{ guide.headline }} <em>{{ guide.emphasis }}</em></h1>
+        <p>{% if page.introduction %}{{ page.introduction }}{% else %}{{ guide.lede }}{% endif %}</p>
+        <div class="v37-actions"><a class="button" href="/book-appointment/">Book consultation</a><a class="button button-secondary" href="#assessment">What gets assessed ↓</a></div>
+      </div>
+      <figure class="v37-detail-media">
+        {% if page.hero_image %}{% image page.hero_image fill-900x1100-c100 loading="eager" decoding="async" fetchpriority="high" %}{% else %}<img src="{% static guide.fallback_image %}" alt="" width="512" height="512" loading="eager" decoding="async" fetchpriority="high">{% endif %}
+        <figcaption>Educational guide · suitability is decided after assessment</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="v37-meta-strip" aria-label="Guide summary"><div class="v37-meta-grid">
+    {% for item in guide.meta %}<div><strong>{{ item.label }}</strong><span>{{ item.value }}</span></div>{% endfor %}
+  </div></section>
+
+  <section class="v37-detail-section"><div class="v37-detail-shell">
+    <header class="v37-detail-head"><span>01 / Start here</span><div><h2>{{ guide.section_title }}</h2><p>{{ guide.section_intro }}</p></div></header>
+    <div class="v37-reading-grid">
+      {% for item in guide.principles %}<article class="v37-reading-card"><span class="v37-kicker">{{ item.label }}</span><h3>{{ item.title }}</h3><p>{{ item.copy }}</p></article>{% endfor %}
+    </div>
+  </div></section>
+
+  <section class="v37-detail-section v37-detail-section--tone" id="assessment"><div class="v37-detail-shell">
+    <header class="v37-detail-head"><span>02 / Assessment</span><div><h2>What changes the plan.</h2><p>A procedure or treatment name is only part of the decision. The clinical context changes whether, when and how it may be used.</p></div></header>
+    <ul class="v37-bullets">{% for item in guide.assessment %}<li>{{ item }}</li>{% endfor %}</ul>
+  </div></section>
+
+  <section class="v37-detail-section"><div class="v37-detail-shell">
+    <header class="v37-detail-head"><span>03 / Treatment logic</span><div><h2>{{ guide.logic_title }}</h2><p>{{ guide.logic_intro }}</p></div></header>
+    <div class="v37-story" data-v37-story>
+      <aside class="v37-story-sticky"><span class="v37-kicker">Selected step</span><h2 data-v37-story-title>{{ guide.steps.0.title }}</h2><p data-v37-story-copy>{{ guide.steps.0.copy }}</p></aside>
+      <div class="v37-story-steps">
+        {% for step in guide.steps %}<article class="v37-story-step{% if forloop.first %} is-active{% endif %}" data-v37-story-step data-title="{{ step.title }}" data-copy="{{ step.copy }}"><small>0{{ forloop.counter }} / {{ step.label }}</small><h3>{{ step.title }}</h3><p>{{ step.copy }}</p></article>{% endfor %}
+      </div>
+    </div>
+  </div></section>
+
+  <section class="v37-detail-section v37-detail-section--dark"><div class="v37-detail-shell">
+    <header class="v37-detail-head"><span>04 / Practical questions</span><div><h2>Useful before you decide.</h2></div></header>
+    <div class="v37-accordion">{% for faq in guide.faqs %}<details><summary>{{ faq.q }}</summary><div class="v37-answer">{{ faq.a }}</div></details>{% endfor %}</div>
+    <div class="v37-actions"><a class="button" href="/book-appointment/">Book consultation</a>{% if guide.related_href %}<a class="button button-secondary" href="{{ guide.related_href }}">{{ guide.related_label }} →</a>{% endif %}</div>
+  </div></section>
+
+  {% include "home/editorial_v37/partials/cms_tail.html" %}
+</main>
