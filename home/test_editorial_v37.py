@@ -5,10 +5,11 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.staticfiles import finders
-from django.template.loader import render_to_string
+from django.template.loader import get_template, render_to_string
 from django.test import SimpleTestCase
 
 from home.context_processors import _env_flag
+from home.templatetags.editorial_v37 import EDITORIAL_V37_TEMPLATES
 
 
 class EditorialV37RolloutTests(SimpleTestCase):
@@ -44,11 +45,13 @@ class EditorialV37RolloutTests(SimpleTestCase):
             {"editorial_v37_enabled": True},
         )
         # Production static storage fingerprints filenames, e.g.
-        # editorial-v37.<hash>.css, so assert the logical stem + extension.
+        # editorial-v37.<hash>.css, so assert logical stems + extensions.
         self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.css")
+        self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.js")
         self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.js")
+        self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.js")
         self.assertIn("editorialVersion='37'", markup)
         self.assertIn("Cormorant+Garamond", markup)
         self.assertIn("Manrope", markup)
@@ -57,8 +60,10 @@ class EditorialV37RolloutTests(SimpleTestCase):
         assets = {
             "css/editorial-v37.css": "html.editorial-v37",
             "css/editorial-v37-home.css": "html.editorial-v37",
+            "css/editorial-v37-detail.css": "html.editorial-v37",
             "js/editorial-v37.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-home.js": 'classList.contains("editorial-v37")',
+            "js/editorial-v37-detail.js": 'classList.contains("editorial-v37")',
         }
         for path, scope in assets.items():
             with self.subTest(path=path):
@@ -68,8 +73,10 @@ class EditorialV37RolloutTests(SimpleTestCase):
                 self.assertIn(scope, source)
 
         css = Path(finders.find("css/editorial-v37.css")).read_text(encoding="utf-8")
+        detail_css = Path(finders.find("css/editorial-v37-detail.css")).read_text(encoding="utf-8")
         self.assertIn("prefers-reduced-motion", css)
         self.assertIn("clinical-result", css)
+        self.assertIn("prefers-reduced-motion", detail_css)
 
     def test_homepage_switch_preserves_legacy_renderer_as_rollback(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
@@ -79,6 +86,50 @@ class EditorialV37RolloutTests(SimpleTestCase):
         self.assertIn("{% exact_page_main as exact_main %}", source)
         self.assertIn("premium-minimal-preview.js", source)
         self.assertIn("{% if not editorial_v37_enabled %}", source)
+
+    def test_flexible_renderer_keeps_legacy_fallback_for_unmigrated_routes(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
+        source = (root / "flexible_page.html").read_text(encoding="utf-8")
+        self.assertIn("editorial_v37_template_for page", source)
+        self.assertIn("editorial_v37_enabled and editorial_v37_template", source)
+        self.assertIn("{% exact_page_main as exact_main %}", source)
+        self.assertIn("exact_page_with_editor_sections", source)
+
+    def test_priority_routes_have_dedicated_editorial_templates(self):
+        expected = {
+            "acne-treatment",
+            "acne-scar-treatment",
+            "pigmentation-treatment",
+            "hair-fall-treatment",
+            "laser-hair-reduction",
+            "dr-cheena-langer",
+            "karan-nagar",
+            "paloura",
+        }
+        self.assertTrue(expected.issubset(EDITORIAL_V37_TEMPLATES))
+        for slug in expected:
+            with self.subTest(slug=slug):
+                template_name = EDITORIAL_V37_TEMPLATES[slug]
+                self.assertIsNotNone(get_template(template_name))
+
+    def test_migrated_templates_use_production_routes_and_keep_cms_tail(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home" / "editorial_v37"
+        templates = [
+            root / "doctor.html",
+            root / "clinic.html",
+            root / "treatments" / "acne-treatment.html",
+            root / "treatments" / "acne-scar-treatment.html",
+            root / "treatments" / "pigmentation-treatment.html",
+            root / "treatments" / "hair-fall-treatment.html",
+            root / "treatments" / "laser-hair-reduction.html",
+        ]
+        for template_path in templates:
+            source = template_path.read_text(encoding="utf-8")
+            with self.subTest(template=template_path.name):
+                self.assertNotIn("/concept/", source)
+                self.assertIn("home/editorial_v37/partials/cms_tail.html", source)
+                self.assertIn('id="main-content"', source)
+                self.assertIn("v37-detail", source)
 
     def test_editorial_homepage_uses_production_routes_and_restored_care_story(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
@@ -92,12 +143,13 @@ class EditorialV37RolloutTests(SimpleTestCase):
         self.assertIn("The treatment should follow the diagnosis.", source)
         self.assertIn("Educational navigation only", source)
 
-    def test_editorial_homepage_avoids_prohibited_marketing_claims(self):
-        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
-        source = (root / "editorial_v37" / "homepage.html").read_text(encoding="utf-8").lower()
+    def test_editorial_templates_avoid_prohibited_marketing_claims(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home" / "editorial_v37"
+        sources = [path.read_text(encoding="utf-8").lower() for path in root.rglob("*.html")]
+        combined = "\n".join(sources)
         for prohibited in ("best dermatologist", "no. 1", "number 1", "guaranteed", "100% success"):
             with self.subTest(prohibited=prohibited):
-                self.assertNotIn(prohibited, source)
+                self.assertNotIn(prohibited, combined)
 
     def test_specialised_templates_keep_parent_extra_head(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
