@@ -1,29 +1,34 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags exact_pages clinical_results %}
+{% load wagtailcore_tags exact_pages clinical_results editorial_v37 %}
 {% block extra_head %}{% include "home/partials/editorial_v37_assets.html" %}{% endblock %}
 {% block content %}
-{% exact_page_main as exact_main %}
-{% if exact_main %}
-  {# Compatibility contract: {% exact_page_with_clinical_results exact_main %} now feeds the positioned editor renderer below. #}
-  {% exact_page_with_clinical_results exact_main as exact_with_results %}
-  {% exact_page_with_editor_sections exact_with_results %}
+{% editorial_v37_template_for page as editorial_v37_template %}
+{% if editorial_v37_enabled and editorial_v37_template %}
+  {% include editorial_v37_template %}
 {% else %}
-<main id="main-content">
-  {% include "home/partials/page_hero.html" %}
-  <section class="section"><div class="container {% if page.show_consultation_sidebar %}content-layout{% endif %}">
-    <article class="prose article-stack">
-      {% include_block page.body %}
-      {% if page.layout_mode == "hybrid" and page.layout_additions %}
-        {% include_block page.layout_additions %}
-      {% endif %}
-      {% clinical_result_gallery %}
-      {% if page.show_clinic_choices %}{% include "home/partials/clinic_choices.html" %}{% endif %}
-      {% if page.show_medical_disclaimer %}
-        <p class="medical-disclaimer"><strong>Medical disclaimer:</strong> {{ settings.home.SiteSettings.medical_disclaimer }}</p>
-      {% endif %}
-    </article>
-    {% if page.show_consultation_sidebar %}{% include "home/partials/consultation_sidebar.html" %}{% endif %}
-  </div></section>
-</main>
+  {% exact_page_main as exact_main %}
+  {% if exact_main %}
+    {# Compatibility contract: {% exact_page_with_clinical_results exact_main %} now feeds the positioned editor renderer below. #}
+    {% exact_page_with_clinical_results exact_main as exact_with_results %}
+    {% exact_page_with_editor_sections exact_with_results %}
+  {% else %}
+  <main id="main-content">
+    {% include "home/partials/page_hero.html" %}
+    <section class="section"><div class="container {% if page.show_consultation_sidebar %}content-layout{% endif %}">
+      <article class="prose article-stack">
+        {% include_block page.body %}
+        {% if page.layout_mode == "hybrid" and page.layout_additions %}
+          {% include_block page.layout_additions %}
+        {% endif %}
+        {% clinical_result_gallery %}
+        {% if page.show_clinic_choices %}{% include "home/partials/clinic_choices.html" %}{% endif %}
+        {% if page.show_medical_disclaimer %}
+          <p class="medical-disclaimer"><strong>Medical disclaimer:</strong> {{ settings.home.SiteSettings.medical_disclaimer }}</p>
+        {% endif %}
+      </article>
+      {% if page.show_consultation_sidebar %}{% include "home/partials/consultation_sidebar.html" %}{% endif %}
+    </div></section>
+  </main>
+  {% endif %}
 {% endif %}
 {% endblock %}
