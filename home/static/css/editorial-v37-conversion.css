@@ -1,0 +1,188 @@
+/* Editorial v37 — conversion surfaces: booking + contact. */
+html.editorial-v37 body.release-v24 .v37-booking-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+  gap: clamp(34px, 6vw, 88px);
+  align-items: start;
+}
+
+html.editorial-v37 body.release-v24 .v37-form-panel {
+  border-top: 1px solid var(--v37-line-strong);
+}
+
+html.editorial-v37 body.release-v24 .v37-appointment-form {
+  margin: 0;
+  padding: clamp(28px, 4vw, 44px) 0 0;
+}
+
+html.editorial-v37 body.release-v24 .v37-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--v37-line-strong);
+  border-left: 1px solid var(--v37-line-strong);
+}
+
+html.editorial-v37 body.release-v24 .v37-form-grid label {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  padding: 18px;
+  border-right: 1px solid var(--v37-line-strong);
+  border-bottom: 1px solid var(--v37-line-strong);
+  color: var(--v37-ink);
+  font: 800 .6rem/1.35 var(--v37-sans);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+html.editorial-v37 body.release-v24 .v37-form-grid label[hidden] { display: none !important; }
+html.editorial-v37 body.release-v24 .v37-form-grid label.v37-form-full { grid-column: 1 / -1; }
+html.editorial-v37 body.release-v24 .v37-form-grid b { color: var(--v37-wine); }
+
+html.editorial-v37 body.release-v24 .v37-form-grid :where(input,select,textarea) {
+  width: 100%;
+  min-height: 50px;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--v37-line-strong);
+  border-radius: 0;
+  color: var(--v37-ink);
+  background: transparent;
+  box-shadow: none;
+  font: 500 .92rem/1.45 var(--v37-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html.editorial-v37 body.release-v24 .v37-form-grid textarea { min-height: 118px; resize: vertical; }
+html.editorial-v37 body.release-v24 .v37-form-grid :where(input,select,textarea):focus {
+  outline: 0;
+  border-bottom-color: var(--v37-wine);
+}
+
+html.editorial-v37 body.release-v24 .v37-consent {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  gap: 12px;
+  align-items: start;
+  margin: 22px 0;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--v37-line);
+  color: var(--v37-muted);
+  font-size: .77rem;
+  line-height: 1.55;
+}
+html.editorial-v37 body.release-v24 .v37-consent input { margin-top: 3px; accent-color: var(--v37-wine); }
+
+html.editorial-v37 body.release-v24 .v37-form-submit {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  gap: 18px;
+  align-items: center;
+}
+html.editorial-v37 body.release-v24 .v37-form-submit p {
+  max-width: 54ch;
+  margin: 0;
+  font-size: .72rem;
+  line-height: 1.55;
+}
+html.editorial-v37 body.release-v24 .v37-form-status {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-left: 3px solid var(--v37-wine);
+  color: var(--v37-ink);
+  background: var(--v37-paper-2);
+  font-size: .78rem;
+}
+
+html.editorial-v37 body.release-v24 .v37-booking-aside {
+  position: sticky;
+  top: 108px;
+  display: grid;
+  border: 1px solid var(--v37-line-strong);
+}
+html.editorial-v37 body.release-v24 .v37-booking-aside > section {
+  padding: clamp(22px, 3vw, 32px);
+  border-bottom: 1px solid var(--v37-line-strong);
+}
+html.editorial-v37 body.release-v24 .v37-booking-aside > section:last-child { border-bottom: 0; }
+html.editorial-v37 body.release-v24 .v37-booking-aside h3 {
+  margin: 8px 0 12px;
+  font-size: clamp(1.8rem, 2.8vw, 3rem) !important;
+  line-height: .95 !important;
+}
+html.editorial-v37 body.release-v24 .v37-booking-aside p { margin: 0; font-size: .82rem; line-height: 1.65; }
+html.editorial-v37 body.release-v24 .v37-big-contact {
+  display: block;
+  padding: 7px 0;
+  color: var(--v37-wine);
+  font: 500 clamp(1.8rem, 3vw, 3.2rem)/1 var(--v37-display);
+  text-decoration: none;
+}
+html.editorial-v37 body.release-v24 .v37-emergency-note { background: #21191c; }
+html.editorial-v37 body.release-v24 .v37-emergency-note :where(p,h3) { color: #fff; }
+html.editorial-v37 body.release-v24 .v37-emergency-note .v37-kicker { color: #d9b27b !important; }
+
+html.editorial-v37 body.release-v24 .v37-contact-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--v37-line-strong);
+  border-left: 1px solid var(--v37-line-strong);
+}
+html.editorial-v37 body.release-v24 .v37-contact-actions a {
+  min-height: 180px;
+  display: grid;
+  align-content: space-between;
+  gap: 14px;
+  padding: clamp(22px, 3vw, 34px);
+  border-right: 1px solid var(--v37-line-strong);
+  border-bottom: 1px solid var(--v37-line-strong);
+  color: var(--v37-ink);
+  background: transparent;
+  text-decoration: none;
+  transition: background .18s ease, color .18s ease;
+}
+html.editorial-v37 body.release-v24 .v37-contact-actions a:hover {
+  color: #fff;
+  background: var(--v37-wine);
+}
+html.editorial-v37 body.release-v24 .v37-contact-actions small {
+  color: inherit;
+  opacity: .66;
+  font: 800 .56rem/1.2 var(--v37-sans);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+html.editorial-v37 body.release-v24 .v37-contact-actions strong {
+  overflow-wrap: anywhere;
+  color: inherit;
+  font: 500 clamp(1.6rem, 3vw, 3.2rem)/.98 var(--v37-display);
+}
+html.editorial-v37 body.release-v24 .v37-contact-actions span {
+  color: inherit;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  html.editorial-v37 body.release-v24 .v37-booking-grid { grid-template-columns: 1fr; }
+  html.editorial-v37 body.release-v24 .v37-booking-aside { position: relative; top: auto; }
+}
+
+@media (max-width: 700px) {
+  html.editorial-v37 body.release-v24 .v37-form-grid,
+  html.editorial-v37 body.release-v24 .v37-contact-actions { grid-template-columns: 1fr; }
+  html.editorial-v37 body.release-v24 .v37-form-grid label.v37-form-full { grid-column: auto; }
+  html.editorial-v37 body.release-v24 .v37-form-submit { grid-template-columns: 1fr; }
+  html.editorial-v37 body.release-v24 .v37-form-submit .button { width: 100%; }
+  html.editorial-v37 body.release-v24 .v37-contact-actions a { min-height: 142px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.editorial-v37 body.release-v24 .v37-contact-actions a { transition: none; }
+}
