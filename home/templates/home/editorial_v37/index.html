@@ -1,0 +1,77 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+<main id="main-content" class="v37-index v37-index--{{ page.index_kind }}">
+  <section class="v37-index-hero">
+    <div class="v37-index-shell v37-index-hero-grid">
+      <div>
+        <span class="v37-kicker">{{ page.get_index_kind_display }} · Aastha Jammu</span>
+        <h1>
+          {% if page.index_kind == "conditions" %}Start with what you are <em>noticing.</em>
+          {% elif page.index_kind == "treatments" %}Understand the option before you <em>choose it.</em>
+          {% elif page.index_kind == "blog" %}Dermatology, explained <em>clearly.</em>
+          {% elif page.index_kind == "clinics" %}Choose the clinic that fits your <em>day.</em>
+          {% elif page.index_kind == "doctors" %}Meet the dermatologist behind the <em>care.</em>
+          {% else %}Explore Aastha <em>clearly.</em>{% endif %}
+        </h1>
+      </div>
+      <div class="v37-index-intro">
+        {% if page.introduction %}<p>{{ page.introduction }}</p>
+        {% elif page.index_kind == "conditions" %}<p>Browse by concern first. These pages are educational and help you find the most relevant dermatologist-led information; they do not diagnose a condition.</p>
+        {% elif page.index_kind == "treatments" %}<p>Explore procedures and treatment pathways with context on where they may fit. Suitability is decided after assessment, not from a menu alone.</p>
+        {% elif page.index_kind == "blog" %}<p>Patient education, practical dermatology and clinic updates written to make skin and hair decisions easier to understand.</p>
+        {% else %}<p>Browse the current Aastha website directory.</p>{% endif %}
+        <div class="v37-actions"><a class="button" href="/book-appointment/">Book consultation</a>{% if page.index_kind != "conditions" %}<a class="button button-secondary" href="/conditions/">Browse concerns</a>{% endif %}</div>
+      </div>
+    </div>
+  </section>
+
+  {% if page.body %}<section class="v37-index-editor"><div class="v37-index-shell">{% include_block page.body %}</div></section>{% endif %}
+
+  <section class="v37-index-directory" aria-labelledby="v37-index-title">
+    <div class="v37-index-shell">
+      <header class="v37-index-toolbar">
+        <div><span class="v37-kicker">Directory</span><h2 id="v37-index-title">Browse {{ page.title }}</h2></div>
+        <label class="v37-index-search">
+          <span class="sr-only">Search {{ page.title }}</span>
+          <input type="search" placeholder="Search this directory…" autocomplete="off" data-v37-directory-search>
+        </label>
+        <span class="v37-index-count" data-v37-directory-count>{{ entries|length }} shown</span>
+      </header>
+
+      <div class="v37-index-grid" data-v37-directory-grid>
+        {% for entry in entries %}
+          <a class="v37-index-card" href="{% pageurl entry %}" data-v37-directory-card data-search="{{ entry.title }} {{ entry.introduction|default:entry.search_description }} {{ entry.eyebrow }}">
+            <figure>
+              {% if entry.hero_image %}
+                {% image entry.hero_image fill-900x620-c100 loading="lazy" decoding="async" %}
+              {% else %}
+                <img src="{% static 'images/visual-cues/clinical-skin-care-512.webp' %}" alt="" width="512" height="512" loading="lazy" decoding="async">
+              {% endif %}
+            </figure>
+            <div class="v37-index-card-copy">
+              {% if entry.eyebrow %}<span>{{ entry.eyebrow }}</span>{% else %}<span>{{ page.get_index_kind_display }}</span>{% endif %}
+              <h3>{{ entry.title }}</h3>
+              <p>{{ entry.introduction|default:entry.search_description|default:"Open this guide for more information."|truncatewords:24 }}</p>
+              <strong>Open guide <i aria-hidden="true">↗</i></strong>
+            </div>
+          </a>
+        {% empty %}
+          <article class="v37-index-empty"><h3>No pages yet.</h3><p>Add or publish a child page in Wagtail and it will appear here automatically.</p></article>
+        {% endfor %}
+      </div>
+
+      <p class="v37-index-empty-filter" data-v37-directory-empty hidden>No matching pages on this directory page. Try a broader search.</p>
+
+      {% if entries.paginator.num_pages > 1 %}
+        <nav class="v37-index-pagination" aria-label="Directory pages">
+          {% if entries.has_previous %}<a class="button button-secondary" href="?page={{ entries.previous_page_number }}">← Previous</a>{% else %}<span></span>{% endif %}
+          <span>Page {{ entries.number }} / {{ entries.paginator.num_pages }}</span>
+          {% if entries.has_next %}<a class="button button-secondary" href="?page={{ entries.next_page_number }}">Next →</a>{% endif %}
+        </nav>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if page.layout_mode == "hybrid" and page.layout_additions %}
+    <section class="v37-cms-tail"><div class="v37-index-shell">{% include_block page.layout_additions %}</div></section>
+  {% endif %}
+</main>
