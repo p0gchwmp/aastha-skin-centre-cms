@@ -47,6 +47,7 @@ class EditorialV37RolloutTests(SimpleTestCase):
         self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.css")
+        self.assertRegex(markup, r"editorial-v37-conversion(?:\.[0-9a-f]+)?\.css")
         self.assertRegex(markup, r"editorial-v37(?:\.[0-9a-f]+)?\.js")
         self.assertRegex(markup, r"editorial-v37-home(?:\.[0-9a-f]+)?\.js")
         self.assertRegex(markup, r"editorial-v37-detail(?:\.[0-9a-f]+)?\.js")
@@ -59,6 +60,7 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "css/editorial-v37.css": "html.editorial-v37",
             "css/editorial-v37-home.css": "html.editorial-v37",
             "css/editorial-v37-detail.css": "html.editorial-v37",
+            "css/editorial-v37-conversion.css": "html.editorial-v37",
             "js/editorial-v37.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-home.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-detail.js": 'classList.contains("editorial-v37")',
@@ -104,6 +106,8 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "hair-transplant",
             "laser-hair-reduction",
             "botulinum-toxin-dermal-fillers",
+            "book-appointment",
+            "contact",
             "dr-cheena-langer",
             "karan-nagar",
             "paloura",
@@ -119,6 +123,8 @@ class EditorialV37RolloutTests(SimpleTestCase):
         templates = [
             root / "doctor.html",
             root / "clinic.html",
+            root / "booking.html",
+            root / "contact.html",
             root / "treatments" / "acne-treatment.html",
             root / "treatments" / "acne-scar-treatment.html",
             root / "treatments" / "pigmentation-treatment.html",
@@ -136,6 +142,26 @@ class EditorialV37RolloutTests(SimpleTestCase):
                 self.assertIn("home/editorial_v37/partials/cms_tail.html", source)
                 self.assertIn('id="main-content"', source)
                 self.assertIn("v37-detail", source)
+
+    def test_booking_template_preserves_whatsapp_form_contract(self):
+        root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home" / "editorial_v37"
+        source = (root / "booking.html").read_text(encoding="utf-8")
+        for contract in (
+            "data-appointment-form",
+            'name="name"',
+            'name="mobile"',
+            'name="clinic"',
+            'name="concern"',
+            'name="patient_type"',
+            'name="date"',
+            'name="time"',
+            'name="consent"',
+            "data-appointment-date",
+            "data-form-status",
+            "Continue on WhatsApp",
+        ):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, source)
 
     def test_editorial_homepage_uses_production_routes_and_restored_care_story(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
