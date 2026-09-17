@@ -1,4 +1,4 @@
-"""Editor assistance for placing new sections inside verified exact layouts."""
+"""Aastha-specific Wagtail admin assistance and editorial control centre."""
 
 from __future__ import annotations
 
@@ -9,16 +9,18 @@ from urllib.parse import urlsplit
 
 from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.templatetags.static import static
 from django.urls import path, reverse
 from django.utils.html import format_html, strip_tags
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_GET
 from wagtail import hooks
+from wagtail.admin.menu import MenuItem
+from wagtail.images import get_image_model
 from wagtail.models import Page
 
-from .models import ExactPageLayout
+from .models import BlogPage, ClinicLocation, Doctor, ExactPageLayout, TreatmentPage
 
 
 ARTICLE_SECTION_RE = re.compile(
@@ -31,6 +33,18 @@ ID_RE = re.compile(r'\bid=(["\'])(?P<id>[a-z][a-z0-9-]*)\1', re.IGNORECASE)
 HEADING_RE = re.compile(
     r'<h[2-4]\b[^>]*>(?P<label>.*?)</h[2-4]>',
     re.IGNORECASE | re.DOTALL,
+)
+
+CONTROL_CENTRE_ROUTES = (
+    ("Homepage", "home", "/"),
+    ("Conditions", "conditions", "/conditions/"),
+    ("Treatments", "treatments", "/treatments/"),
+    ("Doctor", "dr-cheena-langer", "/dr-cheena-langer/"),
+    ("Karan Nagar", "karan-nagar", "/locations/karan-nagar/"),
+    ("Paloura", "paloura", "/locations/paloura/"),
+    ("Journal", "blog", "/blog/"),
+    ("Booking", "book-appointment", "/book-appointment/"),
+    ("Contact", "contact", "/contact/"),
 )
 
 
@@ -68,6 +82,41 @@ def _public_path(page, request) -> str:
     return public_path
 
 
+def _route_page(slug: str, path: str):
+    if path == "/":
+        return Page.objects.filter(depth=2).specific().first()
+    return Page.objects.filter(slug=slug, live=True).specific().first()
+
+
+@require_GET
+@permission_required("wagtailadmin.access_admin", raise_exception=True)
+def aastha_control_centre(request):
+    route_cards = []
+    for label, slug, path in CONTROL_CENTRE_ROUTES:
+        page = _route_page(slug, path)
+        route_cards.append(
+            {
+                "label": label,
+                "path": path,
+                "page": page,
+                "edit_url": f"/admin/pages/{page.pk}/edit/" if page else "",
+            }
+        )
+
+    context = {
+        "route_cards": route_cards,
+        "counts": {
+            "pages": Page.objects.live().public().count(),
+            "treatments": TreatmentPage.objects.live().count(),
+            "journal": BlogPage.objects.live().count(),
+            "images": get_image_model().objects.count(),
+            "clinics": ClinicLocation.objects.filter(is_active=True).count(),
+            "doctors": Doctor.objects.filter(is_active=True).count(),
+        },
+    }
+    return render(request, "home/admin/aastha_control_centre.html", context)
+
+
 @require_GET
 @permission_required("wagtailadmin.access_admin", raise_exception=True)
 def editor_placement_map(request, page_id: int):
@@ -99,11 +148,26 @@ def editor_placement_map(request, page_id: int):
 def register_editor_placement_urls():
     return [
         path(
+            "aastha-control-centre/",
+            aastha_control_centre,
+            name="aastha_control_centre",
+        ),
+        path(
             "editor-placement-map/<int:page_id>/",
             editor_placement_map,
             name="aastha_editor_placement_map",
-        )
+        ),
     ]
+
+
+@hooks.register("register_admin_menu_item")
+def register_aastha_control_centre_menu_item():
+    return MenuItem(
+        "Aastha Control Centre",
+        reverse("aastha_control_centre"),
+        icon_name="site",
+        order=1,
+    )
 
 
 @hooks.register("insert_editor_js")
