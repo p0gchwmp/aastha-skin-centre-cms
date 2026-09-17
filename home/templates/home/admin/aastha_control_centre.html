@@ -1,0 +1,83 @@
+{% extends "wagtailadmin/base.html" %}
+
+{% block titletag %}Aastha Control Centre{% endblock %}
+
+{% block content %}
+<div class="aastha-control-centre">
+  <div class="aastha-cc-hero">
+    <div>
+      <span class="aastha-cc-kicker">Aastha website control centre</span>
+      <h1>Manage the patient website without hunting through the CMS.</h1>
+      <p>Open the pages people use most, manage media, and keep the public site current. Publishing still uses Wagtail's normal permissions, revisions and workflow.</p>
+    </div>
+    <div class="aastha-cc-actions">
+      <a class="button button-secondary" href="/" target="_blank" rel="noopener">Open website ↗</a>
+      <a class="button" href="/admin/pages/">All pages</a>
+    </div>
+  </div>
+
+  <section class="aastha-cc-stats" aria-label="Website inventory">
+    <article><strong>{{ counts.pages }}</strong><span>live pages</span></article>
+    <article><strong>{{ counts.treatments }}</strong><span>treatment pages</span></article>
+    <article><strong>{{ counts.journal }}</strong><span>journal posts</span></article>
+    <article><strong>{{ counts.images }}</strong><span>media images</span></article>
+    <article><strong>{{ counts.clinics }}</strong><span>active clinics</span></article>
+    <article><strong>{{ counts.doctors }}</strong><span>doctor profiles</span></article>
+  </section>
+
+  <div class="aastha-cc-layout">
+    <section class="aastha-cc-panel">
+      <div class="aastha-cc-heading">
+        <div>
+          <span class="aastha-cc-kicker">Patient-critical pages</span>
+          <h2>Edit what patients reach first</h2>
+        </div>
+        <a href="/admin/pages/">Browse page tree →</a>
+      </div>
+      <div class="aastha-cc-routes">
+        {% for item in route_cards %}
+          <article class="aastha-cc-route{% if not item.page %} is-missing{% endif %}">
+            <div>
+              <span>{{ item.path }}</span>
+              <h3>{{ item.label }}</h3>
+              {% if item.page %}
+                <p>{% if item.page.live %}Published{% else %}Draft{% endif %} · updated {{ item.page.latest_revision_created_at|date:"j M Y"|default:"—" }}</p>
+              {% else %}
+                <p>Page not found in this CMS build.</p>
+              {% endif %}
+            </div>
+            <div class="aastha-cc-route-actions">
+              {% if item.edit_url %}<a class="button button-small" href="{{ item.edit_url }}">Edit</a>{% endif %}
+              <a class="button button-small button-secondary" href="{{ item.path }}" target="_blank" rel="noopener">Preview ↗</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <aside class="aastha-cc-side">
+      <section class="aastha-cc-panel">
+        <span class="aastha-cc-kicker">Media + reusable content</span>
+        <h2>Libraries</h2>
+        <div class="aastha-cc-library-links">
+          <a href="/admin/images/"><strong>Images</strong><span>Clinic photos, treatment imagery, clinical results →</span></a>
+          <a href="/admin/documents/"><strong>Documents</strong><span>PDFs and downloadable files →</span></a>
+          <a href="/admin/snippets/"><strong>Snippets</strong><span>Doctors, clinics and reusable content →</span></a>
+        </div>
+      </section>
+
+      <section class="aastha-cc-panel aastha-cc-guidance">
+        <span class="aastha-cc-kicker">Publishing guardrails</span>
+        <h2>Before you publish</h2>
+        <ul>
+          <li>Use real Aastha or licensed imagery; do not upload AI doctor faces.</li>
+          <li>Keep treatment claims factual and avoid guarantees or ranking claims.</li>
+          <li>Preview mobile layout before publishing large image changes.</li>
+          <li>Keep existing public URLs unless a redirect has been planned.</li>
+          <li>Use Wagtail revisions for rollback instead of replacing pages manually.</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</div>
+{% endblock %}
