@@ -7,7 +7,7 @@ import json
 import re
 from urllib.parse import urlsplit
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.templatetags.static import static
@@ -89,6 +89,7 @@ def _route_page(slug: str, path: str):
 
 
 @require_GET
+@login_required(login_url="/admin/login/")
 @permission_required("wagtailadmin.access_admin", raise_exception=True)
 def aastha_control_centre(request):
     route_cards = []
@@ -118,6 +119,7 @@ def aastha_control_centre(request):
 
 
 @require_GET
+@login_required(login_url="/admin/login/")
 @permission_required("wagtailadmin.access_admin", raise_exception=True)
 def editor_placement_map(request, page_id: int):
     page = get_object_or_404(Page, pk=page_id).specific
