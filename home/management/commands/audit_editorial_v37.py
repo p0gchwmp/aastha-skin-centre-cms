@@ -11,6 +11,10 @@ from django.test import Client
 from wagtail.models import Page, Site
 
 from home.context_processors import _env_flag
+from home.templatetags.editorial_v37 import (
+    EDITORIAL_V37_GUIDES,
+    EDITORIAL_V37_TEMPLATES,
+)
 
 
 PRIORITY_ROUTES = (
@@ -49,10 +53,11 @@ PRIORITY_ROUTES = (
 
 SKIP_SCHEMES = ("mailto:", "tel:", "sms:", "javascript:", "data:")
 SKIP_PATH_PREFIXES = ("/admin/", "/assets/", "/media/", "/static/")
+NATIVE_PAGE_MODELS = {"homepage", "contentindexpage"}
 
 
-def _published_routes(site: Site) -> list[str]:
-    routes: set[str] = set()
+def _published_pages(site: Site) -> list[tuple[str, Page]]:
+    result: list[tuple[str, Page]] = []
     pages = (
         Page.objects.live()
         .public()
@@ -66,8 +71,18 @@ def _published_routes(site: Site) -> list[str]:
         path = urlparse(raw_url).path or "/"
         if not path.startswith("/"):
             path = f"/{path}"
-        routes.add(path)
-    return sorted(routes)
+        result.append((path, page))
+    return sorted(result, key=lambda item: item[0])
+
+
+def _renderer_kind(page: Page) -> str:
+    slug = getattr(page, "slug", "") or ""
+    model = getattr(getattr(page, "content_type", None), "model", "") or ""
+    if model in NATIVE_PAGE_MODELS:
+        return "native"
+    if slug in EDITORIAL_V37_TEMPLATES or slug in EDITORIAL_V37_GUIDES:
+        return "native"
+    return "legacy-fallback"
 
 
 def _internal_link_path(href: str, allowed_hosts: set[str]) -> str | None:
@@ -112,8 +127,30 @@ class Command(BaseCommand):
         if site is None:
             raise CommandError("Editorial v37 audit cannot run without a default Wagtail Site.")
 
-        published_routes = _published_routes(site)
+        published_pages = _published_pages(site)
+        published_routes = [path for path, _page in published_pages]
         audit_routes = sorted(set(published_routes).union(PRIORITY_ROUTES))
+
+        native_routes: list[str] = []
+        fallback_routes: list[str] = []
+        for path, page in published_pages:
+            if _renderer_kind(page) == "native":
+                native_routes.append(path)
+            else:
+                fallback_routes.append(path)
+
+        self.stdout.write(
+            "Editorial v37 renderer coverage: "
+            f"{len(native_routes)}/{len(published_pages)} live pages native; "
+            f"{len(fallback_routes)} legacy fallback."
+        )
+        if fallback_routes:
+            self.stdout.write(
+                self.style.WARNING(
+                    "Legacy fallback routes still requiring migration:\n  - "
+                    + "\n  - ".join(fallback_routes)
+                )
+            )
 
         public_host = (getattr(settings, "PUBLIC_SITE_HOST", "") or "").lower()
         allowed_hosts = {host, site.hostname.lower()}
@@ -197,6 +234,21 @@ class Command(BaseCommand):
         if admin.status_code in {301, 302} and "/admin/login/" not in location:
             failures.append(f"/admin/: unexpected redirect target {location!r}")
 
+        control_centre = client.get(
+            "/admin/aastha-control-centre/", secure=secure, follow=False
+        )
+        if control_centre.status_code not in {301, 302}:
+            failures.append(
+                "/admin/aastha-control-centre/: expected login redirect, "
+                f"got {control_centre.status_code}"
+            )
+        control_location = control_centre.headers.get("Location", "")
+        if control_centre.status_code in {301, 302} and "/admin/login/" not in control_location:
+            failures.append(
+                "/admin/aastha-control-centre/: unexpected redirect target "
+                f"{control_location!r}"
+            )
+
         for warning in warnings:
             self.stdout.write(self.style.WARNING(f"WARN: {warning}"))
 
@@ -209,6 +261,7 @@ class Command(BaseCommand):
             self.style.SUCCESS(
                 "Editorial v37 audit passed: "
                 f"{len(audit_routes)} public routes, {len(discovered_links)} internal links, "
+                f"{len(native_routes)} native renderers, "
                 "booking/admin contracts and document-integrity checks."
             )
         )
