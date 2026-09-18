@@ -1,0 +1,125 @@
+{% load static wagtailimages_tags wagtailcore_tags %}
+<main id="main-content" class="v37-detail v37-imported-article{% if imported_article.is_blog %} v37-imported-blog{% endif %}">
+  <section class="v37-detail-hero v37-imported-hero">
+    <div class="v37-detail-hero-grid">
+      <div class="v37-detail-hero-copy">
+        <span class="v37-kicker">{{ imported_article.eyebrow }}</span>
+        <h1>{{ imported_article.title }}</h1>
+        {% if page.introduction %}<p>{{ page.introduction }}</p>{% elif imported_article.lede %}<p>{{ imported_article.lede }}</p>{% endif %}
+        {% if imported_article.is_blog %}
+          <p class="v37-imported-byline">{% if page.published_date %}{{ page.published_date|date:"j M Y" }}{% endif %}{% if page.author %} · {{ page.author.name }}{% endif %}{% if page.reading_time_minutes %} · {{ page.reading_time_minutes }} min read{% endif %}</p>
+        {% else %}
+          <div class="v37-actions">
+            <a class="button" href="/book-appointment/">Book consultation</a>
+            {% if imported_article.sections %}<a class="button button-secondary" href="#guide">Read the guide ↓</a>{% endif %}
+          </div>
+        {% endif %}
+      </div>
+      <figure class="v37-detail-media">
+        {% if page.hero_image %}
+          {% image page.hero_image fill-900x1100-c100 loading="eager" decoding="async" fetchpriority="high" %}
+        {% elif imported_article.source_image %}
+          <img src="{{ imported_article.source_image }}" alt="" width="900" height="1100" loading="eager" decoding="async" fetchpriority="high">
+        {% else %}
+          <img src="{% static imported_article.fallback_image %}" alt="" width="900" height="1100" loading="eager" decoding="async" fetchpriority="high">
+        {% endif %}
+        <figcaption>{% if imported_article.is_blog %}Patient education · dermatologist-led information{% else %}Educational guide · diagnosis and suitability require assessment{% endif %}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {% if imported_article.summary %}
+  <section class="v37-meta-strip" aria-label="Page summary">
+    <div class="v37-meta-grid">
+      {% for item in imported_article.summary %}
+      <div><strong>{{ item.label }}</strong><span>{{ item.value }}</span></div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if imported_article.sections %}
+  <section class="v37-imported-reading" id="guide">
+    <div class="v37-imported-shell">
+      <aside class="v37-imported-toc" aria-label="On this page">
+        <span class="v37-kicker">On this page</span>
+        <nav>
+          {% for section in imported_article.sections %}
+          <a href="#{{ section.anchor }}"><span>0{{ forloop.counter }}</span>{{ section.title }}</a>
+          {% endfor %}
+          {% if imported_article.secondary_sections %}<a href="#more-detail"><span>+</span>More detail</a>{% endif %}
+          {% if imported_article.faqs %}<a href="#questions"><span>?</span>Questions</a>{% endif %}
+        </nav>
+      </aside>
+      <article class="v37-imported-prose">
+        {% for section in imported_article.sections %}
+        <section class="v37-imported-section" id="{{ section.anchor }}">
+          <span class="v37-imported-index">0{{ forloop.counter }}</span>
+          <h2>{{ section.title }}</h2>
+          <div class="v37-imported-copy">{{ section.html }}</div>
+        </section>
+        {% endfor %}
+
+        {% if imported_article.secondary_sections %}
+        <section class="v37-imported-more" id="more-detail">
+          <div class="v37-imported-more-head">
+            <span class="v37-kicker">More detail</span>
+            <h2>Go deeper when you need it.</h2>
+            <p>The original clinical depth is preserved here without making the first read feel like a textbook.</p>
+          </div>
+          {% for section in imported_article.secondary_sections %}
+          <details>
+            <summary>{{ section.title }}</summary>
+            <div class="v37-imported-copy">{{ section.html }}</div>
+          </details>
+          {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if imported_article.faqs %}
+        <section class="v37-imported-faq" id="questions">
+          <span class="v37-kicker">Practical questions</span>
+          <h2>Useful before you decide.</h2>
+          <div class="v37-accordion">
+            {% for faq in imported_article.faqs %}
+            <details><summary>{{ faq.q }}</summary><div class="v37-answer">{{ faq.a }}</div></details>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        {% if imported_article.related %}
+        <section class="v37-imported-related">
+          <span class="v37-kicker">Continue from here</span>
+          <div class="v37-imported-related-grid">
+            {% for item in imported_article.related %}<a href="{{ item.href }}">{{ item.label }} <span aria-hidden="true">↗</span></a>{% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        {% if imported_article.sources %}
+        <details class="v37-imported-sources">
+          <summary>Medical information sources</summary>
+          <ul>{% for item in imported_article.sources %}<li><a href="{{ item.href }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a></li>{% endfor %}</ul>
+        </details>
+        {% endif %}
+
+        {% if page.show_medical_disclaimer %}
+        <p class="medical-disclaimer"><strong>Medical disclaimer:</strong> {{ settings.home.SiteSettings.medical_disclaimer }}</p>
+        {% endif %}
+      </article>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if not imported_article.is_blog %}
+  <section class="v37-detail-section v37-detail-section--dark">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head"><span>Next step</span><div><h2>Need this assessed in person?</h2><p>Book a dermatologist-led consultation at Karan Nagar or Paloura in Jammu.</p></div></header>
+      <div class="v37-actions"><a class="button" href="/book-appointment/">Book consultation</a><a class="button button-secondary" href="{{ settings.home.SiteSettings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp clinic</a></div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% include "home/editorial_v37/partials/cms_tail.html" %}
+</main>
