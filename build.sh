@@ -30,6 +30,7 @@ if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.
   python manage.py test \
     home.test_quality_gates \
     home.test_initialize_cms \
+    home.test_release_signoff \
     seo_support.test_audit_seo_content
 fi
 
