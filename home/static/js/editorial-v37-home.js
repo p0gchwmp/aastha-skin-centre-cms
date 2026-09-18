@@ -150,6 +150,9 @@
   const rail = root.querySelector("[data-v37-drag-rail]");
   if (rail) {
     const cards = [...rail.children].filter((node) => node.matches?.("a"));
+    if (rail.tabIndex < 0) rail.tabIndex = 0;
+    rail.setAttribute("role", "region");
+    rail.setAttribute("aria-label", "Treatment library");
     const controls = document.createElement("div");
     controls.className = "v37-actions v37-rail-controls";
     controls.setAttribute("aria-label", "Treatment library navigation");
@@ -190,6 +193,29 @@
       const target = Math.max(0, Math.min(cards.length - 1, currentIndex() + direction));
       rail.scrollTo({ left: cardLeft(cards[target]), behavior: reducedMotion ? "auto" : "smooth" });
     };
+
+    const moveRailTo = (index) => {
+      if (!cards.length) return;
+      const target = Math.max(0, Math.min(cards.length - 1, index));
+      rail.scrollTo({ left: cardLeft(cards[target]), behavior: reducedMotion ? "auto" : "smooth" });
+    };
+
+    rail.addEventListener("keydown", (event) => {
+      const index = currentIndex();
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        moveRail(1);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        moveRail(-1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        moveRailTo(0);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        moveRailTo(cards.length - 1);
+      }
+    });
 
     previous?.addEventListener("click", () => moveRail(-1));
     next?.addEventListener("click", () => moveRail(1));
