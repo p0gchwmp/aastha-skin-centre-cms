@@ -559,3 +559,21 @@ def editorial_v37_guide_for(page):
     """Return structured copy for a data-driven clinical guide page."""
     slug = getattr(page, "slug", "") or ""
     return EDITORIAL_V37_GUIDES.get(slug, {})
+
+
+
+@register.simple_tag
+def verified_local_area_pages(limit=8):
+    """Return only locality pages explicitly activated for indexing."""
+    from home.models import ContentIndexPage, StandardPage
+
+    areas = ContentIndexPage.objects.live().public().filter(slug="areas").first()
+    if areas is None:
+        return []
+    return list(
+        StandardPage.objects.live()
+        .public()
+        .child_of(areas)
+        .filter(noindex=False)
+        .order_by("title")[:limit]
+    )
