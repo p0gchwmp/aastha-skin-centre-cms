@@ -1,5 +1,9 @@
+import json
 import os
+from functools import lru_cache
+from pathlib import Path
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from wagtail.models import Site
@@ -110,6 +114,22 @@ def sync_non_indexable_utility_pages():
     return updated
 
 
+@lru_cache(maxsize=1)
+def legacy_seed_seo_titles():
+    """Return the original imported SEO titles used by the v28 starter site."""
+    path = Path(settings.BASE_DIR) / "seed_data" / "v28-content.json"
+    if not path.exists():
+        return {}
+    records = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        (record.get("page_type", ""), record.get("slug", "")): (
+            record.get("seo_title") or ""
+        ).strip()
+        for record in records
+        if record.get("slug")
+    }
+
+
 def sync_local_search_pages():
     """Create the staged local-search graph without indexing unverified areas.
 
@@ -198,10 +218,12 @@ def sync_justdial_style_treatment_titles():
     Editors keep full ownership of custom SEO titles.
     """
     updated = []
+    legacy_titles = legacy_seed_seo_titles()
     for page in TreatmentPage.objects.live().public():
         current = (page.seo_title or "").strip()
         title = (page.title or "").strip()
-        if current not in {"", title}:
+        legacy = legacy_titles.get(("treatment", page.slug), "")
+        if current not in {"", title, legacy}:
             continue
         candidate = title if "jammu" in title.casefold() else f"{title} in Jammu"
         if candidate == current or len(candidate) > 65:
@@ -215,11 +237,13 @@ def sync_justdial_style_treatment_titles():
 def sync_justdial_style_profile_titles():
     """Add local intent to default doctor/clinic SEO titles only."""
     updated = []
+    legacy_titles = legacy_seed_seo_titles()
 
     for page in DoctorPage.objects.live().public().select_related("doctor"):
         current = (page.seo_title or "").strip()
         title = (page.title or "").strip()
-        if current not in {"", title}:
+        legacy = legacy_titles.get(("doctor", page.slug), "")
+        if current not in {"", title, legacy}:
             continue
         doctor = page.doctor
         name = doctor.name if doctor else title
@@ -235,7 +259,8 @@ def sync_justdial_style_profile_titles():
     for page in ClinicPage.objects.live().public().select_related("clinic"):
         current = (page.seo_title or "").strip()
         title = (page.title or "").strip()
-        if current not in {"", title}:
+        legacy = legacy_titles.get(("clinic", page.slug), "")
+        if current not in {"", title, legacy}:
             continue
         clinic = page.clinic
         locality = clinic.name if clinic else title
