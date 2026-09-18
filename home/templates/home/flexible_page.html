@@ -1,10 +1,13 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags exact_pages clinical_results editorial_v37 %}
+{% load wagtailcore_tags exact_pages clinical_results editorial_v37 editorial_v37_imported %}
 {% block extra_head %}{% include "home/partials/editorial_v37_assets.html" %}{% endblock %}
 {% block content %}
 {% editorial_v37_template_for page as editorial_v37_template %}
+{% editorial_v37_imported_article page as imported_article %}
 {% if editorial_v37_enabled and editorial_v37_template %}
   {% include editorial_v37_template %}
+{% elif editorial_v37_enabled and imported_article %}
+  {% include "home/editorial_v37/imported-article.html" %}
 {% else %}
   {% exact_page_main as exact_main %}
   {% if exact_main %}
