@@ -5,6 +5,13 @@
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const notifyMotion = (target, kind = "content") => {
+    if (!target || reducedMotion) return;
+    window.dispatchEvent(new CustomEvent("aastha:v37-motion", {
+      detail: { target, kind },
+    }));
+  };
+
   /* Concern explorer: accessible navigation only, never diagnosis. */
   const explorer = root.querySelector("[data-v37-concern-explorer]");
   if (explorer) {
@@ -30,6 +37,7 @@
       if (title) title.textContent = tab.dataset.title || "Explore care";
       if (copy) copy.textContent = tab.dataset.copy || "";
       if (link) link.href = tab.dataset.href || "/conditions/";
+      notifyMotion(stage, "swap");
       if (focus) tab.focus();
     };
 
@@ -97,6 +105,7 @@
       if (title) title.textContent = result.title;
       if (copy) copy.textContent = result.copy;
       if (link) link.href = result.href;
+      notifyMotion(routeResult, "swap");
     };
 
     const renderConcerns = () => {
@@ -142,7 +151,7 @@
   if (rail) {
     const cards = [...rail.children].filter((node) => node.matches?.("a"));
     const controls = document.createElement("div");
-    controls.className = "v37-actions";
+    controls.className = "v37-actions v37-rail-controls";
     controls.setAttribute("aria-label", "Treatment library navigation");
     controls.innerHTML = `
       <button type="button" class="button button-secondary" data-v37-rail-prev aria-label="Previous treatment">← Previous</button>
@@ -229,6 +238,57 @@
         moved = false;
       }
     }, true);
+  }
+
+  /* Care-process navigation: buttons scroll to chapters and follow reading position. */
+  const processStage = root.querySelector("#approach .process-stage");
+  if (processStage) {
+    const buttons = [...processStage.querySelectorAll(".process-nav button")];
+    const chapters = [...processStage.querySelectorAll(".process-chapter")];
+
+    const activate = (index) => {
+      buttons.forEach((button, buttonIndex) => {
+        const active = buttonIndex === index;
+        button.classList.toggle("is-active", active);
+        if (active) button.setAttribute("aria-current", "step");
+        else button.removeAttribute("aria-current");
+      });
+    };
+
+    buttons.forEach((button, index) => {
+      button.addEventListener("click", () => {
+        const chapter = chapters[index];
+        if (!chapter) return;
+        activate(index);
+        chapter.scrollIntoView({
+          behavior: reducedMotion ? "auto" : "smooth",
+          block: "center",
+        });
+      });
+    });
+
+    if ("IntersectionObserver" in window && chapters.length) {
+      const ratios = new Map();
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+        let bestIndex = 0;
+        let bestRatio = -1;
+        chapters.forEach((chapter, index) => {
+          const ratio = ratios.get(chapter) || 0;
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestIndex = index;
+          }
+        });
+        if (bestRatio > 0) activate(bestIndex);
+      }, {
+        rootMargin: "-20% 0px -42% 0px",
+        threshold: [0, 0.2, 0.4, 0.6, 0.8],
+      });
+      chapters.forEach((chapter) => observer.observe(chapter));
+    }
+
+    activate(0);
   }
 
 })();
