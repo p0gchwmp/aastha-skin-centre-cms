@@ -76,6 +76,9 @@ jobs:
           python manage.py migrate --no-input
           python manage.py initialize_cms
 
+      - name: Run Django regression suite
+        run: python manage.py test
+
       - name: Start compressed local CMS
         run: |
           nohup gunicorn aastha_cms.wsgi:application \
