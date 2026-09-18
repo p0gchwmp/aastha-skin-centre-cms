@@ -374,6 +374,8 @@ class Command(BaseCommand):
             dashboard = get("/admin/").content.decode()
             if "Website control centre" not in dashboard:
                 errors.append("Custom editor dashboard panel did not render.")
+            if "Verification &amp; indexation readiness" not in dashboard:
+                errors.append("SEO verification dashboard did not render.")
             transaction.set_rollback(True)
 
         self.stdout.write(
