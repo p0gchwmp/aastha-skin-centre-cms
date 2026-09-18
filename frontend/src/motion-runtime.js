@@ -69,7 +69,7 @@ if (document.documentElement.classList.contains("editorial-v37")) {
       const target = event.detail?.target;
       if (!(target instanceof Element)) return;
       if (event.detail?.kind === "swap") {
-        const parts = [...target.querySelectorAll("h3, p, a, small")];
+        const parts = [...target.querySelectorAll("h3, p, address, a, small")];
         if (!parts.length) return;
         animate(parts, { opacity: [0.72, 1], y: [7, 0] }, {
           duration: 0.28,
@@ -77,6 +77,18 @@ if (document.documentElement.classList.contains("editorial-v37")) {
           ease: [0.22, 1, 0.36, 1],
         });
       }
+    });
+
+    document.querySelectorAll(".v37-accordion details").forEach((details) => {
+      details.addEventListener("toggle", () => {
+        if (!details.open) return;
+        const answer = details.querySelector(".v37-answer");
+        if (!answer) return;
+        animate(answer, { opacity: [0.45, 1], y: [6, 0] }, {
+          duration: 0.24,
+          ease: [0.22, 1, 0.36, 1],
+        });
+      });
     });
   }
 }
