@@ -11,7 +11,7 @@ import { ArrowUpRight, Search, X } from "lucide-react";
 
 const ROUTES = [
   ["Start here","Concerns","Browse by symptom or concern","/conditions/"],
-  ["Start here","Find your route","Choose area + concern","/#finder"],
+  ["Start here","Find your route","Choose area + concern","/#v37-finder"],
   ["Start here","Treatments","Full treatment directory","/treatments/"],
   ["Start here","Book consultation","Request an appointment","/book-appointment/"],
   ["Common guides","Acne","Breakouts, marks and active acne","/treatments/acne-treatment/"],
