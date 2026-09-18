@@ -213,6 +213,7 @@ class LocalSearchGraphTests(TestCase):
 
     def test_local_search_graph_is_complete_live_and_noindex(self):
         result = sync_local_search_pages()
+        self.home.refresh_from_db()
 
         self.assertEqual(len(result["created"]), 1 + len(LOCAL_SEARCH_AREAS))
         areas = self.home.get_children().filter(slug="areas").specific().first()
@@ -231,6 +232,7 @@ class LocalSearchGraphTests(TestCase):
 
     def test_existing_local_page_is_not_overwritten(self):
         sync_local_search_pages()
+        self.home.refresh_from_db()
         areas = self.home.get_children().filter(slug="areas").specific().first()
         page = (
             areas.get_children()
