@@ -80,6 +80,26 @@ def sync_approved_locations_seo():
     return True
 
 
+def sync_non_indexable_utility_pages():
+    """Keep post-submission utility pages out of search indexes."""
+    home = HomePage.objects.first()
+    if home is None:
+        return []
+
+    updated = []
+    page = (
+        home.get_descendants()
+        .filter(slug="appointment-request-received")
+        .specific()
+        .first()
+    )
+    if page is not None and not getattr(page, "noindex", False):
+        page.noindex = True
+        page.save(update_fields=["noindex"])
+        updated.append("/appointment-request-received/")
+    return updated
+
+
 def sync_approved_site_settings(site):
     """Fill approved blank/placeholder settings without overwriting later edits."""
     if site is None:
@@ -159,6 +179,13 @@ class Command(BaseCommand):
             )
         if sync_approved_locations_seo():
             self.stdout.write("Approved locations SEO description applied.")
+        utility_noindex_updates = sync_non_indexable_utility_pages()
+        if utility_noindex_updates:
+            self.stdout.write(
+                "Protected utility pages from indexing: "
+                + ", ".join(utility_noindex_updates)
+                + "."
+            )
 
         has_content = (
             TreatmentPage.objects.exists()
@@ -178,4 +205,5 @@ class Command(BaseCommand):
         sync_approved_site_settings(site)
         sync_approved_homepage_seo(HomePage.objects.first())
         sync_approved_locations_seo()
+        sync_non_indexable_utility_pages()
         self.sync_editor_state()
