@@ -4,10 +4,13 @@ from wagtail.models import Site
 from home.management.commands.initialize_cms import (
     APPROVED_ANALYTICS_ID,
     APPROVED_FACEBOOK_URL,
+    APPROVED_HOMEPAGE_META_DESCRIPTION,
+    APPROVED_HOMEPAGE_SEO_TITLE,
     APPROVED_SEARCH_CONSOLE_VERIFICATION,
+    sync_approved_homepage_seo,
     sync_approved_site_settings,
 )
-from home.models import SiteSettings
+from home.models import HomePage, SiteSettings
 
 
 class ApprovedSiteSettingsTests(TestCase):
@@ -86,4 +89,40 @@ class ApprovedSiteSettingsTests(TestCase):
         self.assertEqual(
             site_settings.search_console_verification,
             APPROVED_SEARCH_CONSOLE_VERIFICATION,
+        )
+
+
+class ApprovedHomepageSeoTests(TestCase):
+    def setUp(self):
+        self.home = HomePage.objects.first()
+        self.assertIsNotNone(self.home)
+
+    def test_blank_homepage_metadata_is_filled(self):
+        self.home.seo_title = ""
+        self.home.search_description = ""
+        self.home.save(update_fields=["seo_title", "search_description"])
+
+        changed = sync_approved_homepage_seo(self.home)
+
+        self.assertEqual(set(changed), {"seo_title", "search_description"})
+        self.home.refresh_from_db()
+        self.assertEqual(self.home.seo_title, APPROVED_HOMEPAGE_SEO_TITLE)
+        self.assertEqual(
+            self.home.search_description,
+            APPROVED_HOMEPAGE_META_DESCRIPTION,
+        )
+
+    def test_editor_authored_homepage_metadata_is_preserved(self):
+        self.home.seo_title = "Custom homepage SEO title"
+        self.home.search_description = "Custom editor-authored homepage description."
+        self.home.save(update_fields=["seo_title", "search_description"])
+
+        changed = sync_approved_homepage_seo(self.home)
+
+        self.assertFalse(changed)
+        self.home.refresh_from_db()
+        self.assertEqual(self.home.seo_title, "Custom homepage SEO title")
+        self.assertEqual(
+            self.home.search_description,
+            "Custom editor-authored homepage description.",
         )
