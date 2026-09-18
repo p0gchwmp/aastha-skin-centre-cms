@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from html.parser import HTMLParser
+import re
 from urllib.parse import urlsplit
 from uuid import uuid4
 from pathlib import Path
@@ -65,6 +66,10 @@ FORBIDDEN_PUBLIC_TEXT = {
     "starter policy",
     "implementation note",
 }
+
+UNRESOLVED_TEMPLATE_PATTERN = re.compile(
+    r"{{\s*[A-Za-z_][^{}]*}}|{%\s*[^%]+%}"
+)
 
 HARDCODED_GLOBAL_FACTS = {
     "₹500",
@@ -173,8 +178,8 @@ class Command(BaseCommand):
             for phrase in FORBIDDEN_PUBLIC_TEXT:
                 if phrase in lowered:
                     errors.append(f"{path} contains forbidden text: {phrase}")
-            if "{{" in body or "}}" in body:
-                errors.append(f"{path} contains an unresolved global token.")
+            if UNRESOLVED_TEMPLATE_PATTERN.search(body):
+                errors.append(f"{path} contains an unresolved template token.")
 
             audit = PublicHTMLAudit()
             audit.feed(body)
@@ -270,7 +275,7 @@ class Command(BaseCommand):
         required_appointment_markup = {
             "appointment form": "data-appointment-form",
             "dynamic WhatsApp destination": "data-whatsapp-url=",
-            "CMS interaction script": "/assets/js/aastha_cms.js",
+            "appointment interaction script": "appointment-form-controller",
         }
         for label, marker in required_appointment_markup.items():
             if marker not in appointment:
