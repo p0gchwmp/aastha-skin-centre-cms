@@ -6,7 +6,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Search, X } from "lucide-react";
 
 const ROUTES = [
@@ -36,7 +36,9 @@ function Explore() {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef(null);
+  const panelRef = useRef(null);
   const previousFocus = useRef(null);
+  const reducedMotion = useReducedMotion();
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -71,10 +73,47 @@ function Explore() {
       previousFocus.current?.focus?.();
       return;
     }
+
     document.body.classList.add("v37-kokonut-open");
-    const timer = window.setTimeout(() => inputRef.current?.focus(), 40);
-    return () => window.clearTimeout(timer);
-  }, [open]);
+    const timer = window.setTimeout(() => inputRef.current?.focus(), reducedMotion ? 0 : 40);
+
+    const onDialogKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusable = [...panel.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )].filter((element) => !element.hidden && element.getAttribute("aria-hidden") !== "true");
+
+      if (!focusable.length) {
+        event.preventDefault();
+        panel.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onDialogKeyDown);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("keydown", onDialogKeyDown);
+    };
+  }, [open, reducedMotion]);
 
   const choose = (route) => {
     if (!route) return;
@@ -82,10 +121,6 @@ function Explore() {
   };
 
   const onKeyDown = (event) => {
-    if (event.key === "Escape") {
-      setOpen(false);
-      return;
-    }
     if (!matches.length) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
@@ -104,10 +139,10 @@ function Explore() {
       {open && (
         <motion.div
           className="kokonut-explore"
-          initial={{ opacity: 0 }}
+          initial={reducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
+          exit={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: reducedMotion ? 0 : 0.18 }}
         >
           <button
             className="kokonut-explore__backdrop"
@@ -116,14 +151,16 @@ function Explore() {
             onClick={() => setOpen(false)}
           />
           <motion.section
+            ref={panelRef}
             className="kokonut-explore__panel"
             role="dialog"
             aria-modal="true"
             aria-labelledby="kokonut-explore-title"
-            initial={{ opacity: 0, y: 24, scale: 0.99 }}
+            tabIndex={-1}
+            initial={reducedMotion ? false : { opacity: 0, y: 24, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 14, scale: 0.995 }}
-            transition={{ type: "spring", stiffness: 330, damping: 31, mass: 0.78 }}
+            exit={reducedMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.995 }}
+            transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 330, damping: 31, mass: 0.78 }}
           >
             <header className="kokonut-explore__head">
               <div>
@@ -148,6 +185,8 @@ function Explore() {
                 role="combobox"
                 aria-expanded="true"
                 aria-controls="kokonut-route-results"
+                aria-autocomplete="list"
+                aria-activedescendant={matches.length ? `kokonut-route-option-${matches[active]?.id}` : undefined}
               />
               <kbd>⌘K</kbd>
             </label>
@@ -162,17 +201,19 @@ function Explore() {
                 {matches.length ? matches.map((route, index) => (
                   <motion.button
                     type="button"
+                    id={`kokonut-route-option-${route.id}`}
                     key={route.href}
                     className={index === active ? "is-active" : ""}
                     role="option"
                     aria-selected={index === active}
                     onMouseEnter={() => setActive(index)}
+                    onFocus={() => setActive(index)}
                     onClick={() => choose(route)}
-                    layout
-                    initial={{ opacity: 0, y: 7 }}
+                    layout={!reducedMotion}
+                    initial={reducedMotion ? false : { opacity: 0, y: 7 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.18, delay: Math.min(index * 0.018, 0.12) }}
+                    exit={reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: -5 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.18, delay: reducedMotion ? 0 : Math.min(index * 0.018, 0.12) }}
                   >
                     <span className="kokonut-explore__group">{route.group}</span>
                     <strong>{route.label}</strong>
@@ -182,8 +223,9 @@ function Explore() {
                 )) : (
                   <motion.p
                     className="kokonut-explore__empty"
-                    initial={{ opacity: 0 }}
+                    initial={reducedMotion ? false : { opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.18 }}
                   >
                     No matching route. Try a broader word.
                   </motion.p>
