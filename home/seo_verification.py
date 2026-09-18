@@ -7,10 +7,6 @@ explicit facts_verified_on date entered after human checking.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-from django.urls import reverse
-
 from home.local_search import LOCAL_SEARCH_AREAS
 from home.models import ClinicLocation, Doctor, StandardPage
 from seo_support.models import ClinicSEOProfile, DoctorSEOProfile
