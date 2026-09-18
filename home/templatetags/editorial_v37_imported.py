@@ -31,6 +31,7 @@ SPECIAL_SECTION_CLASSES = {
     "faq-section",
     "related-knowledge",
     "source-note",
+    "clinic-choice-section",
 }
 
 CUE_GROUPS = {
