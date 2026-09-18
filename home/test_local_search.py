@@ -51,6 +51,7 @@ class LocalSearchActivationTests(TestCase):
         self.home = HomePage.objects.first()
         self.assertIsNotNone(self.home)
         sync_local_search_pages()
+        self.home.refresh_from_db()
 
         self.clinic = ClinicLocation.objects.create(
             name="Local SEO Verification Clinic",
@@ -110,6 +111,7 @@ class LocalSearchSchemaTests(TestCase):
         self.home = HomePage.objects.first()
         self.assertIsNotNone(self.home)
         sync_local_search_pages()
+        self.home.refresh_from_db()
         self.site = Site.objects.get(is_default_site=True)
         self.settings, _ = SiteSettings.objects.get_or_create(site=self.site)
 
