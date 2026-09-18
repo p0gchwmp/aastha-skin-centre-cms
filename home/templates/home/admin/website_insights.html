@@ -50,10 +50,16 @@
             <h3>Published patient-guide inventory</h3>
           </div>
         </div>
-        <div class="insights-bars">
-          <div><span>Treatments</span><strong>{{ metrics.treatments }}</strong><i style="--value: {{ clinical_mix.treatments }}%"></i></div>
-          <div><span>Conditions</span><strong>{{ metrics.conditions }}</strong><i style="--value: {{ clinical_mix.conditions }}%"></i></div>
-          <div><span>Journal</span><strong>{{ metrics.blogs }}</strong><i style="--value: {{ clinical_mix.blogs }}%"></i></div>
+        <div class="insights-bklit-host"
+             data-bklit-clinical-mix
+             data-treatments="{{ metrics.treatments }}"
+             data-conditions="{{ metrics.conditions }}"
+             data-blogs="{{ metrics.blogs }}">
+          <div class="insights-bars" aria-label="Clinical content mix fallback">
+            <div><span>Treatments</span><strong>{{ metrics.treatments }}</strong><i style="--value: {{ clinical_mix.treatments }}%"></i></div>
+            <div><span>Conditions</span><strong>{{ metrics.conditions }}</strong><i style="--value: {{ clinical_mix.conditions }}%"></i></div>
+            <div><span>Journal</span><strong>{{ metrics.blogs }}</strong><i style="--value: {{ clinical_mix.blogs }}%"></i></div>
+          </div>
         </div>
         <p>{{ bklit_note }}</p>
       </article>
@@ -85,4 +91,9 @@
       </article>
     </section>
   </main>
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script type="module" src="{% static 'ui/bklit-insights.js' %}"></script>
 {% endblock %}
