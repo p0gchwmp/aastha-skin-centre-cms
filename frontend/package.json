@@ -1,0 +1,19 @@
+{
+  "name": "aastha-editorial-islands",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "5.0.4",
+    "@visx/shape": "3.12.0",
+    "lucide-react": "0.556.0",
+    "motion": "13.4.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "vite": "8.2.2"
+  },
+  "devDependencies": {}
+}
