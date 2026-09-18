@@ -215,6 +215,42 @@ class EditorialV37RolloutTests(SimpleTestCase):
                 self.assertNotIn(prohibited, combined)
 
 
+    def test_editorial_interaction_parity_contracts_are_retained(self):
+        root = Path(__file__).resolve().parents[1]
+        home_js = (root / "home" / "static" / "js" / "editorial-v37-home.js").read_text(encoding="utf-8")
+        detail_js = (root / "home" / "static" / "js" / "editorial-v37-detail.js").read_text(encoding="utf-8")
+        shell_js = (root / "home" / "static" / "js" / "editorial-v37-shell.js").read_text(encoding="utf-8")
+        home_css = (root / "home" / "static" / "css" / "editorial-v37-home.css").read_text(encoding="utf-8")
+        detail_css = (root / "home" / "static" / "css" / "editorial-v37-detail.css").read_text(encoding="utf-8")
+        shell_css = (root / "home" / "static" / "css" / "editorial-v37-shell.css").read_text(encoding="utf-8")
+        motion = (root / "frontend" / "src" / "motion-runtime.js").read_text(encoding="utf-8")
+
+        for key in ("ArrowRight", "ArrowLeft", "Home", "End"):
+            with self.subTest(surface="treatment-rail", key=key):
+                self.assertIn(key, home_js)
+
+        for contract in (
+            'rail.setAttribute("role", "region")',
+            'rail.setAttribute("aria-label", "Treatment library")',
+            'item.setAttribute("role", "tab")',
+            'panel.setAttribute("role", "tabpanel")',
+            'nav.setAttribute("role", "tablist")',
+            'aria-current", "location"',
+            "IntersectionObserver",
+        ):
+            with self.subTest(contract=contract):
+                self.assertTrue(
+                    contract in home_js or contract in detail_js or contract in shell_js
+                )
+
+        self.assertIn("text-wrap: balance", home_css)
+        self.assertIn("text-wrap: pretty", detail_css)
+        self.assertIn("scroll-margin-top", home_css)
+        self.assertIn(":focus-visible", detail_css)
+        self.assertIn('[aria-current="location"]', shell_css)
+        self.assertIn(".v37-accordion details", motion)
+        self.assertIn('detail: { target: panel, kind: "swap" }', detail_js)
+
     def test_base_template_excludes_legacy_premium_runtime_when_v37_is_enabled(self):
         root = Path(__file__).resolve().parents[1]
         source = (root / "aastha_cms" / "templates" / "base.html").read_text(
