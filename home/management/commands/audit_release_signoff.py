@@ -8,6 +8,7 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
 from wagtail.models import Site
 
+from home.local_search import LOCAL_SEARCH_AREAS
 from home.models import (
     BlogPage,
     ClinicLocation,
@@ -155,6 +156,24 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
         if missing_fields or verification_reasons:
             doctor_pending.append(row)
 
+    verified_service_areas = {
+        area.casefold()
+        for profile in ClinicSEOProfile.objects.filter(
+            facts_verified_on__isnull=False
+        )
+        for area in profile.service_areas
+    }
+    local_search_ready = [
+        area
+        for area in LOCAL_SEARCH_AREAS
+        if area["name"].casefold() in verified_service_areas
+    ]
+    local_search_pending = [
+        area
+        for area in LOCAL_SEARCH_AREAS
+        if area["name"].casefold() not in verified_service_areas
+    ]
+
     settings = SiteSettings.for_site(site)
     site_pending = []
     if not settings.default_social_image_id:
@@ -170,6 +189,9 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             "doctors_total": len(doctor_rows),
             "doctors_pending": len(doctor_pending),
             "site_items_pending": len(site_pending),
+            "local_search_areas_total": len(LOCAL_SEARCH_AREAS),
+            "local_search_areas_ready": len(local_search_ready),
+            "local_search_areas_pending": len(local_search_pending),
         },
         "medical_review_pending": medical_pending,
         "clinics": clinic_rows,
@@ -177,6 +199,8 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
         "doctors": doctor_rows,
         "doctor_signoff_pending": doctor_pending,
         "site_signoff_pending": site_pending,
+        "local_search_ready": local_search_ready,
+        "local_search_pending": local_search_pending,
         "manual_confirmation": {
             "consultation_fee": str(settings.consultation_fee),
             "currency_symbol": settings.currency_symbol,
@@ -219,7 +243,9 @@ class Command(BaseCommand):
             "medical pages pending; "
             f"{summary['clinics_pending']}/{summary['clinics_total']} clinics pending; "
             f"{summary['doctors_pending']}/{summary['doctors_total']} doctors pending; "
-            f"{summary['site_items_pending']} site/media item(s) pending."
+            f"{summary['site_items_pending']} site/media item(s) pending; "
+            f"{summary['local_search_areas_ready']}/"
+            f"{summary['local_search_areas_total']} local-search areas verified."
         )
 
         for item in report["doctor_signoff_pending"]:
@@ -238,6 +264,12 @@ class Command(BaseCommand):
             )
         for item in report["site_signoff_pending"]:
             self.stdout.write(self.style.WARNING(f"SITE — {item}"))
+        for area in report["local_search_pending"]:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"LOCAL SEO — {area['name']}: service-area verification pending"
+                )
+            )
 
         if options.get("json_path"):
             path = options["json_path"]
@@ -252,6 +284,7 @@ class Command(BaseCommand):
             + summary["clinics_pending"]
             + summary["doctors_pending"]
             + summary["site_items_pending"]
+            + summary["local_search_areas_pending"]
         )
         if options.get("fail_on_pending") and pending:
             raise CommandError(
