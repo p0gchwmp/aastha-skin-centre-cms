@@ -26,8 +26,23 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        pages = list(Page.objects.live().public().specific().order_by("path"))
         default_site = Site.objects.filter(is_default_site=True).first()
+        if default_site is not None:
+            pages = list(
+                default_site.root_page.get_descendants(inclusive=True)
+                .live()
+                .public()
+                .specific()
+                .order_by("path")
+            )
+        else:
+            pages = list(
+                Page.objects.live()
+                .public()
+                .exclude(depth=1)
+                .specific()
+                .order_by("path")
+            )
         site_settings = SiteSettings.for_site(default_site) if default_site else None
         default_social_image = bool(
             site_settings and site_settings.default_social_image_id
@@ -43,7 +58,7 @@ class Command(BaseCommand):
         for page in pages:
             effective_title = (page.seo_title or page.title or "").strip()
             description = (page.search_description or "").strip()
-            path = page.url_path or f"page:{page.pk}"
+            path = page.get_url() or page.url_path or f"page:{page.pk}"
             titles[effective_title] += 1
             if description:
                 descriptions[description] += 1
