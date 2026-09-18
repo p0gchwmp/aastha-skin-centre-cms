@@ -57,6 +57,13 @@ PRIORITY_ROUTES = (
 SKIP_SCHEMES = ("mailto:", "tel:", "sms:", "javascript:", "data:")
 SKIP_PATH_PREFIXES = ("/admin/", "/assets/", "/media/", "/static/")
 NATIVE_PAGE_MODELS = {"homepage", "contentindexpage"}
+LEGACY_RUNTIME_MARKERS = (
+    "premium-v3-preview.css",
+    "premium-system-v11.css",
+    "premium-v3-preview.js",
+    "premium-system-v11.js",
+    "pastel-clay-sprite",
+)
 
 
 def _published_pages(site: Site) -> list[tuple[str, Page]]:
@@ -185,6 +192,14 @@ class Command(BaseCommand):
                 failures.append(f"{route}: editorial v37 assets/class missing")
             if "/concept/" in html:
                 failures.append(f"{route}: leaked /concept/ URL")
+            leaked_runtime = [
+                marker for marker in LEGACY_RUNTIME_MARKERS if marker in html
+            ]
+            if leaked_runtime:
+                failures.append(
+                    f"{route}: legacy runtime leaked under v37: "
+                    + ", ".join(leaked_runtime)
+                )
 
             soup = BeautifulSoup(html, "html.parser")
             if soup.title is None or not soup.title.get_text(strip=True):
