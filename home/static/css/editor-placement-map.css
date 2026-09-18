@@ -346,3 +346,227 @@
     align-items: start;
   }
 }
+
+
+/* SEO verification dashboard inside the Aastha Control Centre. */
+.aastha-seo-verification {
+  margin-bottom: 1.5rem;
+}
+
+.aastha-seo-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--aastha-line);
+}
+
+.aastha-seo-summary article {
+  padding: 1rem 1.25rem;
+  border-right: 1px solid var(--aastha-line);
+}
+
+.aastha-seo-summary article:last-child {
+  border-right: 0;
+}
+
+.aastha-seo-summary strong,
+.aastha-seo-summary span {
+  display: block;
+}
+
+.aastha-seo-summary strong {
+  color: var(--aastha-wine);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+}
+
+.aastha-seo-summary span {
+  margin-top: .25rem;
+  color: #756c73;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.aastha-seo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 0;
+}
+
+.aastha-seo-grid > section {
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.aastha-seo-grid > section + section {
+  border-left: 1px solid var(--aastha-line);
+}
+
+.aastha-seo-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, .8fr);
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.aastha-seo-section-head h3,
+.aastha-seo-entity h4,
+.aastha-seo-area h4 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.aastha-seo-section-head h3 {
+  margin: .25rem 0 0;
+  font-size: 1.7rem;
+}
+
+.aastha-seo-section-head p,
+.aastha-seo-entity p,
+.aastha-seo-area p,
+.aastha-seo-safety p {
+  margin: 0;
+  color: #756c73;
+  line-height: 1.5;
+}
+
+.aastha-seo-section-head p {
+  font-size: .82rem;
+}
+
+.aastha-seo-entity-list,
+.aastha-seo-area-list {
+  display: grid;
+  border: 1px solid var(--aastha-line);
+}
+
+.aastha-seo-entity,
+.aastha-seo-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: .9rem 1rem;
+  border-bottom: 1px solid var(--aastha-line);
+}
+
+.aastha-seo-entity:last-child,
+.aastha-seo-area:last-child {
+  border-bottom: 0;
+}
+
+.aastha-seo-entity h4,
+.aastha-seo-area h4 {
+  margin: .35rem 0 .2rem;
+  font-size: 1.15rem;
+}
+
+.aastha-seo-entity p,
+.aastha-seo-area p {
+  font-size: .78rem;
+}
+
+.aastha-seo-status {
+  display: inline-block;
+  padding: .18rem .48rem;
+  border: 1px solid rgba(111, 23, 53, .18);
+  border-radius: 999px;
+  background: #fff7f3;
+  color: #7a5427;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.aastha-seo-status.is-ready {
+  border-color: rgba(25, 112, 67, .22);
+  background: #eef8f1;
+  color: #24613f;
+}
+
+.aastha-seo-status.is-review {
+  border-color: rgba(118, 92, 23, .2);
+  background: #fbf6e7;
+  color: #725d20;
+}
+
+.aastha-seo-evidence,
+.aastha-seo-area-flags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .4rem .7rem;
+  max-width: 250px;
+  font-size: .72rem;
+}
+
+.aastha-seo-evidence a,
+.aastha-seo-area-flags a {
+  color: var(--aastha-wine);
+  font-weight: 800;
+}
+
+.aastha-seo-evidence span,
+.aastha-seo-area-flags span {
+  color: #81777e;
+}
+
+.aastha-seo-safety {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .9rem;
+  align-items: start;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--aastha-line);
+  background: #fbf8f2;
+}
+
+.aastha-seo-safety strong {
+  color: var(--aastha-wine);
+}
+
+.aastha-seo-safety p {
+  font-size: .82rem;
+}
+
+@media (max-width: 1100px) {
+  .aastha-seo-grid,
+  .aastha-seo-section-head {
+    grid-template-columns: 1fr;
+  }
+
+  .aastha-seo-grid > section + section {
+    border-top: 1px solid var(--aastha-line);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 750px) {
+  .aastha-seo-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aastha-seo-summary article:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .aastha-seo-summary article:nth-child(-n+2) {
+    border-bottom: 1px solid var(--aastha-line);
+  }
+
+  .aastha-seo-entity,
+  .aastha-seo-area,
+  .aastha-seo-safety {
+    grid-template-columns: 1fr;
+  }
+
+  .aastha-seo-evidence,
+  .aastha-seo-area-flags {
+    justify-content: flex-start;
+    max-width: none;
+  }
+}
