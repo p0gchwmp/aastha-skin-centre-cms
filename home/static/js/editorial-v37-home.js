@@ -5,21 +5,51 @@
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* Concern explorer: navigation only, never diagnosis. */
+  /* Concern explorer: accessible navigation only, never diagnosis. */
   const explorer = root.querySelector("[data-v37-concern-explorer]");
   if (explorer) {
     const tabs = [...explorer.querySelectorAll("[data-v37-concern]")];
+    const stage = explorer.querySelector(".v37-concern-stage");
     const title = explorer.querySelector("[data-v37-concern-title]");
     const copy = explorer.querySelector("[data-v37-concern-copy]");
     const link = explorer.querySelector("[data-v37-concern-link]");
 
-    const selectConcern = (tab) => {
-      tabs.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+    if (stage) {
+      stage.id ||= "v37-concern-panel";
+      stage.setAttribute("role", "tabpanel");
+    }
+
+    const selectConcern = (tab, { focus = false } = {}) => {
+      tabs.forEach((item, index) => {
+        item.id ||= `v37-concern-tab-${index + 1}`;
+        item.setAttribute("aria-selected", String(item === tab));
+        item.setAttribute("tabindex", item === tab ? "0" : "-1");
+        if (stage) item.setAttribute("aria-controls", stage.id);
+      });
+      if (stage && tab?.id) stage.setAttribute("aria-labelledby", tab.id);
       if (title) title.textContent = tab.dataset.title || "Explore care";
       if (copy) copy.textContent = tab.dataset.copy || "";
       if (link) link.href = tab.dataset.href || "/conditions/";
+      if (focus) tab.focus();
     };
-    tabs.forEach((tab) => tab.addEventListener("click", () => selectConcern(tab)));
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => selectConcern(tab));
+      tab.addEventListener("keydown", (event) => {
+        const keys = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+        if (!keys.includes(event.key)) return;
+        event.preventDefault();
+        let next = index;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % tabs.length;
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + tabs.length) % tabs.length;
+        if (event.key === "Home") next = 0;
+        if (event.key === "End") next = tabs.length - 1;
+        selectConcern(tabs[next], { focus: true });
+      });
+    });
+
+    const initial = tabs.find((tab) => tab.getAttribute("aria-selected") === "true") || tabs[0];
+    if (initial) selectConcern(initial);
   }
 
   /* Route finder: area-specific educational navigation, never diagnosis. */
@@ -31,6 +61,9 @@
     const title = finder.querySelector("[data-v37-route-title]");
     const copy = finder.querySelector("[data-v37-route-copy]");
     const link = finder.querySelector("[data-v37-route-link]");
+    const routeResult = finder.querySelector(".v37-route-result");
+    routeResult?.setAttribute("aria-live", "polite");
+    routeResult?.setAttribute("aria-atomic", "true");
     const state = { area: "face", concern: "" };
 
     const optionsByArea = {
@@ -44,7 +77,7 @@
       scalp: [
         { value: "hair-fall", label: "Hair fall", title: "Hair fall & thinning", copy: "Explore shedding, thinning, alopecia patterns and scalp assessment before treatment selection.", href: "/treatments/hair-fall-treatment/" },
         { value: "flaking-itch", label: "Flaking & itch", title: "Flaking, itch or dandruff", copy: "Explore scalp flaking and dermatitis information before choosing treatment.", href: "/treatments/seborrheic-dermatitis-dandruff/" },
-        { value: "smooth-patches", label: "Smooth patches", title: "Smooth patches of hair loss", copy: "Patchy hair loss has several possible causes. Start with a dermatologist-led assessment pathway.", href: "/conditions/" },
+        { value: "smooth-patches", label: "Smooth patches", title: "Smooth patches of hair loss", copy: "Patchy hair loss has several possible causes. Start with the alopecia areata guide and dermatologist-led assessment pathway.", href: "/treatments/alopecia-areata-treatment/" },
         { value: "scalp-bumps", label: "Scalp bumps", title: "Scalp bumps or inflammation", copy: "Scalp bumps can have several causes. Start with medical dermatology information rather than a procedure.", href: "/conditions/" }
       ],
       body: [
@@ -52,7 +85,7 @@
         { value: "body-acne", label: "Body acne", title: "Body acne & breakouts", copy: "Explore acne information and discuss body-site treatment during assessment.", href: "/treatments/acne-treatment/" },
         { value: "dark-patches", label: "Dark patches", title: "Dark patches & pigmentation", copy: "Explore pigmentation information and discuss the exact site, trigger and skin type during consultation.", href: "/treatments/pigmentation-treatment/" },
         { value: "unwanted-hair", label: "Unwanted hair", title: "Unwanted body hair", copy: "Explore dermatologist-guided laser hair reduction by skin type, hair thickness and treatment area.", href: "/treatments/laser-hair-reduction/" },
-        { value: "growth-lump", label: "Growth / lump", title: "Skin growth or lump", copy: "A changing, painful, bleeding or persistent growth should be assessed before any removal pathway is chosen.", href: "/conditions/" }
+        { value: "growth-lump", label: "Growth / lump", title: "Skin growth or lump", copy: "A changing, painful, bleeding or persistent growth should be assessed before any removal pathway is chosen.", href: "/treatments/wart-mole-skin-tag-removal/" }
       ]
     };
 
@@ -198,17 +231,4 @@
     }, true);
   }
 
-  /* Progressive reveal: cosmetic only and disabled for reduced motion. */
-  if (!reducedMotion && "IntersectionObserver" in window) {
-    const targets = [...root.querySelectorAll(".v37-section-head, .v37-concern-explorer, .v37-route-finder, .v37-doctor-grid, .v37-clinic-grid")];
-    targets.forEach((node) => node.classList.add("v37-reveal"));
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      });
-    }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
-    targets.forEach((node) => observer.observe(node));
-  }
-})();
+})();\n
