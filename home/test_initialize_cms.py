@@ -6,11 +6,14 @@ from home.management.commands.initialize_cms import (
     APPROVED_FACEBOOK_URL,
     APPROVED_HOMEPAGE_META_DESCRIPTION,
     APPROVED_HOMEPAGE_SEO_TITLE,
+    APPROVED_LOCATIONS_META_DESCRIPTION,
     APPROVED_SEARCH_CONSOLE_VERIFICATION,
+    LEGACY_LOCATIONS_META_DESCRIPTION,
     sync_approved_homepage_seo,
+    sync_approved_locations_seo,
     sync_approved_site_settings,
 )
-from home.models import HomePage, SiteSettings
+from home.models import ContentIndexPage, HomePage, SiteSettings
 
 
 class ApprovedSiteSettingsTests(TestCase):
@@ -126,3 +129,39 @@ class ApprovedHomepageSeoTests(TestCase):
             self.home.search_description,
             "Custom editor-authored homepage description.",
         )
+
+
+class ApprovedLocationsSeoTests(TestCase):
+    def setUp(self):
+        self.home = HomePage.objects.first()
+        self.assertIsNotNone(self.home)
+        self.locations = ContentIndexPage(
+            title="Clinic Locations in Jammu",
+            slug="locations",
+            index_kind="clinics",
+            search_description=LEGACY_LOCATIONS_META_DESCRIPTION,
+        )
+        self.home.add_child(instance=self.locations)
+
+    def test_legacy_locations_description_is_upgraded(self):
+        changed = sync_approved_locations_seo()
+
+        self.assertTrue(changed)
+        self.locations.refresh_from_db()
+        self.assertEqual(
+            self.locations.search_description,
+            APPROVED_LOCATIONS_META_DESCRIPTION,
+        )
+
+    def test_editor_authored_locations_description_is_preserved(self):
+        custom = (
+            "Custom editor-approved description for the Jammu clinic locations page."
+        )
+        self.locations.search_description = custom
+        self.locations.save(update_fields=["search_description"])
+
+        changed = sync_approved_locations_seo()
+
+        self.assertFalse(changed)
+        self.locations.refresh_from_db()
+        self.assertEqual(self.locations.search_description, custom)
