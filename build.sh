@@ -30,8 +30,11 @@ if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.
   python manage.py test \
     home.test_quality_gates \
     home.test_initialize_cms \
+    home.test_local_search \
     home.test_release_signoff \
-    seo_support.test_audit_seo_content
+    home.test_seo_foundation \
+    seo_support.test_audit_seo_content \
+    seo_support.tests
 fi
 
 python manage.py bootstrap_admin --if-configured
