@@ -167,3 +167,39 @@ html.editorial-v37 .v37-final-cta .button-secondary { color: #fff !important; bo
   html.editorial-v37 .v37-rail-controls .v37-kicker { min-width: 48px; }
   html.editorial-v37 .v37-doctor-grid ul { grid-template-columns: 1fr; }
 }
+
+
+/* Editorial concept parity: typography, anchors and keyboard surface. */
+html.editorial-v37 .v37-home :where(
+  .v37-hero-copy h1,
+  .v37-section-head h2,
+  .v37-drag-rail h3,
+  .process-chapter h3,
+  .v37-doctor-grid h3
+) { text-wrap: balance; }
+
+html.editorial-v37 .v37-home :where(
+  .v37-hero-copy > p,
+  .v37-section-head p,
+  .v37-drag-rail p,
+  .process-chapter p,
+  .v37-route-result p,
+  .v37-doctor-grid p
+) { text-wrap: pretty; }
+
+html.editorial-v37 .v37-home section[id],
+html.editorial-v37 .v37-home .process-chapter {
+  scroll-margin-top: 96px;
+}
+
+html.editorial-v37 .v37-drag-rail[tabindex="0"]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--v37-wine) 64%, white 36%);
+  outline-offset: 6px;
+}
+
+@media (max-width: 700px) {
+  html.editorial-v37 .v37-home section[id],
+  html.editorial-v37 .v37-home .process-chapter {
+    scroll-margin-top: 78px;
+  }
+}
