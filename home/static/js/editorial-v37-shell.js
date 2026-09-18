@@ -126,10 +126,56 @@
 
     const current = window.location.pathname.replace(/index\.html$/, "");
     nav.querySelectorAll("a").forEach((link) => {
-      const href = new URL(link.href, window.location.origin).pathname;
-      const active = href === current || (href !== "/" && current.startsWith(href));
+      const url = new URL(link.href, window.location.origin);
+      const href = url.pathname.replace(/index\.html$/, "");
+      const active = !url.hash && (href === current || (href !== "/" && current.startsWith(href)));
       if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
     });
+
+    if (current === "/" && "IntersectionObserver" in window) {
+      const pairs = [...nav.querySelectorAll('a[href*="#"]')]
+        .map((link) => {
+          const url = new URL(link.href, window.location.origin);
+          if (url.origin !== window.location.origin || url.pathname !== "/" || !url.hash) return null;
+          return { link, section: document.querySelector(url.hash) };
+        })
+        .filter(Boolean)
+        .filter(({ section }) => section);
+
+      if (pairs.length) {
+        const ratios = new Map();
+        const setCurrentSection = (section) => {
+          pairs.forEach(({ link, section: target }) => {
+            if (target === section) link.setAttribute("aria-current", "location");
+            else if (link.getAttribute("aria-current") === "location") link.removeAttribute("aria-current");
+          });
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+          let best = null;
+          let score = -1;
+          pairs.forEach(({ section }) => {
+            const ratio = ratios.get(section) || 0;
+            if (ratio > score) {
+              best = section;
+              score = ratio;
+            }
+          });
+          if (best && score > 0) setCurrentSection(best);
+        }, {
+          rootMargin: "-22% 0px -58% 0px",
+          threshold: [0, .05, .15, .3, .55],
+        });
+
+        pairs.forEach(({ link, section }) => {
+          observer.observe(section);
+          link.addEventListener("click", () => setCurrentSection(section));
+        });
+      }
+    }
+
     nav.querySelector("[data-v37-explore-trigger]")?.addEventListener("click", openExplore);
     return true;
   }
