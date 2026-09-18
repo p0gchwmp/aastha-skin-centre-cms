@@ -12,9 +12,18 @@ from home.management.commands.initialize_cms import (
     sync_approved_homepage_seo,
     sync_approved_locations_seo,
     sync_approved_site_settings,
+    sync_justdial_style_treatment_titles,
+    sync_local_search_pages,
     sync_non_indexable_utility_pages,
 )
-from home.models import ContentIndexPage, HomePage, SiteSettings, StandardPage
+from home.local_search import LOCAL_SEARCH_AREAS
+from home.models import (
+    ContentIndexPage,
+    HomePage,
+    SiteSettings,
+    StandardPage,
+    TreatmentPage,
+)
 
 
 class ApprovedSiteSettingsTests(TestCase):
@@ -194,3 +203,118 @@ class UtilityPageIndexingTests(TestCase):
         changed = sync_non_indexable_utility_pages()
 
         self.assertEqual(changed, [])
+
+
+
+class LocalSearchGraphTests(TestCase):
+    def setUp(self):
+        self.home = HomePage.objects.first()
+        self.assertIsNotNone(self.home)
+
+    def test_local_search_graph_is_complete_live_and_noindex(self):
+        result = sync_local_search_pages()
+
+        self.assertEqual(len(result["created"]), 1 + len(LOCAL_SEARCH_AREAS))
+        areas = self.home.get_children().filter(slug="areas").specific().first()
+        self.assertIsNotNone(areas)
+        self.assertTrue(areas.live)
+        self.assertTrue(areas.noindex)
+
+        children = list(areas.get_children().specific())
+        self.assertEqual(len(children), len(LOCAL_SEARCH_AREAS))
+        self.assertEqual(
+            {page.slug for page in children},
+            {area["slug"] for area in LOCAL_SEARCH_AREAS},
+        )
+        self.assertTrue(all(page.live for page in children))
+        self.assertTrue(all(page.noindex for page in children))
+
+    def test_existing_local_page_is_not_overwritten(self):
+        sync_local_search_pages()
+        areas = self.home.get_children().filter(slug="areas").specific().first()
+        page = (
+            areas.get_children()
+            .filter(slug=LOCAL_SEARCH_AREAS[0]["slug"])
+            .specific()
+            .first()
+        )
+        page.title = "Editor-owned local title"
+        page.seo_title = "Editor-owned SEO title"
+        page.search_description = "Editor-owned local description for testing."
+        page.save(
+            update_fields=["title", "seo_title", "search_description"]
+        )
+
+        result = sync_local_search_pages()
+
+        self.assertEqual(result["created"], [])
+        page.refresh_from_db()
+        self.assertEqual(page.title, "Editor-owned local title")
+        self.assertEqual(page.seo_title, "Editor-owned SEO title")
+        self.assertEqual(
+            page.search_description,
+            "Editor-owned local description for testing.",
+        )
+
+
+class JustdialStyleTreatmentTitleTests(TestCase):
+    def setUp(self):
+        self.home = HomePage.objects.first()
+        self.assertIsNotNone(self.home)
+        self.index = ContentIndexPage(
+            title="Treatments",
+            slug="seo-title-treatments",
+            index_kind="treatments",
+            search_description="Treatment directory used by SEO title tests.",
+        )
+        self.home.add_child(instance=self.index)
+        self.index.save_revision().publish()
+
+    def _treatment(self, *, title, slug, seo_title):
+        page = TreatmentPage(
+            title=title,
+            slug=slug,
+            seo_title=seo_title,
+            search_description=(
+                "A sufficiently descriptive treatment page description for "
+                "local SEO title regression testing."
+            ),
+        )
+        self.index.add_child(instance=page)
+        page.save_revision().publish()
+        return page
+
+    def test_blank_or_default_title_gets_jammu_intent(self):
+        blank = self._treatment(
+            title="Acne Treatment",
+            slug="acne-title-local-test",
+            seo_title="",
+        )
+        default = self._treatment(
+            title="Hair Fall Treatment",
+            slug="hair-title-local-test",
+            seo_title="Hair Fall Treatment",
+        )
+
+        sync_justdial_style_treatment_titles()
+
+        blank.refresh_from_db()
+        default.refresh_from_db()
+        self.assertEqual(blank.seo_title, "Acne Treatment in Jammu")
+        self.assertEqual(default.seo_title, "Hair Fall Treatment in Jammu")
+
+    def test_custom_editor_title_is_preserved(self):
+        page = self._treatment(
+            title="Pigmentation Treatment",
+            slug="pigmentation-title-local-test",
+            seo_title="Custom dermatologist-approved pigmentation title",
+        )
+
+        updated = sync_justdial_style_treatment_titles()
+
+        page.refresh_from_db()
+        self.assertNotIn(page.get_url(), updated)
+        self.assertEqual(
+            page.seo_title,
+            "Custom dermatologist-approved pigmentation title",
+        )
