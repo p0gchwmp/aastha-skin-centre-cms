@@ -15,6 +15,9 @@ from home.templatetags.editorial_v37 import (
     EDITORIAL_V37_GUIDES,
     EDITORIAL_V37_TEMPLATES,
 )
+from home.templatetags.editorial_v37_imported import (
+    is_editorial_v37_importable,
+)
 
 
 PRIORITY_ROUTES = (
@@ -75,13 +78,15 @@ def _published_pages(site: Site) -> list[tuple[str, Page]]:
     return sorted(result, key=lambda item: item[0])
 
 
-def _renderer_kind(page: Page) -> str:
+def _renderer_kind(path: str, page: Page) -> str:
     slug = getattr(page, "slug", "") or ""
     model = getattr(getattr(page, "content_type", None), "model", "") or ""
     if model in NATIVE_PAGE_MODELS:
         return "native"
     if slug in EDITORIAL_V37_TEMPLATES or slug in EDITORIAL_V37_GUIDES:
         return "native"
+    if is_editorial_v37_importable(page, path):
+        return "native-imported"
     return "legacy-fallback"
 
 
@@ -133,16 +138,22 @@ class Command(BaseCommand):
 
         native_routes: list[str] = []
         fallback_routes: list[str] = []
+        imported_routes: list[str] = []
         for path, page in published_pages:
-            if _renderer_kind(page) == "native":
+            renderer = _renderer_kind(path, page)
+            if renderer == "native":
                 native_routes.append(path)
+            elif renderer == "native-imported":
+                native_routes.append(path)
+                imported_routes.append(path)
             else:
                 fallback_routes.append(path)
 
         self.stdout.write(
             "Editorial v37 renderer coverage: "
             f"{len(native_routes)}/{len(published_pages)} live pages native; "
-            f"{len(fallback_routes)} legacy fallback."
+            f"{len(fallback_routes)} legacy fallback"
+            + (f"; {len(imported_routes)} use semantic import." if imported_routes else ".")
         )
         if fallback_routes:
             self.stdout.write(
