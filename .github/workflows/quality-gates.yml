@@ -2,6 +2,19 @@ name: Lighthouse and accessibility QA
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - concept/editorial-production-v37
+    paths:
+      - "home/**"
+      - "frontend/**"
+      - "aastha_cms/**"
+      - "seo_support/**"
+      - "tools/**"
+      - "build.sh"
+      - "requirements.txt"
+      - "lighthouserc.cjs"
+      - ".github/workflows/quality-gates.yml"
 
 permissions:
   contents: read
@@ -21,6 +34,7 @@ jobs:
       WAGTAILADMIN_BASE_URL: http://127.0.0.1:8000
       LHCI_BASE_URL: http://127.0.0.1:8000
       SECRET_KEY: quality-gate-only-not-for-production
+      AASTHA_EDITORIAL_V37: "1"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -126,11 +140,11 @@ jobs:
         if: always()
         run: cp /tmp/aastha-quality.log audit-artifacts/quality-server.log || true
 
-      - name: Upload quality evidence on failure
-        if: failure()
+      - name: Upload quality evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-accessibility-${{ github.sha }}
           path: audit-artifacts/
           if-no-files-found: warn
-          retention-days: 1
+          retention-days: 7
