@@ -14,6 +14,7 @@ from django.test import Client
 from wagtail.models import Page, Site
 
 from home.blocks import PageBodyStreamBlock
+from home.local_search import LOCAL_SEARCH_AREAS
 from home.models import (
     BlogPage,
     ClinicLocation,
@@ -138,8 +139,29 @@ class Command(BaseCommand):
             .public()
             .specific()
         )
-        if len(pages) != 77:
-            errors.append(f"Expected 77 public CMS pages; found {len(pages)}.")
+        expected_public_pages = 77 + 1 + len(LOCAL_SEARCH_AREAS)
+        if len(pages) != expected_public_pages:
+            errors.append(
+                f"Expected {expected_public_pages} public CMS pages; "
+                f"found {len(pages)}."
+            )
+        expected_area_paths = {
+            "/areas/",
+            *{
+                f"/areas/{area['slug']}/"
+                for area in LOCAL_SEARCH_AREAS
+            },
+        }
+        actual_area_paths = {
+            page.get_url()
+            for page in pages
+            if (page.get_url() or "").startswith("/areas/")
+        }
+        if actual_area_paths != expected_area_paths:
+            errors.append(
+                "Local-search area route set differs from the approved "
+                "patient-useful locality graph."
+            )
         if TreatmentPage.objects.live().public().count() != 52:
             errors.append("Expected 52 imported clinical treatment pages.")
         if BlogPage.objects.live().public().count() != 10:
