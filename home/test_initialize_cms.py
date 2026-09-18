@@ -12,8 +12,9 @@ from home.management.commands.initialize_cms import (
     sync_approved_homepage_seo,
     sync_approved_locations_seo,
     sync_approved_site_settings,
+    sync_non_indexable_utility_pages,
 )
-from home.models import ContentIndexPage, HomePage, SiteSettings
+from home.models import ContentIndexPage, HomePage, SiteSettings, StandardPage
 
 
 class ApprovedSiteSettingsTests(TestCase):
@@ -165,3 +166,31 @@ class ApprovedLocationsSeoTests(TestCase):
         self.assertFalse(changed)
         self.locations.refresh_from_db()
         self.assertEqual(self.locations.search_description, custom)
+
+
+class UtilityPageIndexingTests(TestCase):
+    def setUp(self):
+        self.home = HomePage.objects.first()
+        self.assertIsNotNone(self.home)
+        self.confirmation = StandardPage(
+            title="Appointment request received",
+            slug="appointment-request-received",
+            noindex=False,
+            search_description="Appointment request received.",
+        )
+        self.home.add_child(instance=self.confirmation)
+
+    def test_confirmation_page_is_forced_noindex(self):
+        changed = sync_non_indexable_utility_pages()
+
+        self.assertEqual(changed, ["/appointment-request-received/"])
+        self.confirmation.refresh_from_db()
+        self.assertTrue(self.confirmation.noindex)
+
+    def test_noindex_confirmation_page_is_idempotent(self):
+        self.confirmation.noindex = True
+        self.confirmation.save(update_fields=["noindex"])
+
+        changed = sync_non_indexable_utility_pages()
+
+        self.assertEqual(changed, [])
