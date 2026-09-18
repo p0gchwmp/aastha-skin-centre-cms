@@ -65,20 +65,19 @@ class Command(BaseCommand):
 
             page_errors: list[str] = []
             page_warnings: list[str] = []
+            noindex = bool(getattr(page, "noindex", False))
             if not description:
                 page_errors.append("missing meta description")
-            if len(effective_title) > 65:
+            if not noindex and len(effective_title) > 65:
                 page_warnings.append(f"long SEO title ({len(effective_title)} characters)")
-            if description and len(description) > 165:
+            if not noindex and description and len(description) > 165:
                 page_warnings.append(
                     f"long meta description ({len(description)} characters)"
                 )
-            if description and len(description) < 70:
+            if not noindex and description and len(description) < 70:
                 page_warnings.append(
                     f"short meta description ({len(description)} characters)"
                 )
-
-            noindex = bool(getattr(page, "noindex", False))
             canonical_override = (
                 getattr(page, "canonical_url_override", "") or ""
             ).strip()
@@ -101,10 +100,6 @@ class Command(BaseCommand):
                         f"medical review overdue since {next_review.isoformat()}"
                     )
 
-            social_image = bool(getattr(page, "social_image_id", None))
-            if not social_image and not default_social_image:
-                page_warnings.append("no page or default social image")
-
             page_rows.append(
                 {
                     "id": page.pk,
@@ -126,6 +121,9 @@ class Command(BaseCommand):
                 warnings.append(
                     f"duplicate meta description ({count} pages): {description!r}"
                 )
+
+        if not default_social_image:
+            warnings.append("site settings: no default social image")
 
         active_clinics = list(
             ClinicLocation.objects.filter(is_active=True, live=True).order_by(
