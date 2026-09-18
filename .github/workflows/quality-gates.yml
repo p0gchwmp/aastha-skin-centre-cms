@@ -44,6 +44,7 @@ jobs:
             @lhci/cli@0.15.1 \
             playwright@1.62.0 \
             @axe-core/playwright@4.12.1
+          npm --prefix frontend install --no-audit --no-fund
           npx playwright install --with-deps chromium
           node -e "const {chromium}=require('playwright'); console.log('CHROME_PATH='+chromium.executablePath())" >> "$GITHUB_ENV"
 
@@ -51,6 +52,11 @@ jobs:
         run: |
           node --check tools/audit_accessibility.mjs
           node --check lighthouserc.cjs
+          for js in home/static/js/editorial-v37*.js home/static/js/appointment-form-controller.js; do
+            if [ -f "$js" ]; then
+              node --check "$js"
+            fi
+          done
           python -m py_compile tools/summarize_lighthouse.py
           python -m py_compile tools/generate_responsive_clinical_images.py
           python -m py_compile tools/audit_clinical_result_images.py
@@ -65,6 +71,7 @@ jobs:
           python tools/generate_responsive_clinical_images.py
           python tools/audit_clinical_result_images.py
           python tools/verify_exact_page_snapshots.py
+          npm --prefix frontend run build
           python manage.py collectstatic --no-input
           python manage.py migrate --no-input
           python manage.py initialize_cms
