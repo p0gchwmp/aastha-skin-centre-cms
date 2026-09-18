@@ -128,6 +128,36 @@ class SchemaEnrichmentTests(TestCase):
         )
 
 
+    def test_unverified_profiles_do_not_enrich_schema(self):
+        self.clinic.seo_profile.facts_verified_on = None
+        self.clinic.seo_profile.save(update_fields=["facts_verified_on"])
+        self.doctor.seo_profile.facts_verified_on = None
+        self.doctor.seo_profile.save(update_fields=["facts_verified_on"])
+
+        clinic_id = _clinic_id(self.clinic, self.request, self.origin)
+        doctor_id = _doctor_id(self.doctor, self.request, self.origin)
+        payload = {
+            "@context": "https://schema.org",
+            "@graph": [
+                {"@type": "MedicalClinic", "@id": clinic_id},
+                {"@type": "Physician", "@id": doctor_id},
+            ],
+        }
+
+        enriched = enrich_structured_data(
+            payload,
+            clinics=[self.clinic],
+            doctors=[self.doctor],
+            request=self.request,
+            origin=self.origin,
+        )
+
+        clinic_entity, doctor_entity = enriched["@graph"]
+        self.assertNotIn("geo", clinic_entity)
+        self.assertNotIn("sameAs", clinic_entity)
+        self.assertNotIn("sameAs", doctor_entity)
+
+
 class HomepageSchemaTagTests(TestCase):
     def test_homepage_emits_json_ld_graph(self):
         request = RequestFactory().get("/")
@@ -168,33 +198,3 @@ class HomepageSchemaTagTests(TestCase):
         self.assertEqual(json.loads(result), payload)
         build.assert_called_once()
         self.assertEqual(build.call_args.kwargs["canonical_url"], context["canonical_url"])
-
-
-    def test_unverified_profiles_do_not_enrich_schema(self):
-        self.clinic.seo_profile.facts_verified_on = None
-        self.clinic.seo_profile.save(update_fields=["facts_verified_on"])
-        self.doctor.seo_profile.facts_verified_on = None
-        self.doctor.seo_profile.save(update_fields=["facts_verified_on"])
-
-        clinic_id = _clinic_id(self.clinic, self.request, self.origin)
-        doctor_id = _doctor_id(self.doctor, self.request, self.origin)
-        payload = {
-            "@context": "https://schema.org",
-            "@graph": [
-                {"@type": "MedicalClinic", "@id": clinic_id},
-                {"@type": "Physician", "@id": doctor_id},
-            ],
-        }
-
-        enriched = enrich_structured_data(
-            payload,
-            clinics=[self.clinic],
-            doctors=[self.doctor],
-            request=self.request,
-            origin=self.origin,
-        )
-
-        clinic_entity, doctor_entity = enriched["@graph"]
-        self.assertNotIn("geo", clinic_entity)
-        self.assertNotIn("sameAs", clinic_entity)
-        self.assertNotIn("sameAs", doctor_entity)
