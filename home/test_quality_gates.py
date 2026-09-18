@@ -23,6 +23,7 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("npm --prefix frontend install --no-audit --no-fund", workflow)
         self.assertIn("npm --prefix frontend run build", workflow)
         self.assertIn("home/static/js/editorial-v37*.js", workflow)
+        self.assertIn("python manage.py test", workflow)
         self.assertIn("retention-days: 1", workflow)
 
     def test_workflow_matches_render_asset_build_before_collectstatic(self):
