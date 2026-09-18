@@ -3,9 +3,10 @@
   <section class="v37-index-hero">
     <div class="v37-index-shell v37-index-hero-grid">
       <div>
-        <span class="v37-kicker">{{ page.get_index_kind_display }} · Aastha Jammu</span>
+        <span class="v37-kicker">{% if page.slug == "areas" %}Areas · Dermatology care from Jammu{% else %}{{ page.get_index_kind_display }} · Aastha Jammu{% endif %}</span>
         <h1>
-          {% if page.index_kind == "conditions" %}Start with what you are <em>noticing.</em>
+          {% if page.slug == "areas" %}Find dermatology care around <em>Jammu.</em>
+          {% elif page.index_kind == "conditions" %}Start with what you are <em>noticing.</em>
           {% elif page.index_kind == "treatments" %}Understand the option before you <em>choose it.</em>
           {% elif page.index_kind == "blog" %}Dermatology, explained <em>clearly.</em>
           {% elif page.index_kind == "clinics" %}Choose the clinic that fits your <em>day.</em>
@@ -19,7 +20,7 @@
         {% elif page.index_kind == "treatments" %}<p>Explore procedures and treatment pathways with context on where they may fit. Suitability is decided after assessment, not from a menu alone.</p>
         {% elif page.index_kind == "blog" %}<p>Patient education, practical dermatology and clinic updates written to make skin and hair decisions easier to understand.</p>
         {% else %}<p>Browse the current Aastha website directory.</p>{% endif %}
-        <div class="v37-actions"><a class="button" href="/book-appointment/">Book consultation</a>{% if page.index_kind != "conditions" %}<a class="button button-secondary" href="/conditions/">Browse concerns</a>{% endif %}</div>
+        <div class="v37-actions"><a class="button" href="/book-appointment/">Book consultation</a>{% if page.slug == "areas" %}<a class="button button-secondary" href="/locations/">Compare Jammu clinics</a>{% elif page.index_kind != "conditions" %}<a class="button button-secondary" href="/conditions/">Browse concerns</a>{% endif %}</div>
       </div>
     </div>
   </section>
@@ -51,7 +52,7 @@
               {% if entry.eyebrow %}<span>{{ entry.eyebrow }}</span>{% else %}<span>{{ page.get_index_kind_display }}</span>{% endif %}
               <h3>{{ entry.title }}</h3>
               <p>{{ entry.introduction|default:entry.search_description|default:"Open this guide for more information."|truncatewords:24 }}</p>
-              <strong>Open guide <i aria-hidden="true">↗</i></strong>
+              <strong>{% if page.slug == "areas" %}Open area guide{% else %}Open guide{% endif %} <i aria-hidden="true">↗</i></strong>
             </div>
           </a>
         {% empty %}
