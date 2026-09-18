@@ -5,25 +5,73 @@
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  root.querySelectorAll("[data-v37-choice-matrix]").forEach((matrix) => {
+  root.querySelectorAll("[data-v37-choice-matrix]").forEach((matrix, matrixIndex) => {
     const choices = [...matrix.querySelectorAll("[data-v37-choice]")];
     const title = matrix.querySelector("[data-v37-choice-title]");
     const copy = matrix.querySelector("[data-v37-choice-copy]");
-    const select = (choice) => {
-      choices.forEach((item) => item.setAttribute("aria-selected", String(item === choice)));
+    const panel = matrix.querySelector(".v37-choice-result");
+    if (panel) {
+      panel.id ||= `v37-choice-panel-${matrixIndex + 1}`;
+      panel.setAttribute("role", "tabpanel");
+    }
+
+    const select = (choice, { focus = false } = {}) => {
+      choices.forEach((item, index) => {
+        item.id ||= `v37-choice-${matrixIndex + 1}-${index + 1}`;
+        item.setAttribute("role", "tab");
+        item.setAttribute("aria-selected", String(item === choice));
+        item.tabIndex = item === choice ? 0 : -1;
+        if (panel) item.setAttribute("aria-controls", panel.id);
+      });
+      if (panel && choice?.id) panel.setAttribute("aria-labelledby", choice.id);
       if (title) title.textContent = choice.dataset.title || "Selected pattern";
       if (copy) copy.textContent = choice.dataset.copy || "";
+      if (focus) choice.focus({ preventScroll: true });
     };
-    choices.forEach((choice) => choice.addEventListener("click", () => select(choice)));
+
+    choices.forEach((choice, index) => {
+      choice.addEventListener("click", () => select(choice));
+      choice.addEventListener("keydown", (event) => {
+        let next = null;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % choices.length;
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + choices.length) % choices.length;
+        if (event.key === "Home") next = 0;
+        if (event.key === "End") next = choices.length - 1;
+        if (next === null) return;
+        event.preventDefault();
+        select(choices[next], { focus: true });
+      });
+    });
+
+    const initial = choices.find((choice) => choice.getAttribute("aria-selected") === "true") || choices[0];
+    if (initial) select(initial);
   });
 
-  root.querySelectorAll("[data-v37-atlas]").forEach((atlas) => {
+  root.querySelectorAll("[data-v37-atlas]").forEach((atlas, atlasIndex) => {
     const choices = [...atlas.querySelectorAll("[data-v37-atlas-choice]")];
+    const nav = atlas.querySelector(".v37-atlas-nav");
+    const stage = atlas.querySelector(".v37-atlas-stage");
     const title = atlas.querySelector("[data-v37-atlas-title]");
     const copy = atlas.querySelector("[data-v37-atlas-copy]");
     const links = atlas.querySelector("[data-v37-atlas-links]");
-    const select = (choice) => {
-      choices.forEach((item) => item.setAttribute("aria-selected", String(item === choice)));
+    if (nav) {
+      nav.setAttribute("role", "tablist");
+      nav.setAttribute("aria-orientation", "vertical");
+    }
+    if (stage) {
+      stage.id ||= `v37-atlas-panel-${atlasIndex + 1}`;
+      stage.setAttribute("role", "tabpanel");
+    }
+
+    const select = (choice, { focus = false } = {}) => {
+      choices.forEach((item, index) => {
+        item.id ||= `v37-atlas-tab-${atlasIndex + 1}-${index + 1}`;
+        item.setAttribute("role", "tab");
+        item.setAttribute("aria-selected", String(item === choice));
+        item.tabIndex = item === choice ? 0 : -1;
+        if (stage) item.setAttribute("aria-controls", stage.id);
+      });
+      if (stage && choice?.id) stage.setAttribute("aria-labelledby", choice.id);
       if (title) title.textContent = choice.dataset.title || "Selected pathway";
       if (copy) copy.textContent = choice.dataset.copy || "";
       if (links) {
@@ -38,8 +86,25 @@
           });
         } catch (_) {}
       }
+      if (focus) choice.focus({ preventScroll: true });
     };
-    choices.forEach((choice) => choice.addEventListener("click", () => select(choice)));
+
+    choices.forEach((choice, index) => {
+      choice.addEventListener("click", () => select(choice));
+      choice.addEventListener("keydown", (event) => {
+        let next = null;
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") next = (index + 1) % choices.length;
+        if (event.key === "ArrowUp" || event.key === "ArrowLeft") next = (index - 1 + choices.length) % choices.length;
+        if (event.key === "Home") next = 0;
+        if (event.key === "End") next = choices.length - 1;
+        if (next === null) return;
+        event.preventDefault();
+        select(choices[next], { focus: true });
+      });
+    });
+
+    const initial = choices.find((choice) => choice.getAttribute("aria-selected") === "true") || choices[0];
+    if (initial) select(initial);
   });
 
   root.querySelectorAll("[data-v37-story]").forEach((story) => {
@@ -121,19 +186,54 @@
   const clinicSwitch = root.querySelector("[data-v37-clinic-switch]");
   if (clinicSwitch) {
     const tabs = [...clinicSwitch.querySelectorAll("[data-v37-clinic-choice]")];
+    const panel = clinicSwitch.querySelector("[data-v37-clinic-panel]") || clinicSwitch;
     const name = clinicSwitch.querySelector("[data-v37-clinic-name]");
     const address = clinicSwitch.querySelector("[data-v37-clinic-address]");
     const hours = clinicSwitch.querySelector("[data-v37-clinic-hours]");
     const details = clinicSwitch.querySelector("[data-v37-clinic-details]");
     const directions = clinicSwitch.querySelector("[data-v37-clinic-directions]");
-    tabs.forEach((tab) => tab.addEventListener("click", () => {
-      tabs.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+
+    panel.id ||= "v37-clinic-panel";
+    panel.setAttribute("role", "tabpanel");
+
+    const select = (tab, { focus = false } = {}) => {
+      tabs.forEach((item, index) => {
+        item.id ||= `v37-clinic-tab-${index + 1}`;
+        item.setAttribute("role", "tab");
+        item.setAttribute("aria-selected", String(item === tab));
+        item.tabIndex = item === tab ? 0 : -1;
+        item.setAttribute("aria-controls", panel.id);
+      });
+      if (tab?.id) panel.setAttribute("aria-labelledby", tab.id);
       if (name) name.textContent = tab.dataset.name || "Aastha Skin Centre";
       if (address) address.textContent = tab.dataset.address || "";
       if (hours) hours.innerHTML = tab.dataset.hours || "";
       if (details) details.href = tab.dataset.details || "/locations/";
       if (directions) directions.href = tab.dataset.directions || "/locations/";
-    }));
+      if (!reducedMotion) {
+        window.dispatchEvent(new CustomEvent("aastha:v37-motion", {
+          detail: { target: panel, kind: "swap" },
+        }));
+      }
+      if (focus) tab.focus({ preventScroll: true });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", (event) => {
+        let next = null;
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") next = (index + 1) % tabs.length;
+        if (event.key === "ArrowUp" || event.key === "ArrowLeft") next = (index - 1 + tabs.length) % tabs.length;
+        if (event.key === "Home") next = 0;
+        if (event.key === "End") next = tabs.length - 1;
+        if (next === null) return;
+        event.preventDefault();
+        select(tabs[next], { focus: true });
+      });
+    });
+
+    const initial = tabs.find((tab) => tab.getAttribute("aria-selected") === "true") || tabs[0];
+    if (initial) select(initial);
   }
 
   if (!reducedMotion && "IntersectionObserver" in window) {
