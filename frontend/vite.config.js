@@ -1,18 +1,21 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const frontendRoot = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: path.resolve(process.cwd(), "../home/static/ui"),
+    outDir: path.resolve(frontendRoot, "../home/static/ui"),
     emptyOutDir: true,
     sourcemap: false,
     cssCodeSplit: false,
     rollupOptions: {
       input: {
-        "kokonut-explore": path.resolve(process.cwd(), "src/kokonut-explore.jsx"),
-        "bklit-insights": path.resolve(process.cwd(), "src/bklit-insights.jsx"),
+        "kokonut-explore": path.resolve(frontendRoot, "src/kokonut-explore.jsx"),
+        "bklit-insights": path.resolve(frontendRoot, "src/bklit-insights.jsx"),
       },
       output: {
         entryFileNames: "[name].js",
