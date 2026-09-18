@@ -20,6 +20,9 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("LHCI_FORM_FACTOR: mobile", workflow)
         self.assertIn("LHCI_FORM_FACTOR: desktop", workflow)
         self.assertIn("tools/audit_accessibility.mjs", workflow)
+        self.assertIn("npm --prefix frontend install --no-audit --no-fund", workflow)
+        self.assertIn("npm --prefix frontend run build", workflow)
+        self.assertIn("home/static/js/editorial-v37*.js", workflow)
         self.assertIn("retention-days: 1", workflow)
 
     def test_workflow_matches_render_asset_build_before_collectstatic(self):
@@ -43,14 +46,22 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("DJANGO_SETTINGS_MODULE: aastha_cms.settings.quality", workflow)
         self.assertIn("gunicorn aastha_cms.wsgi:application", workflow)
 
-    def test_production_build_generates_responsive_clinical_assets(self):
+    def test_production_build_generates_and_audits_frontend_assets(self):
         build = self.read("build.sh")
         responsive_clinical = build.index(
             "python tools/generate_responsive_clinical_images.py"
         )
+        audit_clinical = build.index(
+            "python tools/audit_clinical_result_images.py"
+        )
+        frontend_build = build.index("npm --prefix frontend run build")
+        js_syntax_gate = build.index("node --check")
         collectstatic = build.index("python manage.py collectstatic --no-input")
 
-        self.assertLess(responsive_clinical, collectstatic)
+        self.assertLess(responsive_clinical, audit_clinical)
+        self.assertLess(audit_clinical, collectstatic)
+        self.assertLess(frontend_build, collectstatic)
+        self.assertLess(js_syntax_gate, collectstatic)
 
     def test_lighthouse_config_covers_representative_pages_and_strict_targets(self):
         config = self.read("lighthouserc.cjs")
