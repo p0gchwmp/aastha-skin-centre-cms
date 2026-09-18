@@ -21,6 +21,13 @@ APPROVED_HOMEPAGE_META_DESCRIPTION = (
     "Dermatologist-led skin, hair, laser and cosmetic care in Jammu at Aastha "
     "Skin & Dermato-Cosmetic Centre. Book a consultation with Dr. Cheena Langer."
 )
+LEGACY_LOCATIONS_META_DESCRIPTION = (
+    "Find Aastha Skin Centre at Karan Nagar and Paloura Chowk in Jammu."
+)
+APPROVED_LOCATIONS_META_DESCRIPTION = (
+    "Find Aastha Skin Centre clinics in Jammu at Karan Nagar and Paloura Chowk, "
+    "with branch details, contact information and directions."
+)
 LEGACY_FACEBOOK_URLS = {
     "",
     "https://facebook.com",
@@ -48,6 +55,29 @@ def sync_approved_homepage_seo(home):
         setattr(home, field_name, value)
     home.save(update_fields=list(updates))
     return list(updates)
+
+
+def sync_approved_locations_seo():
+    """Upgrade only the known legacy locations description."""
+    locations = (
+        HomePage.objects.first()
+        .get_children()
+        .filter(slug="locations")
+        .specific()
+        .first()
+        if HomePage.objects.first()
+        else None
+    )
+    if locations is None:
+        return False
+
+    current = (locations.search_description or "").strip()
+    if current not in {"", LEGACY_LOCATIONS_META_DESCRIPTION}:
+        return False
+
+    locations.search_description = APPROVED_LOCATIONS_META_DESCRIPTION
+    locations.save(update_fields=["search_description"])
+    return True
 
 
 def sync_approved_site_settings(site):
@@ -127,6 +157,8 @@ class Command(BaseCommand):
                 + ", ".join(homepage_seo_updates)
                 + "."
             )
+        if sync_approved_locations_seo():
+            self.stdout.write("Approved locations SEO description applied.")
 
         has_content = (
             TreatmentPage.objects.exists()
@@ -145,4 +177,5 @@ class Command(BaseCommand):
         site = Site.objects.filter(is_default_site=True).first()
         sync_approved_site_settings(site)
         sync_approved_homepage_seo(HomePage.objects.first())
+        sync_approved_locations_seo()
         self.sync_editor_state()
