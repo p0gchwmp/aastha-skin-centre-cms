@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 
 from home.models import ExactPageLayout, SiteSettings
 from home.templatetags.exact_pages import apply_global_facts, normalise_path
+from home.templatetags.editorial_v37 import EDITORIAL_V37_GUIDES, EDITORIAL_V37_TEMPLATES
 
 register = template.Library()
 
@@ -324,7 +325,12 @@ def _build_imported_article(page, request):
 
 @register.simple_tag(takes_context=True)
 def editorial_v37_imported_article(context, page):
+    if not context.get("editorial_v37_enabled"):
+        return {}
     request = context.get("request")
+    slug = getattr(page, "slug", "") or ""
+    if slug in EDITORIAL_V37_TEMPLATES or slug in EDITORIAL_V37_GUIDES:
+        return {}
     if request is None or not is_editorial_v37_importable(page, request.path_info):
         return {}
     return _build_imported_article(page, request)
