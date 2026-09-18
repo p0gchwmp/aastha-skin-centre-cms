@@ -14,6 +14,7 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       input: {
+        "motion-runtime": path.resolve(frontendRoot, "src/motion-runtime.js"),
         "kokonut-explore": path.resolve(frontendRoot, "src/kokonut-explore.jsx"),
         "bklit-insights": path.resolve(frontendRoot, "src/bklit-insights.jsx"),
       },
