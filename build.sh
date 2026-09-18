@@ -33,6 +33,7 @@ if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.
     home.test_local_search \
     home.test_release_signoff \
     home.test_seo_foundation \
+    home.test_seo_verification \
     seo_support.test_audit_seo_content \
     seo_support.tests
 fi
