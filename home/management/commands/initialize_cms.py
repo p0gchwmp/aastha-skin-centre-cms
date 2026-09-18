@@ -11,7 +11,9 @@ from home.exact_editor_sync import (
 from home.local_search import LOCAL_SEARCH_AREAS, area_description, area_intro, area_title
 from home.models import (
     BlogPage,
+    ClinicPage,
     ContentIndexPage,
+    DoctorPage,
     HomePage,
     SiteSettings,
     StandardPage,
@@ -210,6 +212,44 @@ def sync_justdial_style_treatment_titles():
     return updated
 
 
+def sync_justdial_style_profile_titles():
+    """Add local intent to default doctor/clinic SEO titles only."""
+    updated = []
+
+    for page in DoctorPage.objects.live().public().select_related("doctor"):
+        current = (page.seo_title or "").strip()
+        title = (page.title or "").strip()
+        if current not in {"", title}:
+            continue
+        doctor = page.doctor
+        name = doctor.name if doctor else title
+        candidate = (
+            name if "jammu" in name.casefold()
+            else f"{name}, Dermatologist in Jammu"
+        )
+        if candidate != current and len(candidate) <= 65:
+            page.seo_title = candidate
+            page.save(update_fields=["seo_title"])
+            updated.append(page.get_url() or page.url_path)
+
+    for page in ClinicPage.objects.live().public().select_related("clinic"):
+        current = (page.seo_title or "").strip()
+        title = (page.title or "").strip()
+        if current not in {"", title}:
+            continue
+        clinic = page.clinic
+        locality = clinic.name if clinic else title
+        candidate = f"Dermatologist & Skin Clinic in {locality}, Jammu"
+        if "jammu" in locality.casefold():
+            candidate = f"Dermatologist & Skin Clinic in {locality}"
+        if candidate != current and len(candidate) <= 65:
+            page.seo_title = candidate
+            page.save(update_fields=["seo_title"])
+            updated.append(page.get_url() or page.url_path)
+
+    return updated
+
+
 def sync_approved_site_settings(site):
     """Fill approved blank/placeholder settings without overwriting later edits."""
     if site is None:
@@ -315,6 +355,12 @@ class Command(BaseCommand):
                     f"Applied Jammu-intent SEO titles to {len(local_title_updates)} "
                     "treatment page(s) with blank/default titles."
                 )
+            profile_title_updates = sync_justdial_style_profile_titles()
+            if profile_title_updates:
+                self.stdout.write(
+                    f"Applied local-intent SEO titles to {len(profile_title_updates)} "
+                    "doctor/clinic page(s) with blank/default titles."
+                )
             self.sync_editor_state()
             self.stdout.write(
                 "CMS already contains pages; starter import skipped."
@@ -330,4 +376,5 @@ class Command(BaseCommand):
         sync_non_indexable_utility_pages()
         sync_local_search_pages()
         sync_justdial_style_treatment_titles()
+        sync_justdial_style_profile_titles()
         self.sync_editor_state()
