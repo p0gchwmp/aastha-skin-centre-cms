@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.core.management.base import BaseCommand, CommandError
 from django.test import Client
 from wagtail.models import Page, Site
@@ -129,6 +130,21 @@ class Command(BaseCommand):
             or os.environ.get("RENDER_EXTERNAL_HOSTNAME")
             or "localhost"
         ).split(":", 1)[0].lower()
+
+        required_ui_assets = (
+            "ui/kokonut-explore.js",
+            "ui/bklit-insights.js",
+            "css/editorial-v37-kokonut.css",
+            "js/editorial-v37-motion.js",
+        )
+        missing_ui_assets = [
+            asset for asset in required_ui_assets if not finders.find(asset)
+        ]
+        if missing_ui_assets:
+            raise CommandError(
+                "Editorial UI build is incomplete; missing: "
+                + ", ".join(missing_ui_assets)
+            )
         secure = not settings.DEBUG
         client = Client(HTTP_HOST=host)
         failures: list[str] = []
@@ -264,6 +280,21 @@ class Command(BaseCommand):
         if admin.status_code in {301, 302} and "/admin/login/" not in location:
             failures.append(f"/admin/: unexpected redirect target {location!r}")
 
+        insights = client.get(
+            "/admin/website-insights/", secure=secure, follow=False
+        )
+        if insights.status_code not in {301, 302}:
+            failures.append(
+                "/admin/website-insights/: expected login redirect, "
+                f"got {insights.status_code}"
+            )
+        insights_location = insights.headers.get("Location", "")
+        if insights.status_code in {301, 302} and "/admin/login/" not in insights_location:
+            failures.append(
+                "/admin/website-insights/: unexpected redirect target "
+                f"{insights_location!r}"
+            )
+
         control_centre = client.get(
             "/admin/aastha-control-centre/", secure=secure, follow=False
         )
@@ -292,6 +323,6 @@ class Command(BaseCommand):
                 "Editorial v37 audit passed: "
                 f"{len(audit_routes)} public routes, {len(discovered_links)} internal links, "
                 f"{len(native_routes)} native renderers, "
-                "booking/admin contracts and document-integrity checks."
+                "booking/admin contracts, UI island assets and document-integrity checks."
             )
         )
