@@ -25,6 +25,135 @@
     <article><strong>{{ counts.doctors }}</strong><span>doctor profiles</span></article>
   </section>
 
+  <section class="aastha-cc-panel aastha-seo-verification" aria-labelledby="aastha-seo-verification-title">
+    <div class="aastha-cc-heading">
+      <div>
+        <span class="aastha-cc-kicker">Local entity SEO</span>
+        <h2 id="aastha-seo-verification-title">Verification & indexation readiness</h2>
+      </div>
+      <div class="aastha-cc-route-actions">
+        <a class="button button-small button-secondary" href="{{ seo_verification.links.clinic_profiles }}">Clinic SEO profiles</a>
+        <a class="button button-small button-secondary" href="{{ seo_verification.links.doctor_profiles }}">Doctor SEO profiles</a>
+      </div>
+    </div>
+
+    <div class="aastha-seo-summary" aria-label="SEO verification summary">
+      <article>
+        <strong>{{ seo_verification.counts.clinic_ready }}/{{ seo_verification.counts.clinic_total }}</strong>
+        <span>clinic entities ready</span>
+      </article>
+      <article>
+        <strong>{{ seo_verification.counts.doctor_ready }}/{{ seo_verification.counts.doctor_total }}</strong>
+        <span>doctor entities ready</span>
+      </article>
+      <article>
+        <strong>{{ seo_verification.counts.area_verified }}/{{ seo_verification.counts.area_total }}</strong>
+        <span>areas verified</span>
+      </article>
+      <article>
+        <strong>{{ seo_verification.counts.area_indexable }}/{{ seo_verification.counts.area_total }}</strong>
+        <span>areas indexable</span>
+      </article>
+    </div>
+
+    <div class="aastha-seo-grid">
+      <section>
+        <div class="aastha-seo-section-head">
+          <div>
+            <span class="aastha-cc-kicker">Physical entities</span>
+            <h3>Clinics + doctor</h3>
+          </div>
+          <p>Candidate identity URLs may be prefilled, but schema remains blocked until the profile receives an explicit verification date.</p>
+        </div>
+
+        <div class="aastha-seo-entity-list">
+          {% for item in seo_verification.clinics %}
+            <article class="aastha-seo-entity">
+              <div>
+                <span class="aastha-seo-status {% if item.ready %}is-ready{% else %}is-pending{% endif %}">
+                  {% if item.ready %}Ready{% else %}Pending{% endif %}
+                </span>
+                <h4>{{ item.name }}</h4>
+                {% if item.missing %}
+                  <p>Needs: {{ item.missing|join:", " }}</p>
+                {% else %}
+                  <p>Verified local entity profile is ready for structured data.</p>
+                {% endif %}
+              </div>
+              {% if item.profile %}
+                <div class="aastha-seo-evidence">
+                  {% if item.profile.google_business_url %}<a href="{{ item.profile.google_business_url }}" target="_blank" rel="noopener">Google ↗</a>{% endif %}
+                  {% if item.profile.justdial_url %}<a href="{{ item.profile.justdial_url }}" target="_blank" rel="noopener">Justdial ↗</a>{% endif %}
+                  {% if item.profile.practo_clinic_url %}<a href="{{ item.profile.practo_clinic_url }}" target="_blank" rel="noopener">Practo ↗</a>{% endif %}
+                  <span>{% if item.profile.facts_verified_on %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }}{% else %}Not approved yet{% endif %}</span>
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+
+          {% for item in seo_verification.doctors %}
+            <article class="aastha-seo-entity">
+              <div>
+                <span class="aastha-seo-status {% if item.ready %}is-ready{% else %}is-pending{% endif %}">
+                  {% if item.ready %}Ready{% else %}Pending{% endif %}
+                </span>
+                <h4>{{ item.name }}</h4>
+                {% if item.missing %}
+                  <p>Needs: {{ item.missing|join:", " }}</p>
+                {% else %}
+                  <p>Verified professional identity is ready for Physician schema.</p>
+                {% endif %}
+              </div>
+              {% if item.profile %}
+                <div class="aastha-seo-evidence">
+                  {% if item.profile.practo_url %}<a href="{{ item.profile.practo_url }}" target="_blank" rel="noopener">Practo ↗</a>{% endif %}
+                  {% if item.profile.linkedin_url %}<a href="{{ item.profile.linkedin_url }}" target="_blank" rel="noopener">LinkedIn ↗</a>{% endif %}
+                  {% if item.profile.google_scholar_url %}<a href="{{ item.profile.google_scholar_url }}" target="_blank" rel="noopener">Scholar ↗</a>{% endif %}
+                  {% if item.profile.orcid_url %}<a href="{{ item.profile.orcid_url }}" target="_blank" rel="noopener">ORCID ↗</a>{% endif %}
+                  <span>{% if item.profile.facts_verified_on %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }}{% else %}Not approved yet{% endif %}</span>
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section>
+        <div class="aastha-seo-section-head">
+          <div>
+            <span class="aastha-cc-kicker">Justdial-style locality graph</span>
+            <h3>18 area hubs</h3>
+          </div>
+          <p>Verification and indexation are separate. A page can be reviewed first and only activated after its service-area fact is approved.</p>
+        </div>
+
+        <div class="aastha-seo-area-list">
+          {% for area in seo_verification.areas %}
+            <article class="aastha-seo-area">
+              <div>
+                <span class="aastha-seo-status {% if area.ready %}is-ready{% elif area.fact_verified %}is-review{% else %}is-pending{% endif %}">
+                  {{ area.status }}
+                </span>
+                <h4>{{ area.name }}</h4>
+                <p>{{ area.path }}</p>
+              </div>
+              <div class="aastha-seo-area-flags">
+                <span>Fact {% if area.fact_verified %}✓{% else %}—{% endif %}</span>
+                <span>Index {% if area.indexable %}✓{% else %}—{% endif %}</span>
+                {% if area.page %}<a href="/admin/pages/{{ area.page.pk }}/edit/">Edit</a>{% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <div class="aastha-seo-safety">
+      <strong>Safety rule</strong>
+      <p>No candidate URL or populated field unlocks local schema or locality indexing by itself. Approval still requires a dated SEO profile, and area pages remain noindex until the verified-only activation step is explicitly applied.</p>
+    </div>
+  </section>
+
   <div class="aastha-cc-layout">
     <section class="aastha-cc-panel">
       <div class="aastha-cc-heading">
