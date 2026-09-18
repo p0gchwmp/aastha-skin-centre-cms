@@ -168,8 +168,9 @@ class Command(BaseCommand):
                     "slug": "locations",
                     "seo_title": "Aastha Skin Centre Locations in Jammu",
                     "search_description": (
-                        "Find Aastha Skin Centre at Karan Nagar and Paloura "
-                        "Chowk in Jammu."
+                        "Find Aastha Skin Centre clinics in Jammu at Karan Nagar and "
+                        "Paloura Chowk, with branch details, contact information and "
+                        "directions."
                     ),
                     "eyebrow": "Two Jammu clinics",
                     "introduction": (
