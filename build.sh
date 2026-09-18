@@ -25,6 +25,10 @@ if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.
     --json audit-artifacts/staging-seo-content.json \
     --fail-on-errors
   python manage.py qa_cms_release
+  python manage.py test \
+    home.test_quality_gates \
+    home.test_initialize_cms \
+    seo_support.test_audit_seo_content
 fi
 
 python manage.py bootstrap_admin --if-configured
