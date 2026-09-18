@@ -201,8 +201,8 @@ def sync_justdial_style_treatment_titles():
         title = (page.title or "").strip()
         if current not in {"", title}:
             continue
-        candidate = f"{title} in Jammu"
-        if len(candidate) > 65:
+        candidate = title if "jammu" in title.casefold() else f"{title} in Jammu"
+        if candidate == current or len(candidate) > 65:
             continue
         page.seo_title = candidate
         page.save(update_fields=["seo_title"])
