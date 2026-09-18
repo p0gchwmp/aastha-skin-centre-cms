@@ -1,0 +1,156 @@
+{% load static wagtailcore_tags wagtailimages_tags %}
+{% with area=local_search_area %}
+<main id="main-content" class="v37-detail v37-local-area-page">
+  <section class="v37-detail-hero">
+    <div class="v37-detail-hero-grid">
+      <div class="v37-detail-hero-copy">
+        <span class="v37-kicker">Dermatology care · Jammu</span>
+        <h1>{{ page.title }}<em>.</em></h1>
+        <p>{{ page.introduction }}</p>
+        <div class="v37-actions">
+          <a class="button" href="/book-appointment/">Request appointment</a>
+          <a class="button button-secondary" href="#clinics">See Jammu clinics ↓</a>
+        </div>
+      </div>
+      <figure class="v37-detail-media">
+        {% if page.hero_image %}
+          {% image page.hero_image fill-900x1100-c100 loading="eager" decoding="async" fetchpriority="high" %}
+        {% else %}
+          <img src="{% static 'images/visual-cues/two-clinic-locations-512.webp' %}" alt="" width="512" height="512" loading="eager" decoding="async" fetchpriority="high">
+        {% endif %}
+        <figcaption>
+          {% if area.kind == "regional" %}
+            Consultations take place at Aastha Skin Centre clinics in Jammu
+          {% else %}
+            Two Aastha Skin Centre clinic locations in Jammu
+          {% endif %}
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="v37-meta-strip" aria-label="Local care summary">
+    <div class="v37-meta-grid">
+      <div><strong>2</strong><span>Jammu clinic locations</span></div>
+      <div><strong>MD</strong><span>dermatologist-led care</span></div>
+      <div><strong>Skin + hair</strong><span>medical and procedural care</span></div>
+      <div><strong>Request</strong><span>appointment before visiting</span></div>
+    </div>
+  </section>
+
+  <section class="v37-detail-section">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head">
+        <span>01 / Explore care</span>
+        <div>
+          <h2>Common skin, hair and laser services in Jammu.</h2>
+          <p>Start with the concern or treatment you want to understand. The final plan is decided after clinical assessment.</p>
+        </div>
+      </header>
+      <div class="v37-directory">
+        {% for treatment in local_search_treatments %}
+          <a href="{% pageurl treatment %}">
+            <span class="idx">{{ forloop.counter|stringformat:"02d" }}</span>
+            <strong>{{ treatment.title }} in Jammu</strong>
+            <p>{{ treatment.search_description|default:treatment.introduction|truncatewords:20 }}</p>
+            <span aria-hidden="true">↗</span>
+          </a>
+        {% endfor %}
+        <a href="/treatments/">
+          <span class="idx">+</span>
+          <strong>Browse all treatments</strong>
+          <p>Explore the complete dermatology, hair, laser and dermato-cosmetic treatment directory.</p>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="v37-detail-section v37-detail-section--tone" id="clinics">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head">
+        <span>02 / Clinic locations</span>
+        <div>
+          <h2>Choose the Jammu clinic that is convenient for your visit.</h2>
+          {% if area.kind == "regional" %}
+            <p>Aastha Skin Centre does not claim a clinic in {{ area.name }}. Consultations are at the Jammu branches below.</p>
+          {% else %}
+            <p>Patients searching from {{ area.name }} can request an appointment at either Jammu branch.</p>
+          {% endif %}
+        </div>
+      </header>
+      <div class="v37-reading-grid">
+        {% for clinic in clinic_locations %}
+          <article class="v37-reading-card">
+            <span class="v37-kicker">Aastha Skin Centre</span>
+            <h3>{{ clinic.name }}</h3>
+            <p>{{ clinic.address }}</p>
+            {% if clinic.doctor_hours %}<p><strong>Doctor timings:</strong><br>{{ clinic.doctor_hours|linebreaksbr }}</p>{% endif %}
+            <div class="v37-actions">
+              {% if clinic.google_maps_url %}<a class="button button-secondary" href="{{ clinic.google_maps_url }}" target="_blank" rel="noopener">Directions ↗</a>{% endif %}
+              <a class="button button-secondary" href="/book-appointment/">Request appointment</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="v37-detail-section">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head">
+        <span>03 / Related areas</span>
+        <div>
+          <h2>Dermatology care searches around Jammu.</h2>
+          <p>These links help patients move between genuine service-area pages rather than landing on repetitive service-location clones.</p>
+        </div>
+      </header>
+      <div class="v37-directory">
+        {% for related in local_search_related_areas %}
+          <a href="{% pageurl related %}">
+            <span class="idx">{{ forloop.counter|stringformat:"02d" }}</span>
+            <strong>{{ related.title }}</strong>
+            <p>{{ related.search_description|truncatewords:18 }}</p>
+            <span aria-hidden="true">↗</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="v37-detail-section v37-detail-section--dark">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head">
+        <span>04 / Local questions</span>
+        <div><h2>Useful before planning a visit.</h2></div>
+      </header>
+      <div class="v37-accordion">
+        <details>
+          <summary>Does Aastha Skin Centre have a clinic in {{ area.name }}?</summary>
+          <div class="v37-answer">
+            {% if area.kind == "regional" %}
+              No. Aastha Skin Centre's physical clinics are in Karan Nagar and Paloura Chowk, Jammu. This page is for patients planning care in Jammu from {{ area.name }}.
+            {% else %}
+              Aastha Skin Centre's physical clinics are in Karan Nagar and Paloura Chowk. This page helps patients searching from {{ area.name }} compare the two Jammu clinic options.
+            {% endif %}
+          </div>
+        </details>
+        <details>
+          <summary>Can I request an appointment before travelling?</summary>
+          <div class="v37-answer">{{ settings.home.SiteSettings.appointment_confirmation_text }}</div>
+        </details>
+        <details>
+          <summary>How do I know which treatment page to read?</summary>
+          <div class="v37-answer">Start with the concern that best matches your problem. A website page cannot confirm a diagnosis; treatment suitability is decided after assessment.</div>
+        </details>
+      </div>
+      <div class="v37-actions">
+        <a class="button" href="/book-appointment/">Request appointment</a>
+        <a class="button button-secondary" href="/locations/">Compare clinic locations →</a>
+      </div>
+    </div>
+  </section>
+
+  {% include "home/editorial_v37/partials/cms_tail.html" %}
+</main>
+{% endwith %}
