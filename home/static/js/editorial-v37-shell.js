@@ -3,7 +3,7 @@
 
   const routes = [
     { group: "Start here", label: "Concerns", note: "Browse by symptom or concern", href: "/conditions/" },
-    { group: "Start here", label: "Find your route", note: "Choose area + concern", href: "/#finder" },
+    { group: "Start here", label: "Find your route", note: "Choose area + concern", href: "/#v37-finder" },
     { group: "Start here", label: "Treatments", note: "Full treatment directory", href: "/treatments/" },
     { group: "Start here", label: "Book consultation", note: "Request an appointment", href: "/book-appointment/" },
     { group: "Common guides", label: "Acne", note: "Breakouts, marks and active acne", href: "/treatments/acne-treatment/" },
@@ -117,10 +117,10 @@
     nav.dataset.v37Shell = "true";
     nav.innerHTML = `
       <a href="/conditions/">Concerns</a>
-      <a href="/#finder">Find your route</a>
+      <a href="/#v37-finder">Find your route</a>
       <a href="/treatments/">Treatments</a>
       <a href="/dr-cheena-langer/">Doctor</a>
-      <a href="/#clinics">Clinics</a>
+      <a href="/#v37-clinics">Clinics</a>
       <button type="button" class="v37-explore-trigger" data-v37-explore-trigger aria-haspopup="dialog">Explore</button>
       <a class="button button-small v37-book" href="/book-appointment/">Book consultation</a>`;
 
