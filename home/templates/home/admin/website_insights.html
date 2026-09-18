@@ -1,0 +1,88 @@
+{% extends "wagtailadmin/base.html" %}
+{% load static %}
+{% block titletag %}Website insights{% endblock %}
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/website-insights.css' %}">
+{% endblock %}
+{% block content %}
+  {% include "wagtailadmin/shared/header.html" with title="Website insights" icon="site" %}
+
+  <main class="insights-shell">
+    <section class="insights-intro">
+      <div>
+        <span class="insights-kicker">AASTHA · STAFF ONLY</span>
+        <h2>Content health before vanity metrics.</h2>
+        <p>This view reports real CMS inventory now. Traffic, search and booking charts stay intentionally empty until their APIs are connected—no fabricated analytics.</p>
+      </div>
+      <div class="insights-status">
+        <span>Editorial v37</span>
+        <strong>Production migration</strong>
+      </div>
+    </section>
+
+    <section class="insights-grid" aria-label="Website content metrics">
+      <article><span>Live pages</span><strong>{{ metrics.pages }}</strong><small>Public Wagtail pages</small></article>
+      <article><span>Clinical guides</span><strong>{{ metrics.clinical_total }}</strong><small>{{ metrics.treatments }} treatments · {{ metrics.conditions }} conditions</small></article>
+      <article><span>Journal</span><strong>{{ metrics.blogs }}</strong><small>Published articles</small></article>
+      <article><span>Media</span><strong>{{ metrics.images }}</strong><small>Images in the CMS library</small></article>
+    </section>
+
+    <section class="insights-panels">
+      <article class="insights-panel">
+        <div class="panel-head">
+          <div>
+            <span class="insights-kicker">EDITORIAL COVERAGE</span>
+            <h3>Pages with exact editorial control</h3>
+          </div>
+          <strong>{{ metrics.editorial_coverage }}%</strong>
+        </div>
+        <div class="coverage-ring" style="--coverage: {{ metrics.editorial_coverage }}%">
+          <span>{{ metrics.exact }}<small>exact layouts</small></span>
+        </div>
+        <p>Coverage is calculated from enabled exact-layout records against the current live page count.</p>
+      </article>
+
+      <article class="insights-panel">
+        <div class="panel-head">
+          <div>
+            <span class="insights-kicker">CLINICAL MIX</span>
+            <h3>Published patient-guide inventory</h3>
+          </div>
+        </div>
+        <div class="insights-bars">
+          <div><span>Treatments</span><strong>{{ metrics.treatments }}</strong><i style="--value: {{ clinical_mix.treatments }}%"></i></div>
+          <div><span>Conditions</span><strong>{{ metrics.conditions }}</strong><i style="--value: {{ clinical_mix.conditions }}%"></i></div>
+          <div><span>Journal</span><strong>{{ metrics.blogs }}</strong><i style="--value: {{ clinical_mix.blogs }}%"></i></div>
+        </div>
+        <p>{{ bklit_note }}</p>
+      </article>
+
+      <article class="insights-panel insights-panel--wide">
+        <div class="panel-head">
+          <div>
+            <span class="insights-kicker">CARE INFRASTRUCTURE</span>
+            <h3>What the CMS can actively manage</h3>
+          </div>
+        </div>
+        <div class="insights-infra">
+          <div><strong>{{ metrics.doctors }}</strong><span>active doctor profile</span></div>
+          <div><strong>{{ metrics.clinics }}</strong><span>active clinic locations</span></div>
+          <div><strong>{{ metrics.reusable }}</strong><span>reusable sections</span></div>
+        </div>
+      </article>
+
+      <article class="insights-panel insights-panel--wide insights-data-next">
+        <div>
+          <span class="insights-kicker">NEXT DATA CONNECTION</span>
+          <h3>Search → guide → booking funnel</h3>
+          <p>Once Search Console / analytics events are connected, this panel becomes the Bklit UI funnel and time-series surface for impressions, guide engagement, booking intent and WhatsApp handoff.</p>
+        </div>
+        <div class="insights-empty-series" aria-label="Analytics series not connected">
+          <span></span><span></span><span></span><span></span><span></span>
+          <strong>Awaiting analytics API</strong>
+        </div>
+      </article>
+    </section>
+  </main>
+{% endblock %}
