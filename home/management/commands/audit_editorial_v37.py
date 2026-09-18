@@ -135,7 +135,7 @@ class Command(BaseCommand):
             "ui/kokonut-explore.js",
             "ui/bklit-insights.js",
             "css/editorial-v37-kokonut.css",
-            "js/editorial-v37-motion.js",
+            "ui/motion-runtime.js",
         )
         missing_ui_assets = [
             asset for asset in required_ui_assets if not finders.find(asset)
