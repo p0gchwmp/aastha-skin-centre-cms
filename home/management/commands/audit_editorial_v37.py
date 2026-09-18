@@ -162,6 +162,10 @@ class Command(BaseCommand):
                     + "\n  - ".join(fallback_routes)
                 )
             )
+            failures.append(
+                "renderer coverage is incomplete: "
+                f"{len(fallback_routes)} public route(s) still use legacy fallback"
+            )
 
         public_host = (getattr(settings, "PUBLIC_SITE_HOST", "") or "").lower()
         allowed_hosts = {host, site.hostname.lower()}
