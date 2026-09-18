@@ -296,26 +296,25 @@ class Command(BaseCommand):
                 + ", ".join(utility_noindex_updates)
                 + "."
             )
-        local_search = sync_local_search_pages()
-        if local_search["created"]:
-            self.stdout.write(
-                "Created staged noindex local-search pages: "
-                + ", ".join(local_search["created"])
-                + "."
-            )
-        local_title_updates = sync_justdial_style_treatment_titles()
-        if local_title_updates:
-            self.stdout.write(
-                f"Applied Jammu-intent SEO titles to {len(local_title_updates)} "
-                "treatment page(s) with blank/default titles."
-            )
-
         has_content = (
             TreatmentPage.objects.exists()
             or BlogPage.objects.exists()
             or (home is not None and home.get_children().exists())
         )
         if has_content:
+            local_search = sync_local_search_pages()
+            if local_search["created"]:
+                self.stdout.write(
+                    "Created staged noindex local-search pages: "
+                    + ", ".join(local_search["created"])
+                    + "."
+                )
+            local_title_updates = sync_justdial_style_treatment_titles()
+            if local_title_updates:
+                self.stdout.write(
+                    f"Applied Jammu-intent SEO titles to {len(local_title_updates)} "
+                    "treatment page(s) with blank/default titles."
+                )
             self.sync_editor_state()
             self.stdout.write(
                 "CMS already contains pages; starter import skipped."
