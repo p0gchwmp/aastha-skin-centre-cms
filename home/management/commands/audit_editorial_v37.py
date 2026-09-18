@@ -12,6 +12,7 @@ from django.test import Client
 from wagtail.models import Page, Site
 
 from home.context_processors import _env_flag
+from home.local_search import LOCAL_SEARCH_AREA_SLUGS
 from home.templatetags.editorial_v37 import (
     EDITORIAL_V37_GUIDES,
     EDITORIAL_V37_TEMPLATES,
@@ -53,6 +54,7 @@ PRIORITY_ROUTES = (
     "/locations/paloura/",
     "/book-appointment/",
     "/contact/",
+    "/areas/",
 )
 
 SKIP_SCHEMES = ("mailto:", "tel:", "sms:", "javascript:", "data:")
@@ -93,6 +95,10 @@ def _renderer_kind(path: str, page: Page) -> str:
         return "native"
     if slug in EDITORIAL_V37_TEMPLATES or slug in EDITORIAL_V37_GUIDES:
         return "native"
+    if slug in LOCAL_SEARCH_AREA_SLUGS:
+        parent = page.get_parent().specific
+        if getattr(parent, "slug", "") == "areas":
+            return "native"
     if is_editorial_v37_importable(page, path):
         return "native-imported"
     return "legacy-fallback"
