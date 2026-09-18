@@ -64,5 +64,19 @@ if (document.documentElement.classList.contains("editorial-v37")) {
         animate(button, { x: [0, 4, 0] }, { duration: 0.34, ease: [0.22, 1, 0.36, 1] });
       });
     });
+
+    window.addEventListener("aastha:v37-motion", (event) => {
+      const target = event.detail?.target;
+      if (!(target instanceof Element)) return;
+      if (event.detail?.kind === "swap") {
+        const parts = [...target.querySelectorAll("h3, p, a, small")];
+        if (!parts.length) return;
+        animate(parts, { opacity: [0.72, 1], y: [7, 0] }, {
+          duration: 0.28,
+          delay: stagger(0.025),
+          ease: [0.22, 1, 0.36, 1],
+        });
+      }
+    });
   }
 }
