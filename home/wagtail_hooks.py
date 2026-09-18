@@ -122,11 +122,18 @@ def website_insights(request):
         if metrics["pages"]
         else 0
     )
+    mix_total = max(1, metrics["treatments"] + metrics["conditions"] + metrics["blogs"])
+    clinical_mix = {
+        "treatments": round((metrics["treatments"] / mix_total) * 100),
+        "conditions": round((metrics["conditions"] / mix_total) * 100),
+        "blogs": round((metrics["blogs"] / mix_total) * 100),
+    }
     return render(
         request,
         "home/admin/website_insights.html",
         {
             "metrics": metrics,
+            "clinical_mix": clinical_mix,
             "bklit_note": (
                 "Visual language follows Bklit UI chart composition; "
                 "live traffic/conversion series will activate once an analytics API "
