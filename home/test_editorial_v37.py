@@ -254,3 +254,36 @@ class EditorialV37AdminInsightsTests(SimpleTestCase):
         self.assertIn("Website insights", template)
         self.assertIn("no fabricated analytics", template)
         self.assertIn("insights-shell", css)
+
+
+class EditorialV37UiIslandTests(SimpleTestCase):
+    def test_react_islands_are_isolated_and_progressive(self):
+        root = Path(__file__).resolve().parents[1]
+        package = (root / "frontend" / "package.json").read_text(encoding="utf-8")
+        vite = (root / "frontend" / "vite.config.js").read_text(encoding="utf-8")
+        kokonut = (root / "frontend" / "src" / "kokonut-explore.jsx").read_text(encoding="utf-8")
+        bklit = (root / "frontend" / "src" / "bklit-insights.jsx").read_text(encoding="utf-8")
+        shell = (root / "home" / "static" / "js" / "editorial-v37-shell.js").read_text(encoding="utf-8")
+        build = (root / "build.sh").read_text(encoding="utf-8")
+        admin = (root / "home" / "templates" / "home" / "admin" / "website_insights.html").read_text(encoding="utf-8")
+
+        self.assertIn('"motion": "13.4.0"', package)
+        self.assertIn('"react": "19.2.0"', package)
+        self.assertIn('"kokonut-explore"', vite)
+        self.assertIn('"bklit-insights"', vite)
+        self.assertIn("Kokonut UI Action Search Bar", kokonut)
+        self.assertIn("window.AasthaKokonutExplore", kokonut)
+        self.assertIn("Bklit UI", bklit)
+        self.assertIn("data-bklit-clinical-mix", admin)
+        self.assertIn('import("/assets/ui/kokonut-explore.js")', shell)
+        self.assertIn("npm --prefix frontend run build", build)
+
+    def test_bklit_island_remains_admin_only(self):
+        root = Path(__file__).resolve().parents[1]
+        public_templates = root / "home" / "templates" / "home" / "editorial_v37"
+        combined = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in public_templates.rglob("*.html")
+        )
+        self.assertNotIn("bklit-insights.js", combined)
+        self.assertNotIn("data-bklit-clinical-mix", combined)
