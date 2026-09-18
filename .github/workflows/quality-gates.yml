@@ -30,7 +30,7 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: aastha_cms.settings.quality
       PYTHONUNBUFFERED: "1"
-      PUBLIC_SITE_URL: http://127.0.0.1:8000
+      PUBLIC_SITE_URL: ""
       WAGTAILADMIN_BASE_URL: http://127.0.0.1:8000
       LHCI_BASE_URL: http://127.0.0.1:8000
       SECRET_KEY: quality-gate-only-not-for-production
@@ -92,8 +92,6 @@ jobs:
           python manage.py audit_editorial_v37
 
       - name: Run CMS release evidence audits
-        env:
-          DJANGO_SETTINGS_MODULE: aastha_cms.settings.dev
         run: |
           mkdir -p audit-artifacts
           python manage.py check_launch_config
