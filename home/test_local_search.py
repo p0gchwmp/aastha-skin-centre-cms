@@ -22,6 +22,7 @@ from home.models import (
     TreatmentPage,
 )
 from home.seo import build_structured_data
+from home.templatetags.editorial_v37 import verified_local_area_pages
 from seo_support.models import ClinicSEOProfile
 
 
@@ -82,6 +83,21 @@ class LocalSearchActivationTests(TestCase):
         areas.refresh_from_db()
         self.assertTrue(page.noindex)
         self.assertTrue(areas.noindex)
+
+    def test_verified_area_links_exclude_noindex_pages(self):
+        first = LOCAL_SEARCH_AREAS[0]
+        ClinicSEOProfile.objects.create(
+            clinic=self.clinic,
+            service_area=first["name"],
+            facts_verified_on=date(2026, 9, 18),
+        )
+
+        self.assertEqual(verified_local_area_pages(), [])
+        call_command("activate_verified_local_search", apply=True)
+
+        links = verified_local_area_pages()
+        self.assertEqual([page.slug for page in links], [first["slug"]])
+        self.assertTrue(all(not page.noindex for page in links))
 
     def test_apply_indexes_only_verified_area_and_hub(self):
         first = LOCAL_SEARCH_AREAS[0]
