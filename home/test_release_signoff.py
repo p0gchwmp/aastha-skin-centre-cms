@@ -5,6 +5,7 @@ from django.core.management.base import CommandError
 from django.test import TestCase
 from wagtail.models import Site
 
+from home.local_search import LOCAL_SEARCH_AREAS
 from home.management.commands.audit_release_signoff import (
     build_release_signoff_report,
 )
@@ -101,6 +102,11 @@ class ReleaseSignoffAuditTests(TestCase):
             "approved default social image is missing",
             report["site_signoff_pending"],
         )
+        self.assertEqual(
+            report["summary"]["local_search_areas_pending"],
+            len(LOCAL_SEARCH_AREAS),
+        )
+        self.assertEqual(report["summary"]["local_search_areas_ready"], 0)
 
     def test_fail_on_pending_is_opt_in(self):
         call_command("audit_release_signoff")
