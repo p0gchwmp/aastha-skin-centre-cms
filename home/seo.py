@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 
 from django.utils.html import strip_tags
 
+from .local_search import AREA_BY_SLUG, PRIORITY_TREATMENT_SLUGS
 from .models import (
     BlogPage,
     ClinicLocation,
@@ -20,6 +21,7 @@ from .models import (
     Doctor,
     DoctorPage,
     SiteSettings,
+    StandardPage,
     TreatmentPage,
 )
 
@@ -337,6 +339,52 @@ def _page_entity(
         "inLanguage": "en-IN",
         "dateModified": _modified_date(page),
     }
+
+    if isinstance(page, StandardPage):
+        parent = page.get_parent().specific
+        area = (
+            AREA_BY_SLUG.get(page.slug)
+            if getattr(parent, "slug", "") == "areas"
+            else None
+        )
+        if area:
+            treatment_rows = list(
+                TreatmentPage.objects.live()
+                .public()
+                .filter(slug__in=PRIORITY_TREATMENT_SLUGS)
+            )
+            treatment_by_slug = {item.slug: item for item in treatment_rows}
+            item_list = []
+            for position, slug in enumerate(PRIORITY_TREATMENT_SLUGS, start=1):
+                treatment = treatment_by_slug.get(slug)
+                if treatment is None:
+                    continue
+                item_list.append(
+                    {
+                        "@type": "ListItem",
+                        "position": position,
+                        "name": treatment.title,
+                        "url": _page_url(treatment, request, origin),
+                    }
+                )
+            return _compact(
+                {
+                    **common,
+                    "@type": "CollectionPage",
+                    "about": {
+                        "@type": "Place",
+                        "name": area["name"],
+                    },
+                    "mainEntity": {
+                        "@type": "ItemList",
+                        "name": (
+                            "Dermatology services in Jammu for patients "
+                            f"searching from {area['name']}"
+                        ),
+                        "itemListElement": item_list,
+                    },
+                }
+            )
 
     if isinstance(page, BlogPage):
         author = page.author
