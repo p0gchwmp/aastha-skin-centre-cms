@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from wagtail.models import Site
 
@@ -304,6 +306,25 @@ class JustdialStyleTreatmentTitleTests(TestCase):
         default.refresh_from_db()
         self.assertEqual(blank.seo_title, "Acne Treatment in Jammu")
         self.assertEqual(default.seo_title, "Hair Fall Treatment in Jammu")
+
+    def test_known_legacy_seed_title_is_safe_to_localize(self):
+        page = self._treatment(
+            title="Acne Treatment",
+            slug="legacy-acne-title-test",
+            seo_title="Legacy imported acne SEO title",
+        )
+
+        with patch(
+            "home.management.commands.initialize_cms.legacy_seed_seo_titles",
+            return_value={
+                ("treatment", page.slug): "Legacy imported acne SEO title"
+            },
+        ):
+            updated = sync_justdial_style_treatment_titles()
+
+        page.refresh_from_db()
+        self.assertIn(page.get_url(), updated)
+        self.assertEqual(page.seo_title, "Acne Treatment in Jammu")
 
     def test_custom_editor_title_is_preserved(self):
         page = self._treatment(
