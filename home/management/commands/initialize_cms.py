@@ -8,7 +8,15 @@ from home.exact_editor_sync import (
     sync_all_exact_layout_editor_fields,
     sync_uploaded_homepage_images,
 )
-from home.models import BlogPage, HomePage, SiteSettings, TreatmentPage
+from home.local_search import LOCAL_SEARCH_AREAS, area_description, area_intro, area_title
+from home.models import (
+    BlogPage,
+    ContentIndexPage,
+    HomePage,
+    SiteSettings,
+    StandardPage,
+    TreatmentPage,
+)
 
 
 APPROVED_FACEBOOK_URL = "https://www.facebook.com/aasthaskincentre/"
@@ -100,6 +108,108 @@ def sync_non_indexable_utility_pages():
     return updated
 
 
+def sync_local_search_pages():
+    """Create the staged local-search graph without indexing unverified areas.
+
+    Existing pages are left editor-owned. Newly created pages are live so the
+    staging renderer/link audits can exercise them, but every route remains
+    noindex until local facts are explicitly verified in the SEO profiles.
+    """
+    home = HomePage.objects.first()
+    if home is None:
+        return {"created": [], "existing": []}
+
+    areas = (
+        home.get_children()
+        .filter(slug="areas")
+        .specific()
+        .first()
+    )
+    created = []
+    existing = []
+
+    if areas is None:
+        areas = ContentIndexPage(
+            title="Areas We Serve from Jammu",
+            slug="areas",
+            seo_title="Dermatology Care Areas | Jammu",
+            search_description=(
+                "Explore dermatologist-led skin, hair and laser care in Jammu "
+                "for patients searching across Jammu neighbourhoods and nearby "
+                "regional towns."
+            ),
+            eyebrow="Local care · Jammu",
+            introduction=(
+                "Use these area guides to compare Aastha Skin Centre's two "
+                "Jammu clinics, explore treatment information and plan an "
+                "appointment. Physical clinic locations are shown clearly on "
+                "every page."
+            ),
+            index_kind="general",
+            cards_per_page=24,
+            listing_order="alphabetical",
+            show_consultation_sidebar=False,
+            show_clinic_choices=False,
+            show_medical_disclaimer=False,
+            noindex=True,
+        )
+        home.add_child(instance=areas)
+        areas.save_revision().publish()
+        created.append("/areas/")
+    else:
+        existing.append("/areas/")
+
+    for area in LOCAL_SEARCH_AREAS:
+        page = (
+            areas.get_children()
+            .filter(slug=area["slug"])
+            .specific()
+            .first()
+        )
+        if page is not None:
+            existing.append(f"/areas/{area['slug']}/")
+            continue
+
+        page = StandardPage(
+            title=area_title(area),
+            slug=area["slug"],
+            seo_title=area_title(area),
+            search_description=area_description(area),
+            eyebrow="Local care · Jammu",
+            introduction=area_intro(area),
+            layout_mode="hybrid",
+            show_consultation_sidebar=False,
+            show_clinic_choices=False,
+            show_medical_disclaimer=False,
+            noindex=True,
+        )
+        areas.add_child(instance=page)
+        page.save_revision().publish()
+        created.append(f"/areas/{area['slug']}/")
+
+    return {"created": created, "existing": existing}
+
+
+def sync_justdial_style_treatment_titles():
+    """Add Jammu intent only where treatment SEO titles are blank/default.
+
+    Editors keep full ownership of custom SEO titles.
+    """
+    updated = []
+    for page in TreatmentPage.objects.live().public():
+        current = (page.seo_title or "").strip()
+        title = (page.title or "").strip()
+        if current not in {"", title}:
+            continue
+        candidate = f"{title} in Jammu"
+        if len(candidate) > 65:
+            continue
+        page.seo_title = candidate
+        page.save(update_fields=["seo_title"])
+        updated.append(page.get_url() or page.url_path)
+    return updated
+
+
 def sync_approved_site_settings(site):
     """Fill approved blank/placeholder settings without overwriting later edits."""
     if site is None:
@@ -186,6 +296,19 @@ class Command(BaseCommand):
                 + ", ".join(utility_noindex_updates)
                 + "."
             )
+        local_search = sync_local_search_pages()
+        if local_search["created"]:
+            self.stdout.write(
+                "Created staged noindex local-search pages: "
+                + ", ".join(local_search["created"])
+                + "."
+            )
+        local_title_updates = sync_justdial_style_treatment_titles()
+        if local_title_updates:
+            self.stdout.write(
+                f"Applied Jammu-intent SEO titles to {len(local_title_updates)} "
+                "treatment page(s) with blank/default titles."
+            )
 
         has_content = (
             TreatmentPage.objects.exists()
@@ -206,4 +329,6 @@ class Command(BaseCommand):
         sync_approved_homepage_seo(HomePage.objects.first())
         sync_approved_locations_seo()
         sync_non_indexable_utility_pages()
+        sync_local_search_pages()
+        sync_justdial_style_treatment_titles()
         self.sync_editor_state()
