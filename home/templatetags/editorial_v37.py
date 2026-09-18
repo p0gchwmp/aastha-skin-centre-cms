@@ -21,6 +21,7 @@ EDITORIAL_V37_TEMPLATES = {
     "laser-hair-reduction": "home/editorial_v37/treatments/laser-hair-reduction.html",
     "botulinum-toxin-dermal-fillers": "home/editorial_v37/treatments/botulinum-toxin-dermal-fillers.html",
     "book-appointment": "home/editorial_v37/booking.html",
+    "appointment-request-received": "home/editorial_v37/appointment-request-received.html",
     "contact": "home/editorial_v37/contact.html",
     "dr-cheena-langer": "home/editorial_v37/doctor.html",
     "karan-nagar": "home/editorial_v37/clinic.html",
