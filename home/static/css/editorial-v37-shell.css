@@ -6,6 +6,7 @@ html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] {
 }
 html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a,
 html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > button {
+  position: relative !important;
   min-height: 42px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -24,8 +25,27 @@ html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > button
 }
 html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a:hover,
 html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > button:hover,
-html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a[aria-current="page"] {
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a[aria-current="page"],
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a[aria-current="location"] {
   color: var(--v37-wine) !important;
+}
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a:not(.v37-book)::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 5px;
+  height: 1px;
+  background: var(--v37-wine);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .18s ease;
+}
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a:not(.v37-book):hover::after,
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a:not(.v37-book):focus-visible::after,
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a:not(.v37-book)[aria-current="page"]::after,
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a:not(.v37-book)[aria-current="location"]::after {
+  transform: scaleX(1);
 }
 html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] .v37-explore-trigger {
   margin-left: 8px !important;
@@ -199,6 +219,9 @@ body.v37-explore-open { overflow: hidden !important; }
     margin: 0 !important;
     border-bottom: 1px solid var(--v37-line) !important;
   }
+  html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a::after {
+    display: none !important;
+  }
   html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] .v37-explore-trigger,
   html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] .v37-book {
     justify-content: center !important;
@@ -214,5 +237,6 @@ body.v37-explore-open { overflow: hidden !important; }
 @media (prefers-reduced-motion: reduce) {
   .v37-explore,
   .v37-explore-panel,
-  .v37-explore-route i { transition: none !important; }
+  .v37-explore-route i,
+  html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a::after { transition: none !important; }
 }
