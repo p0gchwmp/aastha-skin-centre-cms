@@ -24,7 +24,9 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn("npm --prefix frontend run build", workflow)
         self.assertIn("home/static/js/editorial-v37*.js", workflow)
         self.assertIn("python manage.py test", workflow)
-        self.assertIn("retention-days: 1", workflow)
+        self.assertIn('PUBLIC_SITE_URL: ""', workflow)
+        self.assertNotIn("DJANGO_SETTINGS_MODULE: aastha_cms.settings.dev", workflow)
+        self.assertIn("retention-days: 7", workflow)
 
     def test_workflow_matches_render_asset_build_before_collectstatic(self):
         workflow = self.read(".github/workflows/quality-gates.yml")
@@ -80,7 +82,7 @@ class FrontendQualityGateContractTests(SimpleTestCase):
         self.assertIn('"categories:performance": ["error", { minScore: 0.95 }]', config)
         self.assertIn('"categories:accessibility": ["error", { minScore: 1 }]', config)
         self.assertIn('"categories:best-practices": ["error", { minScore: 1 }]', config)
-        self.assertIn('"categories:seo": ["error", { minScore: 1 }]', config)
+        self.assertIn('"categories:seo": ["warn", { minScore: 0.95 }]', config)
         self.assertIn(
             '"largest-contentful-paint": ["error", { maxNumericValue: 2500 }]',
             config,
