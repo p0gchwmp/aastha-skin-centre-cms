@@ -16,6 +16,11 @@ APPROVED_ANALYTICS_ID = "G-G5DQPDJ53P"
 APPROVED_SEARCH_CONSOLE_VERIFICATION = (
     "LejmOPRWDnzDg6WWoVLxvPwjRBWkflLm_P81L0EbEkE"
 )
+APPROVED_HOMEPAGE_SEO_TITLE = "Dermatologist-led Skin, Hair & Laser Care in Jammu"
+APPROVED_HOMEPAGE_META_DESCRIPTION = (
+    "Dermatologist-led skin, hair, laser and cosmetic care in Jammu at Aastha "
+    "Skin & Dermato-Cosmetic Centre. Book a consultation with Dr. Cheena Langer."
+)
 LEGACY_FACEBOOK_URLS = {
     "",
     "https://facebook.com",
@@ -23,6 +28,26 @@ LEGACY_FACEBOOK_URLS = {
     "https://www.facebook.com",
     "https://www.facebook.com/",
 }
+
+
+def sync_approved_homepage_seo(home):
+    """Fill approved homepage metadata only when editors have left it blank."""
+    if home is None:
+        return []
+
+    updates = {}
+    if not (home.seo_title or "").strip():
+        updates["seo_title"] = APPROVED_HOMEPAGE_SEO_TITLE
+    if not (home.search_description or "").strip():
+        updates["search_description"] = APPROVED_HOMEPAGE_META_DESCRIPTION
+
+    if not updates:
+        return []
+
+    for field_name, value in updates.items():
+        setattr(home, field_name, value)
+    home.save(update_fields=list(updates))
+    return list(updates)
 
 
 def sync_approved_site_settings(site):
@@ -95,6 +120,14 @@ class Command(BaseCommand):
             )
 
         home = HomePage.objects.first()
+        homepage_seo_updates = sync_approved_homepage_seo(home)
+        if homepage_seo_updates:
+            self.stdout.write(
+                "Approved homepage SEO applied: "
+                + ", ".join(homepage_seo_updates)
+                + "."
+            )
+
         has_content = (
             TreatmentPage.objects.exists()
             or BlogPage.objects.exists()
@@ -111,4 +144,5 @@ class Command(BaseCommand):
         # A fresh import creates the site-specific settings record.
         site = Site.objects.filter(is_default_site=True).first()
         sync_approved_site_settings(site)
+        sync_approved_homepage_seo(HomePage.objects.first())
         self.sync_editor_state()
