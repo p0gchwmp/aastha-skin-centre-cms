@@ -878,6 +878,62 @@ class StandardPage(BaseFlexiblePage):
         "home.ContentIndexPage",
     ]
 
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        parent = self.get_parent().specific
+        if getattr(parent, "slug", "") != "areas":
+            return context
+
+        from home.local_search import (
+            AREA_BY_SLUG,
+            PRIORITY_TREATMENT_SLUGS,
+            related_area_slugs,
+        )
+        from seo_support.models import ClinicSEOProfile
+
+        area = AREA_BY_SLUG.get(self.slug)
+        if area is None:
+            return context
+
+        treatment_rows = list(
+            TreatmentPage.objects.live()
+            .public()
+            .filter(slug__in=PRIORITY_TREATMENT_SLUGS)
+        )
+        treatment_by_slug = {item.slug: item for item in treatment_rows}
+        context["local_search_treatments"] = [
+            treatment_by_slug[slug]
+            for slug in PRIORITY_TREATMENT_SLUGS
+            if slug in treatment_by_slug
+        ]
+
+        related_slugs = related_area_slugs(self.slug)
+        related_rows = list(
+            StandardPage.objects.live()
+            .public()
+            .child_of(parent)
+            .filter(slug__in=related_slugs)
+        )
+        related_by_slug = {item.slug: item for item in related_rows}
+        context["local_search_related_areas"] = [
+            related_by_slug[slug]
+            for slug in related_slugs
+            if slug in related_by_slug
+        ]
+
+        verified_service_areas = {
+            item.casefold()
+            for profile in ClinicSEOProfile.objects.filter(
+                facts_verified_on__isnull=False
+            )
+            for item in profile.service_areas
+        }
+        context["local_search_area"] = area
+        context["local_search_area_verified"] = (
+            area["name"].casefold() in verified_service_areas
+        )
+        return context
+
 
 class BlogPage(BaseFlexiblePage):
     template = "home/blog_page.html"
