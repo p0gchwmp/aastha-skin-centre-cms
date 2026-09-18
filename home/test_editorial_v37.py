@@ -9,6 +9,10 @@ from django.template.loader import get_template, render_to_string
 from django.test import SimpleTestCase
 
 from home.context_processors import _env_flag
+from home.management.commands.qa_cms_release import (
+    EXPECTED_BLOG_PATHS,
+    UNRESOLVED_TEMPLATE_PATTERN,
+)
 from home.templatetags.editorial_v37 import EDITORIAL_V37_TEMPLATES
 
 
@@ -275,6 +279,43 @@ class EditorialV37RolloutTests(SimpleTestCase):
             source = (root / filename).read_text(encoding="utf-8")
             with self.subTest(filename=filename):
                 self.assertIn("{{ block.super }}", source)
+
+
+class EditorialV37ReleaseQaContractTests(SimpleTestCase):
+    def test_template_token_detector_ignores_normal_javascript_braces(self):
+        normal_javascript = (
+            "<script>const state={open:true}; "
+            "function close(){ return {ok:true}; }}</script>"
+        )
+        self.assertIsNone(UNRESOLVED_TEMPLATE_PATTERN.search(normal_javascript))
+        self.assertIsNotNone(
+            UNRESOLVED_TEMPLATE_PATTERN.search("{{ consultation_fee }}")
+        )
+        self.assertIsNotNone(
+            UNRESOLVED_TEMPLATE_PATTERN.search("{% static 'x.css' %}")
+        )
+
+    def test_acne_editorial_template_preserves_educational_blog_graph(self):
+        root = (
+            Path(__file__).resolve().parents[1]
+            / "home"
+            / "templates"
+            / "home"
+            / "editorial_v37"
+            / "treatments"
+            / "acne-treatment.html"
+        )
+        source = root.read_text(encoding="utf-8")
+        for path in EXPECTED_BLOG_PATHS:
+            with self.subTest(path=path):
+                self.assertIn(f'href="{path}"', source)
+
+    def test_booking_runtime_uses_current_appointment_controller(self):
+        root = Path(__file__).resolve().parents[1]
+        base = (root / "aastha_cms" / "templates" / "base.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("appointment-form-controller.js", base)
 
 
 class EditorialV37AdminInsightsTests(SimpleTestCase):
