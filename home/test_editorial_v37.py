@@ -211,6 +211,25 @@ class EditorialV37RolloutTests(SimpleTestCase):
             with self.subTest(prohibited=prohibited):
                 self.assertNotIn(prohibited, combined)
 
+
+    def test_base_template_excludes_legacy_premium_runtime_when_v37_is_enabled(self):
+        root = Path(__file__).resolve().parents[1]
+        source = (root / "aastha_cms" / "templates" / "base.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertGreaterEqual(source.count("{% if not editorial_v37_enabled %}"), 3)
+        self.assertIn("premium-system-v11.css", source)
+        self.assertIn("premium-system-v11.js", source)
+        self.assertIn("pastel_clay_sprite.html", source)
+
+        css_guard = source.index("{% if not editorial_v37_enabled %}")
+        css_asset = source.index("premium-v3-preview.css")
+        self.assertLess(css_guard, css_asset)
+
+        js_guard = source.rindex("{% if not editorial_v37_enabled %}")
+        js_asset = source.index("premium-v3-preview.js")
+        self.assertLess(js_guard, js_asset)
+
     def test_specialised_templates_keep_parent_extra_head(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
         for filename in ("blog_page.html", "doctor_page.html", "clinic_page.html"):
