@@ -554,3 +554,46 @@ html.editorial-v37 body.release-v24 .v37-medical-note {
 @media (prefers-reduced-motion: reduce) {
   html.editorial-v37 body.release-v24 .v37-detail * { scroll-behavior: auto !important; transition-duration: .001ms !important; }
 }
+
+
+/* Editorial concept parity: typography, anchor offsets and keyboard focus. */
+html.editorial-v37 body.release-v24 .v37-detail :where(
+  .v37-detail-hero h1,
+  .v37-detail-head h2,
+  .v37-choice-result h3,
+  .v37-reading-card h3,
+  .v37-story-step h3,
+  .v37-atlas-stage h3,
+  .v37-clinic-card h2
+) { text-wrap: balance; }
+
+html.editorial-v37 body.release-v24 .v37-detail :where(
+  .v37-detail-hero-copy > p,
+  .v37-detail-head p,
+  .v37-choice-result p,
+  .v37-reading-card p,
+  .v37-story-step p,
+  .v37-atlas-stage p,
+  .v37-clinic-card address
+) { text-wrap: pretty; }
+
+html.editorial-v37 body.release-v24 .v37-detail section[id],
+html.editorial-v37 body.release-v24 .v37-detail [data-v37-story-step] {
+  scroll-margin-top: 96px;
+}
+
+html.editorial-v37 body.release-v24 .v37-choice:focus-visible,
+html.editorial-v37 body.release-v24 .v37-atlas-nav button:focus-visible,
+html.editorial-v37 body.release-v24 [data-v37-clinic-choice]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--v37-wine) 64%, white 36%) !important;
+  outline-offset: -4px;
+  position: relative;
+  z-index: 3;
+}
+
+@media (max-width: 700px) {
+  html.editorial-v37 body.release-v24 .v37-detail section[id],
+  html.editorial-v37 body.release-v24 .v37-detail [data-v37-story-step] {
+    scroll-margin-top: 78px;
+  }
+}
