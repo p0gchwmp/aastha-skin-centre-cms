@@ -31,3 +31,20 @@ class SeoContentAuditScopeTests(TestCase):
         self.assertEqual(audited_ids, expected_ids)
         if wagtail_root.pk not in expected_ids:
             self.assertNotIn(wagtail_root.pk, audited_ids)
+
+
+    def test_missing_default_social_image_is_reported_once(self):
+        with TemporaryDirectory() as tmp:
+            output = Path(tmp) / "seo-audit.json"
+            call_command("audit_seo_content", json_path=output)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+
+        social_warnings = [
+            item for item in payload["warnings"]
+            if "default social image" in item
+        ]
+
+        self.assertEqual(social_warnings, ["site settings: no default social image"])
+        self.assertFalse(
+            any("no page or default social image" in item for item in payload["warnings"])
+        )
