@@ -155,7 +155,10 @@ class SEOVerificationStateTests(TestCase):
         )
         self.client.force_login(user)
 
-        response = self.client.get("/admin/aastha-control-centre/")
+        response = self.client.get(
+            "/admin/aastha-control-centre/",
+            secure=True,
+        )
 
         self.assertEqual(response.status_code, 200)
         body = response.content.decode()
