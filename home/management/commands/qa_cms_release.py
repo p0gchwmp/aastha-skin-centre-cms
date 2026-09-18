@@ -110,10 +110,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         errors: list[str] = []
-        client = Client()
         site = Site.objects.filter(is_default_site=True).first()
         if site is None:
             raise CommandError("No default Wagtail site exists.")
+
+        client = Client(HTTP_HOST=site.hostname)
+        get = lambda path: client.get(path, secure=True)
 
         if connection.vendor == "sqlite":
             with connection.cursor() as cursor:
@@ -160,7 +162,7 @@ class Command(BaseCommand):
         internal_targets: set[str] = set()
         for page in pages:
             path = page.get_url() or "/"
-            response = client.get(path)
+            response = get(path)
             if response.status_code != 200:
                 errors.append(f"{path} returned HTTP {response.status_code}.")
                 continue
@@ -212,7 +214,7 @@ class Command(BaseCommand):
                         )
 
         for target in sorted(internal_targets):
-            status = client.get(target).status_code
+            status = get(target).status_code
             if status not in {200, 301, 302}:
                 errors.append(
                     f"Internal link target {target} returned HTTP {status}."
@@ -225,12 +227,12 @@ class Command(BaseCommand):
             "/search/?query=acne": "Search the website",
         }
         for route, expected_text in operational_routes.items():
-            response = client.get(route)
+            response = get(route)
             body = response.content.decode(response.charset)
             if response.status_code != 200 or expected_text not in body:
                 errors.append(f"Operational route {route} failed its check.")
 
-        home_response = client.get("/")
+        home_response = get("/")
         if home_response.get("X-Robots-Tag") != "noindex, nofollow":
             errors.append("Development/staging noindex response header is absent.")
 
@@ -304,7 +306,7 @@ class Command(BaseCommand):
             settings.primary_mobile = "9999911111"
             settings.whatsapp_mobile = "9999922222"
             settings.save()
-            changed = client.get("/book-appointment/").content.decode()
+            changed = get("/book-appointment/").content.decode()
             checks = {
                 "fee": "₹650" in changed and "₹500" not in changed,
                 "follow-up": "within 14 days" in changed,
@@ -336,13 +338,13 @@ class Command(BaseCommand):
                 "/admin/snippets/",
             ]
             for url in admin_urls:
-                response = client.get(url)
+                response = get(url)
                 if response.status_code != 200:
                     errors.append(
                         f"Admin route {url} returned HTTP "
                         f"{response.status_code}."
                     )
-            dashboard = client.get("/admin/").content.decode()
+            dashboard = get("/admin/").content.decode()
             if "Website control centre" not in dashboard:
                 errors.append("Custom editor dashboard panel did not render.")
             transaction.set_rollback(True)
