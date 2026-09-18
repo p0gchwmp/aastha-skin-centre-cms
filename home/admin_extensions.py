@@ -21,6 +21,7 @@ from wagtail.images import get_image_model
 from wagtail.models import Page
 
 from .models import BlogPage, ClinicLocation, Doctor, ExactPageLayout, TreatmentPage
+from .seo_verification import build_seo_verification_state
 
 
 ARTICLE_SECTION_RE = re.compile(
@@ -104,8 +105,10 @@ def aastha_control_centre(request):
             }
         )
 
+    seo_verification = build_seo_verification_state()
     context = {
         "route_cards": route_cards,
+        "seo_verification": seo_verification,
         "counts": {
             "pages": Page.objects.live().public().count(),
             "treatments": TreatmentPage.objects.live().count(),
