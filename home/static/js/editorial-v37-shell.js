@@ -23,6 +23,22 @@
 
   const normalize = (value) => String(value || "").trim().toLowerCase();
 
+  let kokonutModulePromise = null;
+  async function loadKokonutExplore() {
+    if (window.AasthaKokonutExplore?.open) return true;
+    if (!kokonutModulePromise) {
+      kokonutModulePromise = import("/assets/ui/kokonut-explore.js")
+        .then(() => new Promise((resolve) => {
+          if (window.AasthaKokonutExplore?.open) return resolve(true);
+          const done = () => resolve(Boolean(window.AasthaKokonutExplore?.open));
+          window.addEventListener("aastha:kokonut-ready", done, { once: true });
+          window.setTimeout(() => resolve(Boolean(window.AasthaKokonutExplore?.open)), 900);
+        }))
+        .catch(() => false);
+    }
+    return kokonutModulePromise;
+  }
+
   function buildExplore() {
     if (document.querySelector(".v37-explore")) return document.querySelector(".v37-explore");
     const overlay = document.createElement("div");
@@ -67,9 +83,14 @@
   }
 
   let previousFocus = null;
-  function openExplore() {
-    const overlay = buildExplore();
+  async function openExplore() {
     previousFocus = document.activeElement;
+    const enhanced = await loadKokonutExplore();
+    if (enhanced && window.AasthaKokonutExplore?.open) {
+      window.AasthaKokonutExplore.open();
+      return;
+    }
+    const overlay = buildExplore();
     overlay.hidden = false;
     document.body.classList.add("v37-explore-open");
     window.requestAnimationFrame(() => overlay.classList.add("is-open"));
@@ -78,6 +99,10 @@
   }
 
   function closeExplore() {
+    if (window.AasthaKokonutExplore?.close) {
+      window.AasthaKokonutExplore.close();
+      return;
+    }
     const overlay = document.querySelector(".v37-explore");
     if (!overlay || overlay.hidden) return;
     overlay.classList.remove("is-open");
@@ -110,7 +135,6 @@
   }
 
   function init() {
-    buildExplore();
     if (!installNav()) {
       const host = document.querySelector("[data-site-header]") || document.body;
       const observer = new MutationObserver(() => {
