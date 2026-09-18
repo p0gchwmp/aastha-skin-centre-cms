@@ -195,7 +195,7 @@ function Explore() {
               className="kokonut-explore__results"
               id="kokonut-route-results"
               role="listbox"
-              layout
+              layout={!reducedMotion}
             >
               <AnimatePresence mode="popLayout">
                 {matches.length ? matches.map((route, index) => (
@@ -206,6 +206,7 @@ function Explore() {
                     className={index === active ? "is-active" : ""}
                     role="option"
                     aria-selected={index === active}
+                    tabIndex={-1}
                     onMouseEnter={() => setActive(index)}
                     onFocus={() => setActive(index)}
                     onClick={() => choose(route)}
