@@ -241,3 +241,16 @@ class EditorialV37RolloutTests(SimpleTestCase):
             source = (root / filename).read_text(encoding="utf-8")
             with self.subTest(filename=filename):
                 self.assertIn("{{ block.super }}", source)
+
+
+class EditorialV37AdminInsightsTests(SimpleTestCase):
+    def test_staff_insights_surface_is_admin_only(self):
+        root = Path(__file__).resolve().parents[1]
+        hooks = (root / "home" / "wagtail_hooks.py").read_text(encoding="utf-8")
+        template = (root / "home" / "templates" / "home" / "admin" / "website_insights.html").read_text(encoding="utf-8")
+        css = (root / "home" / "static" / "css" / "website-insights.css").read_text(encoding="utf-8")
+        self.assertIn("@require_admin_access", hooks)
+        self.assertIn("website-insights/", hooks)
+        self.assertIn("Website insights", template)
+        self.assertIn("no fabricated analytics", template)
+        self.assertIn("insights-shell", css)
