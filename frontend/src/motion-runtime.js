@@ -6,7 +6,7 @@ if (document.documentElement.classList.contains("editorial-v37")) {
   document.documentElement.dataset.motionEngine = "motion-13.4.0";
 
   if (!reduced) {
-    const hero = document.querySelector(".v37-home .v37-hero, .v37-detail .v37-detail-head, .v37-booking .v37-detail-head, .v37-contact .v37-detail-head");
+    const hero = document.querySelector(".v37-home .v37-editorial-hero, .v37-detail .v37-detail-hero");
     if (hero) {
       const parts = [...hero.querySelectorAll(".v37-kicker, h1, p, .v37-actions a, .v37-actions button")];
       if (parts.length) {
@@ -17,7 +17,7 @@ if (document.documentElement.classList.contains("editorial-v37")) {
         });
       }
 
-      const visual = hero.querySelector("img, picture, .v37-hero-visual, .hero-art");
+      const visual = hero.querySelector(".v37-hero-art img, .v37-detail-media img, picture img, img");
       if (visual) {
         const parallax = animate(visual, { transform: ["translateY(10px) scale(1.015)", "translateY(-18px) scale(1.015)"] }, { ease: "linear" });
         scroll(parallax, { target: hero, offset: ["start end", "end start"] });
@@ -25,8 +25,8 @@ if (document.documentElement.classList.contains("editorial-v37")) {
     }
 
     const revealSelectors = [
-      ".v37-directory-card",
-      ".v37-drag-card",
+      ".v37-directory > a",
+      ".v37-drag-rail > a",
       ".v37-choice-matrix",
       ".v37-atlas",
       ".v37-facts",
@@ -43,7 +43,7 @@ if (document.documentElement.classList.contains("editorial-v37")) {
     }, { margin: "0px 0px -8% 0px", amount: 0.12 });
 
     document.querySelectorAll(
-      ".v37-drag-card, .v37-directory-card, .v37-choice-matrix button, .v37-route-choice, .v37-concern-selector button, .v37-clinic-choice"
+      ".v37-drag-rail > a, .v37-directory > a, .v37-choice-matrix button, .v37-route-controls button, .v37-concern-tabs button, [data-v37-clinic-choice]"
     ).forEach((element) => {
       element.addEventListener("pointerenter", () => {
         animate(element, { scale: 1.012, y: -2 }, { duration: 0.2, ease: [0.22, 1, 0.36, 1] });
