@@ -1,11 +1,16 @@
 from urllib.parse import urlsplit
 
 from django.contrib import messages
+from django.shortcuts import render
 from django.templatetags.static import static
+from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from wagtail import hooks
+from wagtail.admin.auth import require_admin_access
+from wagtail.admin.menu import MenuItem
 from wagtail.admin.ui.components import Component
+from wagtail.images import get_image_model
 from wagtail.models import Page, Site
 
 from .models import (
@@ -92,6 +97,60 @@ class WebsiteControlPanel(Component):
           </div>
         </section>
         """)
+
+
+
+
+@require_admin_access
+def website_insights(request):
+    Image = get_image_model()
+    metrics = {
+        "pages": Page.objects.live().public().count(),
+        "blogs": BlogPage.objects.live().public().count(),
+        "treatments": TreatmentPage.objects.live().public().count(),
+        "conditions": ConditionPage.objects.live().public().count(),
+        "images": Image.objects.count(),
+        "exact": ExactPageLayout.objects.filter(enabled=True).count(),
+        "doctors": Doctor.objects.filter(is_active=True, live=True).count(),
+        "clinics": ClinicLocation.objects.filter(is_active=True, live=True).count(),
+        "reusable": ReusableSection.objects.filter(is_active=True, live=True).count(),
+    }
+    clinical_total = metrics["treatments"] + metrics["conditions"]
+    metrics["clinical_total"] = clinical_total
+    metrics["editorial_coverage"] = (
+        round((metrics["exact"] / metrics["pages"]) * 100)
+        if metrics["pages"]
+        else 0
+    )
+    return render(
+        request,
+        "home/admin/website_insights.html",
+        {
+            "metrics": metrics,
+            "bklit_note": (
+                "Visual language follows Bklit UI chart composition; "
+                "live traffic/conversion series will activate once an analytics API "
+                "is connected."
+            ),
+        },
+    )
+
+
+@hooks.register("register_admin_urls")
+def register_website_insights_urls():
+    return [
+        path("website-insights/", website_insights, name="aastha_website_insights"),
+    ]
+
+
+@hooks.register("register_admin_menu_item")
+def register_website_insights_menu_item():
+    return MenuItem(
+        "Website insights",
+        reverse("aastha_website_insights"),
+        icon_name="site",
+        order=55,
+    )
 
 
 @hooks.register("construct_homepage_panels")
