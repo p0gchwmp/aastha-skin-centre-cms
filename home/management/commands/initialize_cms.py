@@ -13,6 +13,7 @@ from home.exact_editor_sync import (
     sync_uploaded_homepage_images,
 )
 from home.local_search import LOCAL_SEARCH_AREAS, area_description, area_intro, area_title
+from home.seo_verification import ensure_candidate_seo_profiles
 from home.models import (
     BlogPage,
     ClinicPage,
@@ -386,6 +387,11 @@ class Command(BaseCommand):
                     f"Applied local-intent SEO titles to {len(profile_title_updates)} "
                     "doctor/clinic page(s) with blank/default titles."
                 )
+            seo_profiles = ensure_candidate_seo_profiles()
+            if seo_profiles["created"] or seo_profiles["updated"]:
+                self.stdout.write(
+                    "Prepared SEO verification profiles without marking them verified."
+                )
             self.sync_editor_state()
             self.stdout.write(
                 "CMS already contains pages; starter import skipped."
@@ -402,4 +408,5 @@ class Command(BaseCommand):
         sync_local_search_pages()
         sync_justdial_style_treatment_titles()
         sync_justdial_style_profile_titles()
+        ensure_candidate_seo_profiles()
         self.sync_editor_state()
