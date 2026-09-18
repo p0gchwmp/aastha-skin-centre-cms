@@ -1,0 +1,67 @@
+{% load static %}
+<main id="main-content" class="v37-detail v37-confirmation-page">
+  <section class="v37-detail-hero v37-confirmation-hero">
+    <div class="v37-detail-hero-grid">
+      <div class="v37-detail-hero-copy">
+        <span class="v37-kicker">Appointment request · received</span>
+        <h1>Your request is <em>with reception.</em></h1>
+        <p>This page confirms the website step only. Your appointment is final after the clinic confirms the branch, date and time with you.</p>
+        <div class="v37-actions">
+          <a class="button" href="{{ settings.home.SiteSettings.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp reception</a>
+          <a class="button button-secondary" href="/">Return home</a>
+        </div>
+      </div>
+      <figure class="v37-detail-media">
+        <img src="{% static 'images/visual-cues/appointment-booking-512.webp' %}" alt="Appointment request confirmation at Aastha Skin Centre" width="512" height="512" loading="eager" decoding="async" fetchpriority="high">
+        <figcaption>Request received · confirmation still required</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="v37-meta-strip" aria-label="What happens next">
+    <div class="v37-meta-grid">
+      <div><strong>01</strong><span>Reception reviews your request</span></div>
+      <div><strong>02</strong><span>Branch and availability are checked</span></div>
+      <div><strong>03</strong><span>The clinic contacts you to confirm</span></div>
+      <div><strong>04</strong><span>Arrive at the confirmed clinic and time</span></div>
+    </div>
+  </section>
+
+  <section class="v37-detail-section">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head">
+        <span>Need to change something?</span>
+        <div>
+          <h2>Contact reception directly.</h2>
+          <p>If your preferred date, clinic or concern changed after submitting the request, tell reception before travelling.</p>
+        </div>
+      </header>
+      <div class="v37-reading-grid">
+        <article class="v37-reading-card">
+          <span class="v37-kicker">Call</span>
+          <h3>{{ settings.home.SiteSettings.primary_mobile }}</h3>
+          <p>Use the clinic phone for appointment coordination and availability.</p>
+          <a class="button" href="tel:+91{{ settings.home.SiteSettings.primary_phone_digits }}">Call reception</a>
+        </article>
+        <article class="v37-reading-card">
+          <span class="v37-kicker">WhatsApp</span>
+          <h3>Message the clinic.</h3>
+          <p>Useful for clarifying the requested branch, date or consultation concern.</p>
+          <a class="button" href="{{ settings.home.SiteSettings.whatsapp_url }}" target="_blank" rel="noopener">Open WhatsApp</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="v37-detail-section v37-detail-section--dark">
+    <div class="v37-detail-shell">
+      <header class="v37-detail-head">
+        <span>Important</span>
+        <div>
+          <h2>A request is not an emergency channel.</h2>
+          <p>{{ settings.home.SiteSettings.emergency_note }} Seek urgent hospital care for severe breathing difficulty, facial or throat swelling, a severe medicine reaction or rapidly worsening symptoms.</p>
+        </div>
+      </header>
+    </div>
+  </section>
+</main>
