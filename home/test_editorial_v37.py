@@ -64,6 +64,7 @@ class EditorialV37RolloutTests(SimpleTestCase):
         self.assertIn("editorialVersion='37'", markup)
         self.assertIn("Cormorant+Garamond", markup)
         self.assertIn("Manrope", markup)
+        self.assertIn("cdn.jsdelivr.net", markup)
 
     def test_editorial_assets_exist_and_are_scoped(self):
         assets = {
@@ -78,6 +79,7 @@ class EditorialV37RolloutTests(SimpleTestCase):
             "js/editorial-v37-detail.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-shell.js": 'classList.contains("editorial-v37")',
             "js/editorial-v37-index.js": 'classList.contains("editorial-v37")',
+            "js/editorial-v37-motion.js": 'classList.contains("editorial-v37")',
         }
         for path, scope in assets.items():
             with self.subTest(path=path):
@@ -95,6 +97,9 @@ class EditorialV37RolloutTests(SimpleTestCase):
         self.assertIn("Find your route", shell_js)
         self.assertIn("Book consultation", shell_js)
         self.assertIn("data-v37-explore-trigger", shell_js)
+        motion_js = Path(finders.find("js/editorial-v37-motion.js")).read_text(encoding="utf-8")
+        self.assertIn("motion@13.4.0", motion_js)
+        self.assertIn("prefers-reduced-motion", motion_js)
 
     def test_homepage_switch_preserves_legacy_renderer_as_rollback(self):
         root = Path(__file__).resolve().parents[1] / "home" / "templates" / "home"
