@@ -181,8 +181,7 @@ class LocalSearchSchemaTests(TestCase):
             item_list["itemListElement"][0]["name"],
             self.treatment.title,
         )
-        self.assertTrue(
-            item_list["itemListElement"][0]["url"].endswith(
-                f"/treatments/{self.treatment.slug}/"
-            )
+        self.assertEqual(
+            item_list["itemListElement"][0]["url"],
+            f"{origin}{self.treatment.get_url()}",
         )
