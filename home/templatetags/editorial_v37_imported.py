@@ -123,12 +123,26 @@ def is_editorial_v37_importable(page, path: str | None = None) -> bool:
     return ExactPageLayout.objects.filter(path=public_path, enabled=True).exists()
 
 
+CUE_ASSETS = {
+    "acne": "images/visual-cues/acne-care-512.webp",
+    "scars": "images/visual-cues/scars-texture-skin-quality-512.webp",
+    "hair": "images/visual-cues/hair-scalp-care-512.webp",
+    "pigmentation": "images/visual-cues/pigmentation-care-512.webp",
+    "infection": "images/visual-cues/fungal-infection-care-512.webp",
+    "allergy": "images/visual-cues/allergy-inflammatory-rashes-512.webp",
+    "growths": "images/visual-cues/moles-growths-nails-512.webp",
+    "dermatosurgery": "images/visual-cues/minor-dermatosurgery-512.webp",
+    "children": "images/visual-cues/childrens-dermatology-512.webp",
+    "ageing": "images/visual-cues/skin-quality-ageing-512.webp",
+}
+
+
 def _cue_for_slug(slug: str) -> str:
     value = (slug or "").lower()
     for cue, tokens in CUE_GROUPS.items():
         if any(token in value for token in tokens):
-            return f"images/visual-cue-sources/{cue}.webp"
-    return "images/visual-cue-sources/allergy.webp"
+            return CUE_ASSETS[cue]
+    return "images/visual-cues/clinical-skin-care-512.webp"
 
 
 def _text(node, default="") -> str:
