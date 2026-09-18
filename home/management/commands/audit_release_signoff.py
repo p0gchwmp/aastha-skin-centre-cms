@@ -1,0 +1,259 @@
+"""Report the human approvals still required before production cutover."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from django.core.management.base import BaseCommand, CommandError
+from wagtail.models import Site
+
+from home.models import (
+    BlogPage,
+    ClinicLocation,
+    ConditionPage,
+    Doctor,
+    SiteSettings,
+    TreatmentPage,
+)
+from seo_support.models import ClinicSEOProfile, DoctorSEOProfile
+
+
+MEDICAL_PAGE_TYPES = (ConditionPage, TreatmentPage, BlogPage)
+
+
+def _clean(value) -> str:
+    return str(value or "").strip()
+
+
+def build_release_signoff_report(site=None) -> dict[str, object]:
+    site = site or Site.objects.filter(is_default_site=True).first()
+    if site is None:
+        raise CommandError("No default Wagtail site exists.")
+
+    pages = list(
+        site.root_page.get_descendants(inclusive=True)
+        .live()
+        .public()
+        .specific()
+        .order_by("path")
+    )
+    medical_pages = [page for page in pages if isinstance(page, MEDICAL_PAGE_TYPES)]
+
+    medical_pending = []
+    for page in medical_pages:
+        reasons = []
+        if getattr(page, "review_status", "") != "approved":
+            reasons.append(
+                f"review status is {getattr(page, 'review_status', '') or 'blank'}"
+            )
+        if not getattr(page, "reviewed_by_id", None):
+            reasons.append("reviewer is not recorded")
+        if not getattr(page, "medical_review_date", None):
+            reasons.append("medical review date is not recorded")
+        if reasons:
+            medical_pending.append(
+                {
+                    "path": page.get_url() or page.url_path,
+                    "title": page.title,
+                    "reasons": reasons,
+                }
+            )
+
+    clinic_rows = []
+    clinic_pending = []
+    active_clinics = list(
+        ClinicLocation.objects.filter(is_active=True, live=True).order_by(
+            "sort_order", "name"
+        )
+    )
+    for clinic in active_clinics:
+        missing_fields = [
+            field
+            for field in (
+                "address",
+                "postal_code",
+                "google_maps_url",
+                "reception_hours",
+                "doctor_hours",
+                "procedure_hours",
+            )
+            if not _clean(getattr(clinic, field, ""))
+        ]
+        if not (_clean(clinic.mobile) or _clean(clinic.landline)):
+            missing_fields.append("phone")
+
+        try:
+            seo_profile = clinic.seo_profile
+        except ClinicSEOProfile.DoesNotExist:
+            seo_profile = None
+
+        verification_reasons = []
+        if seo_profile is None:
+            verification_reasons.append("local SEO profile is missing")
+        elif not seo_profile.facts_verified_on:
+            verification_reasons.append("local SEO facts have no verification date")
+
+        row = {
+            "name": clinic.name,
+            "slug": clinic.slug,
+            "address": clinic.address,
+            "postal_code": clinic.postal_code,
+            "mobile": clinic.mobile,
+            "landline": clinic.landline,
+            "google_maps_url": clinic.google_maps_url,
+            "reception_hours": clinic.reception_hours,
+            "doctor_hours": clinic.doctor_hours,
+            "procedure_hours": clinic.procedure_hours,
+            "missing_fields": missing_fields,
+            "verification_reasons": verification_reasons,
+        }
+        clinic_rows.append(row)
+        if missing_fields or verification_reasons:
+            clinic_pending.append(row)
+
+    doctor_rows = []
+    doctor_pending = []
+    active_doctors = list(
+        Doctor.objects.filter(is_active=True, live=True).order_by(
+            "sort_order", "name"
+        )
+    )
+    for doctor in active_doctors:
+        missing_fields = [
+            field
+            for field in ("qualifications", "role", "registration_details")
+            if not _clean(getattr(doctor, field, ""))
+        ]
+        if not doctor.photo_id:
+            missing_fields.append("photo")
+
+        try:
+            seo_profile = doctor.seo_profile
+        except DoctorSEOProfile.DoesNotExist:
+            seo_profile = None
+
+        verification_reasons = []
+        if seo_profile is None:
+            verification_reasons.append("professional SEO profile is missing")
+        elif not seo_profile.facts_verified_on:
+            verification_reasons.append(
+                "professional profile facts have no verification date"
+            )
+
+        row = {
+            "name": doctor.name,
+            "slug": doctor.slug,
+            "qualifications": doctor.qualifications,
+            "role": doctor.role,
+            "registration_details": doctor.registration_details,
+            "photo_present": bool(doctor.photo_id),
+            "missing_fields": missing_fields,
+            "verification_reasons": verification_reasons,
+        }
+        doctor_rows.append(row)
+        if missing_fields or verification_reasons:
+            doctor_pending.append(row)
+
+    settings = SiteSettings.for_site(site)
+    site_pending = []
+    if not settings.default_social_image_id:
+        site_pending.append("approved default social image is missing")
+
+    report = {
+        "site": site.hostname,
+        "summary": {
+            "medical_pages_total": len(medical_pages),
+            "medical_pages_pending": len(medical_pending),
+            "clinics_total": len(clinic_rows),
+            "clinics_pending": len(clinic_pending),
+            "doctors_total": len(doctor_rows),
+            "doctors_pending": len(doctor_pending),
+            "site_items_pending": len(site_pending),
+        },
+        "medical_review_pending": medical_pending,
+        "clinics": clinic_rows,
+        "clinic_signoff_pending": clinic_pending,
+        "doctors": doctor_rows,
+        "doctor_signoff_pending": doctor_pending,
+        "site_signoff_pending": site_pending,
+        "manual_confirmation": {
+            "consultation_fee": str(settings.consultation_fee),
+            "currency_symbol": settings.currency_symbol,
+            "follow_up_days": settings.follow_up_days,
+            "follow_up_included": settings.follow_up_included,
+            "primary_mobile": settings.primary_mobile,
+            "secondary_mobile": settings.secondary_mobile,
+            "whatsapp_mobile": settings.whatsapp_mobile,
+            "email": settings.email,
+            "note": (
+                "Populated values are shown for human confirmation only. "
+                "This audit does not treat a filled field as an approval."
+            ),
+        },
+    }
+    return report
+
+
+class Command(BaseCommand):
+    help = (
+        "Report medical, clinic, doctor and media approvals still required "
+        "before production cutover."
+    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("--json", type=Path, dest="json_path")
+        parser.add_argument(
+            "--fail-on-pending",
+            action="store_true",
+            help="Return non-zero while any signoff item is still pending.",
+        )
+
+    def handle(self, *args, **options):
+        report = build_release_signoff_report()
+        summary = report["summary"]
+
+        self.stdout.write(
+            "Release signoff audit: "
+            f"{summary['medical_pages_pending']}/{summary['medical_pages_total']} "
+            "medical pages pending; "
+            f"{summary['clinics_pending']}/{summary['clinics_total']} clinics pending; "
+            f"{summary['doctors_pending']}/{summary['doctors_total']} doctors pending; "
+            f"{summary['site_items_pending']} site/media item(s) pending."
+        )
+
+        for item in report["doctor_signoff_pending"]:
+            reasons = item["missing_fields"] + item["verification_reasons"]
+            self.stdout.write(
+                self.style.WARNING(
+                    f"DOCTOR — {item['name']}: " + "; ".join(reasons)
+                )
+            )
+        for item in report["clinic_signoff_pending"]:
+            reasons = item["missing_fields"] + item["verification_reasons"]
+            self.stdout.write(
+                self.style.WARNING(
+                    f"CLINIC — {item['name']}: " + "; ".join(reasons)
+                )
+            )
+        for item in report["site_signoff_pending"]:
+            self.stdout.write(self.style.WARNING(f"SITE — {item}"))
+
+        if options.get("json_path"):
+            path = options["json_path"]
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(report, indent=2, ensure_ascii=False, default=str),
+                encoding="utf-8",
+            )
+
+        pending = (
+            summary["medical_pages_pending"]
+            + summary["clinics_pending"]
+            + summary["doctors_pending"]
+            + summary["site_items_pending"]
+        )
+        if options.get("fail_on_pending") and pending:
+            raise CommandError(
+                f"Release signoff audit found {pending} pending approval group(s)."
+            )
