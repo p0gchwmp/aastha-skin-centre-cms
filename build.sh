@@ -4,6 +4,7 @@ set -o errexit
 python -m pip install -r requirements.txt
 python tools/build_visual_cue_assets.py
 python tools/generate_responsive_clinical_images.py
+python tools/audit_clinical_result_images.py
 python tools/verify_exact_page_snapshots.py
 npm --prefix frontend install --no-audit --no-fund
 npm --prefix frontend run build
