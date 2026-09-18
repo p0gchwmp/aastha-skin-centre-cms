@@ -1,0 +1,158 @@
+/* Kokonut UI-derived route search, restyled for Aastha editorial v37. */
+body.v37-kokonut-open { overflow: hidden !important; }
+.kokonut-explore {
+  position: fixed;
+  inset: 0;
+  z-index: 5500;
+  display: grid;
+  place-items: start center;
+  padding: clamp(14px, 5vw, 70px);
+  color: #171315;
+  font-family: Manrope, Arial, sans-serif;
+}
+.kokonut-explore__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(14, 10, 12, .78);
+  backdrop-filter: blur(12px);
+  cursor: default;
+}
+.kokonut-explore__panel {
+  position: relative;
+  z-index: 1;
+  width: min(920px, 100%);
+  max-height: calc(100dvh - clamp(28px, 10vw, 140px));
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  border: 1px solid rgba(255,255,255,.17);
+  background: #f4eee6;
+  box-shadow: 0 38px 120px rgba(12, 7, 9, .38);
+}
+.kokonut-explore__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(22px, 4vw, 38px);
+  border-bottom: 1px solid rgba(34, 25, 29, .15);
+}
+.kokonut-explore__head span,
+.kokonut-explore__group {
+  color: #86163f;
+  font-size: .58rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.kokonut-explore__head h2 {
+  max-width: 13ch;
+  margin: 7px 0 0;
+  font: 500 clamp(2.3rem, 5vw, 4.8rem)/.9 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -.045em;
+}
+.kokonut-explore__head > button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(34,25,29,.2);
+  background: transparent;
+  color: #171315;
+  cursor: pointer;
+}
+.kokonut-explore__search {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 0 clamp(20px, 4vw, 36px);
+  border-bottom: 1px solid rgba(34,25,29,.15);
+  background: #fbf7f1;
+}
+.kokonut-explore__search input {
+  width: 100%;
+  min-height: 70px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #171315;
+  font: 600 clamp(.95rem, 1.5vw, 1.15rem)/1.2 Manrope, Arial, sans-serif;
+}
+.kokonut-explore__search input::placeholder { color: #8b8084; }
+.kokonut-explore__search kbd {
+  padding: 5px 7px;
+  border: 1px solid rgba(34,25,29,.16);
+  background: #eee6dd;
+  color: #746a6d;
+  font: 700 .58rem/1 Manrope, Arial, sans-serif;
+}
+.kokonut-explore__results {
+  min-height: 0;
+  overflow: auto;
+  padding: 10px clamp(12px, 2vw, 18px) 16px;
+}
+.kokonut-explore__results button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 100px minmax(130px,.75fr) minmax(0,1.2fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(34,25,29,.11);
+  background: transparent;
+  color: #171315;
+  text-align: left;
+  cursor: pointer;
+}
+.kokonut-explore__results button.is-active {
+  background: #e9dfd5;
+  box-shadow: inset 3px 0 0 #86163f;
+}
+.kokonut-explore__results button strong {
+  font: 500 1.35rem/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -.02em;
+}
+.kokonut-explore__results button small {
+  color: #6d6366;
+  font: 500 .73rem/1.45 Manrope, Arial, sans-serif;
+}
+.kokonut-explore__empty { padding: 30px 12px; color: #70666a; }
+.kokonut-explore__panel > footer {
+  padding: 13px clamp(20px,4vw,36px);
+  border-top: 1px solid rgba(34,25,29,.15);
+  color: #7b7174;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.kokonut-explore__panel > footer span { margin-inline: 8px; color: #a59a9d; }
+.kokonut-explore :focus-visible { outline: 3px solid #c99356; outline-offset: 2px; }
+
+@media (max-width: 680px) {
+  .kokonut-explore { padding: 10px; place-items: stretch; }
+  .kokonut-explore__panel { max-height: calc(100dvh - 20px); }
+  .kokonut-explore__head { padding: 20px; }
+  .kokonut-explore__head h2 { font-size: 2.55rem; }
+  .kokonut-explore__results button {
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 4px 12px;
+    padding: 13px 10px;
+  }
+  .kokonut-explore__group { grid-column: 1; }
+  .kokonut-explore__results button strong { grid-column: 1; font-size: 1.25rem; }
+  .kokonut-explore__results button small { grid-column: 1; }
+  .kokonut-explore__results button svg { grid-column: 2; grid-row: 1 / span 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kokonut-explore *, .kokonut-explore *::before, .kokonut-explore *::after {
+    scroll-behavior: auto !important;
+  }
+}
