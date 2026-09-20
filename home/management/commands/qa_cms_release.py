@@ -384,6 +384,10 @@ class Command(BaseCommand):
                 control_html = control_centre.content.decode()
                 if "Verification &amp; indexation readiness" not in control_html:
                     errors.append("SEO verification dashboard did not render.")
+                if "Clinical content review queue" not in control_html:
+                    errors.append("Medical review queue did not render.")
+                if "No bulk approval:" not in control_html:
+                    errors.append("Medical review queue guardrail did not render.")
             transaction.set_rollback(True)
 
         self.stdout.write(
