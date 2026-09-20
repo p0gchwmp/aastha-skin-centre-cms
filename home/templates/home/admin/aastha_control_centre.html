@@ -154,6 +154,53 @@
     </div>
   </section>
 
+  <section class="aastha-cc-panel aastha-review-queue" aria-labelledby="aastha-review-queue-title">
+    <div class="aastha-cc-heading">
+      <div>
+        <span class="aastha-cc-kicker">Medical sign-off</span>
+        <h2 id="aastha-review-queue-title">Clinical content review queue</h2>
+      </div>
+      <strong class="aastha-review-count">
+        {{ release_signoff.summary.medical_pages_pending }}/{{ release_signoff.summary.medical_pages_total }} pending
+      </strong>
+    </div>
+
+    <div class="aastha-review-guidance">
+      <p>Each medical page requires an explicit approved review status, named reviewer and medical review date. Open a page, review its clinical wording, record the approval fields, then publish the revision.</p>
+      <p><strong>No bulk approval:</strong> the queue is intentionally page-by-page so medical sign-off cannot be inferred from imported content or a completed SEO check.</p>
+    </div>
+
+    <div class="aastha-review-list">
+      {% for item in release_signoff.medical_review_pending %}
+        <article class="aastha-review-row">
+          <div class="aastha-review-index">{{ forloop.counter|stringformat:"02d" }}</div>
+          <div class="aastha-review-main">
+            <div class="aastha-review-meta">
+              <span>{{ item.page_type }}</span>
+              <code>{{ item.path }}</code>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.reasons|join:" · " }}</p>
+            <div class="aastha-review-state">
+              <span>Status: <strong>{{ item.review_status|default:"blank" }}</strong></span>
+              <span>Reviewer: <strong>{{ item.reviewer|default:"—" }}</strong></span>
+              <span>Review date: <strong>{{ item.medical_review_date|date:"j M Y"|default:"—" }}</strong></span>
+            </div>
+          </div>
+          <div class="aastha-cc-route-actions">
+            <a class="button button-small" href="/admin/pages/{{ item.page_id }}/edit/">Review page</a>
+            <a class="button button-small button-secondary" href="{{ item.path }}" target="_blank" rel="noopener">Preview ↗</a>
+          </div>
+        </article>
+      {% empty %}
+        <div class="aastha-review-empty">
+          <strong>Medical review queue is clear.</strong>
+          <p>All live medical pages have an approved status, reviewer and review date.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
   <div class="aastha-cc-layout">
     <section class="aastha-cc-panel">
       <div class="aastha-cc-heading">
