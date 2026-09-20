@@ -18,6 +18,7 @@ from home.models import (
     BlogPage,
     ClinicPage,
     ContentIndexPage,
+    Doctor,
     DoctorPage,
     HomePage,
     SiteSettings,
@@ -42,6 +43,9 @@ LEGACY_LOCATIONS_META_DESCRIPTION = (
 APPROVED_LOCATIONS_META_DESCRIPTION = (
     "Find Aastha Skin Centre clinics in Jammu at Karan Nagar and Paloura Chowk, "
     "with branch details, contact information and directions."
+)
+APPROVED_DOCTOR_REGISTRATION_DETAILS = (
+    "J&K Medical Council Registration No. 9538 (16 Jan 2007)"
 )
 LEGACY_FACEBOOK_URLS = {
     "",
@@ -276,6 +280,19 @@ def sync_justdial_style_profile_titles():
     return updated
 
 
+def sync_approved_doctor_registration():
+    """Fill the council registration only when the doctor record is blank."""
+    doctor = Doctor.objects.filter(slug="dr-cheena-langer").first()
+    if doctor is None:
+        return False
+    if (doctor.registration_details or "").strip():
+        return False
+
+    doctor.registration_details = APPROVED_DOCTOR_REGISTRATION_DETAILS
+    doctor.save(update_fields=["registration_details"])
+    return True
+
+
 def sync_approved_site_settings(site):
     """Fill approved blank/placeholder settings without overwriting later edits."""
     if site is None:
@@ -392,6 +409,10 @@ class Command(BaseCommand):
                 self.stdout.write(
                     "Prepared SEO verification profiles without marking them verified."
                 )
+            if sync_approved_doctor_registration():
+                self.stdout.write(
+                    "Applied verified J&K Medical Council registration to blank doctor record."
+                )
             self.sync_editor_state()
             self.stdout.write(
                 "CMS already contains pages; starter import skipped."
@@ -409,4 +430,5 @@ class Command(BaseCommand):
         sync_justdial_style_treatment_titles()
         sync_justdial_style_profile_titles()
         ensure_candidate_seo_profiles()
+        sync_approved_doctor_registration()
         self.sync_editor_state()
