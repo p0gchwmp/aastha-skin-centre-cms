@@ -166,3 +166,5 @@ class SEOVerificationStateTests(TestCase):
         self.assertIn("18 area hubs", body)
         self.assertIn("Not approved yet", body)
         self.assertIn("Gandhi Nagar", body)
+        self.assertIn("Clinical content review queue", body)
+        self.assertIn("No bulk approval:", body)
