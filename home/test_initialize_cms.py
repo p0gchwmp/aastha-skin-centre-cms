@@ -9,10 +9,12 @@ from home.management.commands.initialize_cms import (
     APPROVED_HOMEPAGE_META_DESCRIPTION,
     APPROVED_HOMEPAGE_SEO_TITLE,
     APPROVED_LOCATIONS_META_DESCRIPTION,
+    APPROVED_DOCTOR_REGISTRATION_DETAILS,
     APPROVED_SEARCH_CONSOLE_VERIFICATION,
     LEGACY_LOCATIONS_META_DESCRIPTION,
     sync_approved_homepage_seo,
     sync_approved_locations_seo,
+    sync_approved_doctor_registration,
     sync_approved_site_settings,
     sync_justdial_style_treatment_titles,
     sync_local_search_pages,
@@ -21,6 +23,7 @@ from home.management.commands.initialize_cms import (
 from home.local_search import LOCAL_SEARCH_AREAS
 from home.models import (
     ContentIndexPage,
+    Doctor,
     HomePage,
     SiteSettings,
     StandardPage,
@@ -177,6 +180,39 @@ class ApprovedLocationsSeoTests(TestCase):
         self.assertFalse(changed)
         self.locations.refresh_from_db()
         self.assertEqual(self.locations.search_description, custom)
+
+
+class ApprovedDoctorRegistrationTests(TestCase):
+    def setUp(self):
+        self.doctor = Doctor.objects.create(
+            name="Dr. Cheena Langer",
+            slug="dr-cheena-langer",
+            qualifications="MBBS, MD Dermatology",
+            role="Consultant Dermatologist",
+            registration_details="",
+            is_active=True,
+        )
+
+    def test_blank_registration_is_filled_from_approved_council_record(self):
+        changed = sync_approved_doctor_registration()
+
+        self.assertTrue(changed)
+        self.doctor.refresh_from_db()
+        self.assertEqual(
+            self.doctor.registration_details,
+            APPROVED_DOCTOR_REGISTRATION_DETAILS,
+        )
+
+    def test_editor_registration_is_preserved(self):
+        custom = "Editor-verified registration wording"
+        self.doctor.registration_details = custom
+        self.doctor.save(update_fields=["registration_details"])
+
+        changed = sync_approved_doctor_registration()
+
+        self.assertFalse(changed)
+        self.doctor.refresh_from_db()
+        self.assertEqual(self.doctor.registration_details, custom)
 
 
 class UtilityPageIndexingTests(TestCase):
