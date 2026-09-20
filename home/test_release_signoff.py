@@ -94,10 +94,15 @@ class ReleaseSignoffAuditTests(TestCase):
         self.assertEqual(clinic["missing_fields"], [])
         self.assertIn("local SEO profile is missing", clinic["verification_reasons"])
 
-        medical_paths = {
-            item["path"] for item in report["medical_review_pending"]
+        medical_items = {
+            item["path"]: item for item in report["medical_review_pending"]
         }
-        self.assertIn(self.treatment.get_url(), medical_paths)
+        self.assertIn(self.treatment.get_url(), medical_items)
+        treatment_item = medical_items[self.treatment.get_url()]
+        self.assertEqual(treatment_item["page_id"], self.treatment.pk)
+        self.assertEqual(treatment_item["review_status"], "medical")
+        self.assertEqual(treatment_item["reviewer"], "")
+        self.assertIsNone(treatment_item["medical_review_date"])
         self.assertIn(
             "approved default social image is missing",
             report["site_signoff_pending"],
