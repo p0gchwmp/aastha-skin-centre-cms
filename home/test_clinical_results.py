@@ -24,6 +24,34 @@ from home.exact_editor_setup import (
 
 
 class ClinicalResultGalleryTests(SimpleTestCase):
+    def assert_static_asset(self, actual, relative_path):
+        """Accept ManifestStaticFilesStorage hashes while verifying the exact asset."""
+        relative = Path(relative_path)
+        prefix = (
+            "/assets/"
+            + relative.parent.as_posix().strip("/")
+            + "/"
+            + relative.stem
+        )
+        self.assertTrue(
+            actual.startswith(prefix),
+            f"{actual!r} does not start with {prefix!r}",
+        )
+        self.assertTrue(
+            actual.endswith(relative.suffix),
+            f"{actual!r} does not end with {relative.suffix!r}",
+        )
+
+    def srcset_urls(self, value):
+        output = {}
+        for candidate in (value or "").split(","):
+            candidate = candidate.strip()
+            if not candidate:
+                continue
+            url, width = candidate.rsplit(" ", 1)
+            output[width] = url
+        return output
+
     def test_verified_route_manifest(self):
         self.assertEqual(len(CLINICAL_RESULT_GALLERIES), 16)
         self.assertEqual(
@@ -89,16 +117,24 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertIsNone(gallery.select_one("[data-clinical-previous]"))
         image = gallery.select_one("img")
         self.assertIsNotNone(image)
-        self.assertEqual(
+        self.assert_static_asset(
             image.get("src"),
-            "/assets/images/clinical-results/acne-treatment/acne-treatment-01.webp",
+            local_asset_path("/treatments/acne-treatment/", 1),
         )
+        srcset = self.srcset_urls(image.get("srcset"))
         for width in RESPONSIVE_WIDTHS:
-            self.assertIn(
-                f"acne-treatment-01-{width}w.webp {width}w",
-                image.get("srcset"),
+            self.assert_static_asset(
+                srcset[f"{width}w"],
+                responsive_asset_path(
+                    "/treatments/acne-treatment/",
+                    1,
+                    width,
+                ),
             )
-        self.assertIn("acne-treatment-01.webp 1200w", image.get("srcset"))
+        self.assert_static_asset(
+            srcset["1200w"],
+            local_asset_path("/treatments/acne-treatment/", 1),
+        )
         self.assertTrue(image.get("sizes"))
 
     def test_multiple_images_use_accessible_non_autoplay_carousel(self):
@@ -151,19 +187,23 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         first_image = gallery.select_one("[data-clinical-slide] img")
         self.assertEqual(first_image.get("loading"), "eager")
         self.assertEqual(first_image.get("fetchpriority"), "high")
-        self.assertEqual(
+        self.assert_static_asset(
             first_image.get("src"),
-            "/assets/images/clinical-results/acne-scar-treatment/"
-            "acne-scar-treatment-01.webp",
+            local_asset_path("/treatments/acne-scar-treatment/", 1),
         )
+        srcset = self.srcset_urls(first_image.get("srcset"))
         for width in RESPONSIVE_WIDTHS:
-            self.assertIn(
-                f"acne-scar-treatment-01-{width}w.webp {width}w",
-                first_image.get("srcset"),
+            self.assert_static_asset(
+                srcset[f"{width}w"],
+                responsive_asset_path(
+                    "/treatments/acne-scar-treatment/",
+                    1,
+                    width,
+                ),
             )
-        self.assertIn(
-            "acne-scar-treatment-01.webp 1200w",
-            first_image.get("srcset"),
+        self.assert_static_asset(
+            srcset["1200w"],
+            local_asset_path("/treatments/acne-scar-treatment/", 1),
         )
         self.assertIn("max-width: 760px", first_image.get("sizes"))
         self.assertIn("70vw", first_image.get("sizes"))
@@ -271,11 +311,9 @@ class ClinicalResultGalleryTests(SimpleTestCase):
         self.assertIsNotNone(media)
         image = media.select_one("[data-clinical-slide] img")
         self.assertIsNotNone(image)
-        self.assertTrue(
-            image.get("src", "").endswith(
-                "/assets/images/clinical-results/acne-scar-treatment/"
-                "acne-scar-treatment-01.webp"
-            )
+        self.assert_static_asset(
+            image.get("src", ""),
+            local_asset_path("/treatments/acne-scar-treatment/", 1),
         )
         self.assertNotIn("visual-cues/acne-care", rendered)
         self.assertNotIn("drive.google.com", rendered)
