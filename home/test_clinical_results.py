@@ -16,6 +16,11 @@ from home.clinical_results_local import (
 from home.templatetags.clinical_results import (
     exact_page_with_clinical_results,
 )
+from home.exact_editor_setup import (
+    APPROVED_DOCTOR_FALLBACK_IMAGE,
+    inject_v37_clinical_hero,
+    restore_v37_doctor_photo_fallback,
+)
 
 
 class ClinicalResultGalleryTests(SimpleTestCase):
@@ -248,6 +253,46 @@ class ClinicalResultGalleryTests(SimpleTestCase):
             "1 clinic-supplied photograph",
             rendered,
         )
+
+    def test_v37_restore_replaces_dark_placeholder_with_local_clinical_photo(self):
+        source = (
+            '<main id="main-content"><section class="v37-detail-hero">'
+            '<figure class="v37-detail-media">'
+            '<img src="/assets/images/visual-cues/acne-care-512.webp" alt="">'
+            '<figcaption>Educational guide</figcaption>'
+            '</figure></section></main>'
+        )
+        rendered = inject_v37_clinical_hero(
+            source,
+            "/treatments/acne-scar-treatment/",
+        )
+        soup = BeautifulSoup(rendered, "html.parser")
+        media = soup.select_one(".v37-detail-media--clinical")
+        self.assertIsNotNone(media)
+        image = media.select_one("[data-clinical-slide] img")
+        self.assertIsNotNone(image)
+        self.assertTrue(
+            image.get("src", "").endswith(
+                "/assets/images/clinical-results/acne-scar-treatment/"
+                "acne-scar-treatment-01.webp"
+            )
+        )
+        self.assertNotIn("visual-cues/acne-care", rendered)
+        self.assertNotIn("drive.google.com", rendered)
+
+    def test_v37_home_and_doctor_use_real_photo_when_wagtail_media_is_missing(self):
+        source = (
+            '<figure><img src="/assets/images/visual-cues/'
+            'dermatologist-diagnosis-512.webp" alt="Dermatologist-led care"></figure>'
+        )
+        for path in ("/", "/dr-cheena-langer/"):
+            with self.subTest(path=path):
+                rendered = restore_v37_doctor_photo_fallback(source, path)
+                self.assertIn(APPROVED_DOCTOR_FALLBACK_IMAGE, rendered)
+                self.assertNotIn(
+                    "visual-cues/dermatologist-diagnosis-512.webp",
+                    rendered,
+                )
 
     def test_unknown_page_has_no_gallery(self):
         self.assertEqual(gallery_markup("/treatments/rosacea-treatment/"), "")

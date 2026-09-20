@@ -72,6 +72,52 @@ html.editorial-v37 body.release-v24 .v37-detail-media img {
   filter: saturate(.88) contrast(1.03);
 }
 
+
+/* Restored clinic-supplied photography for Editorial v37. */
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical {
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(14px, 2vw, 24px);
+  background: #f3ece8;
+}
+
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical > .clinical-results--hero {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__inner {
+  width: 100%;
+  margin: 0;
+}
+
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__viewport,
+html[data-theme="dark"].editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__viewport,
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__slide img,
+html[data-theme="dark"].editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__slide img {
+  background: #f3ece8 !important;
+}
+
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__slide img,
+html[data-theme="dark"].editorial-v37 body.release-v24 .v37-detail-media--clinical .clinical-results__slide img {
+  width: 100%;
+  height: auto !important;
+  max-height: 430px !important;
+  object-fit: contain !important;
+  padding: 0 !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+html.editorial-v37 body.release-v24 .v37-detail-media--clinical
+:is(.clinical-results__hero-label,.clinical-results__counter,.clinical-results__note) {
+  color: var(--v37-ink) !important;
+}
+
 html.editorial-v37 body.release-v24 .v37-detail-media figcaption {
   position: absolute;
   inset: auto 0 0;

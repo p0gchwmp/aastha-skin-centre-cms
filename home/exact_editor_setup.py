@@ -7,6 +7,7 @@ side-effect free and startup failures are easy to isolate.
 from __future__ import annotations
 
 from copy import deepcopy
+import re
 
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
@@ -14,6 +15,8 @@ from django.db import models
 from wagtail.admin.panels import FieldPanel, HelpPanel, MultiFieldPanel
 from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
+
+from home.clinical_results_local import hero_gallery_markup
 
 from .exact_editor import (
     ExactImageStreamBlock,
@@ -189,6 +192,7 @@ def configure_exact_content_editor() -> None:
     ExactPageLayout._meta.verbose_name = "editable page content"
     ExactPageLayout._meta.verbose_name_plural = "editable page content"
 
+    restore_middleware_path = "home.exact_editor_setup.V37MediaRestoreMiddleware"
     middleware_path = "home.exact_editor_setup.ExactContentEditorMiddleware"
     middleware = list(settings.MIDDLEWARE)
     if middleware_path not in middleware:
@@ -197,9 +201,98 @@ def configure_exact_content_editor() -> None:
         except ValueError:
             position = len(middleware)
         middleware.insert(position, middleware_path)
-        settings.MIDDLEWARE = middleware
+    if restore_middleware_path not in middleware:
+        exact_position = middleware.index(middleware_path)
+        # Request order: restore -> exact. Response order reverses, so exact
+        # editor changes land first and media restoration is the final layer.
+        middleware.insert(exact_position, restore_middleware_path)
+    settings.MIDDLEWARE = middleware
 
     _CONFIGURED = True
+
+
+
+APPROVED_DOCTOR_FALLBACK_IMAGE = (
+    "https://www.aasthaskincentre.in/media/images/"
+    "DSC_5241_1.max-900x900.format-webp.webp"
+)
+V37_DETAIL_MEDIA_RE = re.compile(
+    r'<figure\b(?=[^>]*\bclass=(?P<quote>["\'])'
+    r'[^"\']*\bv37-detail-media\b[^"\']*(?P=quote))[^>]*>'
+    r'.*?</figure>',
+    re.IGNORECASE | re.DOTALL,
+)
+V37_VISUAL_CUE_SRC_RE = re.compile(
+    r'(?P<prefix>\bsrc=["\'])(?P<src>[^"\']*/images/visual-cues/'
+    r'(?P<name>personalised-plan|dermatologist-diagnosis)-512\.webp)'
+    r'(?P<suffix>["\'])',
+    re.IGNORECASE,
+)
+
+
+def inject_v37_clinical_hero(source: str, path: str) -> str:
+    """Restore locally materialised clinical photography on mapped v37 routes."""
+    gallery = hero_gallery_markup(path)
+    if not gallery:
+        return source
+    replacement = (
+        '<div class="v37-detail-media v37-detail-media--clinical">'
+        + gallery
+        + "</div>"
+    )
+    return V37_DETAIL_MEDIA_RE.sub(replacement, source, count=1)
+
+
+def restore_v37_doctor_photo_fallback(source: str, path: str) -> str:
+    """Use the approved real doctor photograph when staging media rows are absent."""
+    if path not in {"/", "/dr-cheena-langer/"}:
+        return source
+
+    def replace(match: re.Match[str]) -> str:
+        name = match.group("name").casefold()
+        if path == "/dr-cheena-langer/" and name != "dermatologist-diagnosis":
+            return match.group(0)
+        return (
+            match.group("prefix")
+            + APPROVED_DOCTOR_FALLBACK_IMAGE
+            + match.group("suffix")
+        )
+
+    return V37_VISUAL_CUE_SRC_RE.sub(replace, source)
+
+
+class V37MediaRestoreMiddleware:
+    """Restore approved real photography after the exact-page editor renders."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        content_type = response.get("Content-Type", "")
+        if (
+            response.status_code != 200
+            or getattr(response, "streaming", False)
+            or "text/html" not in content_type
+        ):
+            return response
+
+        try:
+            charset = getattr(response, "charset", "utf-8")
+            body = response.content.decode(charset)
+        except (AttributeError, UnicodeDecodeError):
+            return response
+
+        path = normalise_path(request.path_info)
+        updated = inject_v37_clinical_hero(body, path)
+        updated = restore_v37_doctor_photo_fallback(updated, path)
+        if updated == body:
+            return response
+
+        response.content = updated.encode(charset)
+        if response.has_header("Content-Length"):
+            del response["Content-Length"]
+        return response
 
 
 class ExactContentEditorMiddleware:
