@@ -244,7 +244,7 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             "public_evidence_conflicts": sum(
                 1
                 for row in (*clinic_rows, *doctor_rows)
-                if row.get("public_evidence", {}).get("state") == "conflict"
+                if (row.get("public_evidence") or {}).get("state") == "conflict"
                 and not (row.get("verification") or {}).get("complete")
             ),
         },
