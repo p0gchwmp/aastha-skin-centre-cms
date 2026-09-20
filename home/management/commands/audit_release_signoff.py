@@ -55,8 +55,19 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
         if reasons:
             medical_pending.append(
                 {
+                    "page_id": page.pk,
                     "path": page.get_url() or page.url_path,
                     "title": page.title,
+                    "page_type": page.__class__.__name__,
+                    "review_status": getattr(page, "review_status", ""),
+                    "reviewer": (
+                        str(page.reviewed_by)
+                        if getattr(page, "reviewed_by_id", None)
+                        else ""
+                    ),
+                    "medical_review_date": getattr(
+                        page, "medical_review_date", None
+                    ),
                     "reasons": reasons,
                 }
             )
