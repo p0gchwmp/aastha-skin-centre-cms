@@ -63,7 +63,7 @@
             <span class="aastha-cc-kicker">Physical entities</span>
             <h3>Clinics + doctor</h3>
           </div>
-          <p>Candidate identity URLs may be prefilled, but schema remains blocked until the profile receives an explicit verification date.</p>
+          <p>Candidate identity URLs may be prefilled. Review the source snapshot and any conflict below; schema remains blocked until a human records complete verification evidence.</p>
         </div>
 
         <div class="aastha-seo-entity-list">
@@ -87,6 +87,23 @@
                   {% if item.profile.practo_clinic_url %}<a href="{{ item.profile.practo_clinic_url }}" target="_blank" rel="noopener">Practo ↗</a>{% endif %}
                   {% if item.profile.verification_source_url %}<a href="{{ item.profile.verification_source_url }}" target="_blank" rel="noopener">Evidence ↗</a>{% endif %}
                   <span>{% if item.profile.verification_complete %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }} by {{ item.profile.verification_reviewer }}{% elif item.profile.facts_verified_on %}Evidence incomplete{% else %}Not approved yet{% endif %}</span>
+                </div>
+              {% endif %}
+              {% if item.evidence %}
+                <div class="aastha-source-review">
+                  <div class="aastha-source-review-head">
+                    <span class="aastha-seo-status {% if item.evidence.state == 'conflict' %}is-conflict{% else %}is-review{% endif %}">{{ item.evidence.label }}</span>
+                    <small>Public-source snapshot · {{ item.evidence.observed_on }}</small>
+                  </div>
+                  <p>{{ item.evidence.summary }}</p>
+                  <div class="aastha-source-checks">
+                    {% for check in item.evidence.checks %}
+                      <span class="{% if check.state == 'conflict' %}is-conflict{% else %}is-aligned{% endif %}"><strong>{{ check.label }}</strong> — {{ check.note }}</span>
+                    {% endfor %}
+                  </div>
+                  <div class="aastha-source-links">
+                    {% for source in item.evidence.sources %}<a href="{{ source.url }}" target="_blank" rel="noopener">{{ source.kind }} · {{ source.label }} ↗</a>{% endfor %}
+                  </div>
                 </div>
               {% endif %}
             </article>
@@ -115,6 +132,23 @@
                   <span>{% if item.profile.verification_complete %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }} by {{ item.profile.verification_reviewer }}{% elif item.profile.facts_verified_on %}Evidence incomplete{% else %}Not approved yet{% endif %}</span>
                 </div>
               {% endif %}
+              {% if item.evidence %}
+                <div class="aastha-source-review">
+                  <div class="aastha-source-review-head">
+                    <span class="aastha-seo-status {% if item.evidence.state == 'conflict' %}is-conflict{% else %}is-review{% endif %}">{{ item.evidence.label }}</span>
+                    <small>Public-source snapshot · {{ item.evidence.observed_on }}</small>
+                  </div>
+                  <p>{{ item.evidence.summary }}</p>
+                  <div class="aastha-source-checks">
+                    {% for check in item.evidence.checks %}
+                      <span class="{% if check.state == 'conflict' %}is-conflict{% else %}is-aligned{% endif %}"><strong>{{ check.label }}</strong> — {{ check.note }}</span>
+                    {% endfor %}
+                  </div>
+                  <div class="aastha-source-links">
+                    {% for source in item.evidence.sources %}<a href="{{ source.url }}" target="_blank" rel="noopener">{{ source.kind }} · {{ source.label }} ↗</a>{% endfor %}
+                  </div>
+                </div>
+              {% endif %}
             </article>
           {% endfor %}
         </div>
@@ -126,7 +160,7 @@
             <span class="aastha-cc-kicker">Justdial-style locality graph</span>
             <h3>18 area hubs</h3>
           </div>
-          <p>Verification and indexation are separate. A page can be reviewed first and only activated after its service-area fact is approved.</p>
+          <p>{{ seo_verification.counts.area_jammu_total }} Jammu-locality candidates · {{ seo_verification.counts.area_regional_total }} regional travel-origin candidates. Verification and indexation stay separate.</p>
         </div>
 
         <div class="aastha-seo-area-list">
@@ -137,7 +171,7 @@
                   {{ area.status }}
                 </span>
                 <h4>{{ area.name }}</h4>
-                <p>{{ area.path }}</p>
+                <p>{{ area.review_bucket }} · {{ area.path }}</p>
               </div>
               <div class="aastha-seo-area-flags">
                 <span>Fact {% if area.fact_verified %}✓{% else %}—{% endif %}</span>
@@ -152,7 +186,7 @@
 
     <div class="aastha-seo-safety">
       <strong>Safety rule</strong>
-      <p>No candidate URL or populated field unlocks local schema or locality indexing by itself. Approval requires a verification date, reviewer and verification notes; the proof URL is optional. Area pages remain noindex until the verified-only activation step is explicitly applied.</p>
+      <p>No candidate URL, source snapshot or populated field unlocks local schema or locality indexing by itself. Approval requires a verification date, reviewer and verification notes; the proof URL is optional. Conflicting public hours must be resolved against the clinic's current operating schedule before approval. Area pages remain noindex until the verified-only activation step is explicitly applied.</p>
     </div>
   </section>
 

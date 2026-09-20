@@ -113,6 +113,24 @@ class ReleaseSignoffAuditTests(TestCase):
         )
         self.assertEqual(report["summary"]["local_search_areas_ready"], 0)
 
+    def test_report_exports_public_evidence_without_treating_it_as_approval(self):
+        report = build_release_signoff_report(self.site)
+        self.assertIn("public_evidence_conflicts", report["summary"])
+
+        known_clinics = {
+            item["slug"]: item
+            for item in report["clinics"]
+            if item["slug"] in {"karan-nagar", "paloura"}
+        }
+        for row in known_clinics.values():
+            self.assertIsNotNone(row["public_evidence"])
+            self.assertIn(
+                row["public_evidence"]["state"],
+                {"conflict", "candidate-aligned"},
+            )
+            if row["public_evidence"]["state"] == "conflict":
+                self.assertFalse((row.get("verification") or {}).get("complete", False))
+
     def test_fail_on_pending_is_opt_in(self):
         call_command("audit_release_signoff")
         with self.assertRaises(CommandError):

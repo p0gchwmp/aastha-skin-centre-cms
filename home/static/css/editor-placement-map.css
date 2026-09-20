@@ -494,6 +494,69 @@
   color: #725d20;
 }
 
+.aastha-seo-status.is-conflict {
+  border-color: rgba(155, 47, 47, .22);
+  background: #fff0ef;
+  color: #8a2f2f;
+}
+
+.aastha-source-review {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: .7rem;
+  margin-top: .15rem;
+  padding: .85rem;
+  border: 1px solid var(--aastha-line);
+  background: #fcfaf7;
+}
+
+.aastha-source-review-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem .8rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.aastha-source-review-head small {
+  color: #8a8086;
+  font-size: .68rem;
+  font-weight: 750;
+}
+
+.aastha-source-review > p {
+  font-size: .78rem;
+}
+
+.aastha-source-checks {
+  display: grid;
+  gap: .4rem;
+}
+
+.aastha-source-checks span {
+  padding-left: .65rem;
+  border-left: 3px solid #5e8c70;
+  color: #62585e;
+  font-size: .73rem;
+  line-height: 1.45;
+}
+
+.aastha-source-checks span.is-conflict {
+  border-left-color: #a34b4b;
+}
+
+.aastha-source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem .85rem;
+}
+
+.aastha-source-links a {
+  color: var(--aastha-wine);
+  font-size: .71rem;
+  font-weight: 800;
+}
+
 .aastha-seo-evidence,
 .aastha-seo-area-flags {
   display: flex;

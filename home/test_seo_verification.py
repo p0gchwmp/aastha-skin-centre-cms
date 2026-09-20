@@ -10,6 +10,7 @@ from home.models import ClinicLocation, Doctor, HomePage
 from home.seo_verification import (
     CLINIC_PROFILE_CANDIDATES,
     DOCTOR_PROFILE_CANDIDATES,
+    ENTITY_EVIDENCE_SNAPSHOTS,
     build_seo_verification_state,
     ensure_candidate_seo_profiles,
 )
@@ -156,6 +157,22 @@ class SEOVerificationStateTests(TestCase):
         self.assertTrue(gandhi["indexable"])
         self.assertEqual(gandhi["status"], "Indexable")
 
+    def test_public_evidence_snapshots_are_review_only_and_surface_conflicts(self):
+        state = build_seo_verification_state()
+        clinic = next(item for item in state["clinics"] if item["slug"] == "karan-nagar")
+        doctor = next(
+            item for item in state["doctors"] if item["slug"] == "dr-cheena-langer"
+        )
+
+        self.assertEqual(clinic["evidence"]["state"], "conflict")
+        self.assertEqual(doctor["evidence"]["state"], "candidate-aligned")
+        self.assertFalse(clinic["verified"])
+        self.assertFalse(doctor["verified"])
+        self.assertEqual(state["counts"]["evidence_conflicts"], 1)
+        self.assertEqual(state["counts"]["area_jammu_total"], 11)
+        self.assertEqual(state["counts"]["area_regional_total"], 7)
+        self.assertIn(("clinic", "paloura"), ENTITY_EVIDENCE_SNAPSHOTS)
+
     def test_control_centre_renders_verification_dashboard(self):
         user = get_user_model().objects.create_superuser(
             username="seo-verification-admin",
@@ -178,3 +195,8 @@ class SEOVerificationStateTests(TestCase):
         self.assertIn("Clinical content review queue", body)
         self.assertIn("No bulk approval:", body)
         self.assertIn("verification date, reviewer and verification notes", body)
+        self.assertIn("Public-source snapshot", body)
+        self.assertIn("Public hours conflict", body)
+        self.assertIn("Core identity aligned", body)
+        self.assertIn("11 Jammu-locality candidates", body)
+        self.assertIn("7 regional travel-origin candidates", body)

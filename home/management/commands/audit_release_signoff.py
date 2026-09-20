@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from wagtail.models import Site
 
 from home.local_search import LOCAL_SEARCH_AREAS
+from home.seo_verification import entity_evidence_snapshot
 from home.models import (
     BlogPage,
     ClinicLocation,
@@ -135,6 +136,7 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             ),
             "missing_fields": missing_fields,
             "verification_reasons": verification_reasons,
+            "public_evidence": entity_evidence_snapshot("clinic", clinic.slug),
         }
         clinic_rows.append(row)
         if missing_fields or verification_reasons:
@@ -198,6 +200,7 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             ),
             "missing_fields": missing_fields,
             "verification_reasons": verification_reasons,
+            "public_evidence": entity_evidence_snapshot("doctor", doctor.slug),
         }
         doctor_rows.append(row)
         if missing_fields or verification_reasons:
@@ -238,6 +241,12 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             "local_search_areas_total": len(LOCAL_SEARCH_AREAS),
             "local_search_areas_ready": len(local_search_ready),
             "local_search_areas_pending": len(local_search_pending),
+            "public_evidence_conflicts": sum(
+                1
+                for row in (*clinic_rows, *doctor_rows)
+                if row.get("public_evidence", {}).get("state") == "conflict"
+                and not (row.get("verification") or {}).get("complete")
+            ),
         },
         "medical_review_pending": medical_pending,
         "clinics": clinic_rows,
@@ -291,7 +300,8 @@ class Command(BaseCommand):
             f"{summary['doctors_pending']}/{summary['doctors_total']} doctors pending; "
             f"{summary['site_items_pending']} site/media item(s) pending; "
             f"{summary['local_search_areas_ready']}/"
-            f"{summary['local_search_areas_total']} local-search areas verified."
+            f"{summary['local_search_areas_total']} local-search areas verified; "
+            f"{summary['public_evidence_conflicts']} unresolved public-source conflict(s)."
         )
 
         for item in report["doctor_signoff_pending"]:
