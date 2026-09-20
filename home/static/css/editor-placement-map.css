@@ -570,3 +570,125 @@
     max-width: none;
   }
 }
+
+
+/* Medical review queue: explicit page-by-page sign-off, never bulk approval. */
+.aastha-review-queue {
+  margin-bottom: 1.5rem;
+}
+
+.aastha-review-count {
+  color: var(--aastha-wine);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.aastha-review-guidance {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--aastha-line);
+  background: #fbf8f2;
+}
+
+.aastha-review-guidance p,
+.aastha-review-empty p {
+  margin: 0;
+  color: #685f65;
+  line-height: 1.55;
+}
+
+.aastha-review-list {
+  max-height: min(70vh, 880px);
+  overflow: auto;
+}
+
+.aastha-review-row {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: .95rem 1.25rem;
+  border-bottom: 1px solid var(--aastha-line);
+}
+
+.aastha-review-row:last-child {
+  border-bottom: 0;
+}
+
+.aastha-review-row:hover {
+  background: #fbf8f2;
+}
+
+.aastha-review-index {
+  color: #a18f98;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .75rem;
+}
+
+.aastha-review-main {
+  min-width: 0;
+}
+
+.aastha-review-main h3 {
+  margin: .2rem 0 .3rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.aastha-review-main > p {
+  margin: 0;
+  color: #785969;
+  font-size: .8rem;
+}
+
+.aastha-review-meta,
+.aastha-review-state {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .8rem;
+  color: #81777e;
+  font-size: .72rem;
+}
+
+.aastha-review-meta > span {
+  color: var(--aastha-wine);
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.aastha-review-meta code {
+  overflow-wrap: anywhere;
+}
+
+.aastha-review-state {
+  margin-top: .45rem;
+}
+
+.aastha-review-state strong {
+  color: #4f474d;
+  font-weight: 700;
+}
+
+.aastha-review-empty {
+  padding: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .aastha-review-guidance,
+  .aastha-review-row {
+    grid-template-columns: 1fr;
+  }
+
+  .aastha-review-index {
+    display: none;
+  }
+
+  .aastha-review-list {
+    max-height: none;
+  }
+}
