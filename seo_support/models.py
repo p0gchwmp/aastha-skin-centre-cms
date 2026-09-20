@@ -94,6 +94,19 @@ class ClinicSEOProfile(models.Model):
     sunday_hours = models.CharField(
         max_length=80, blank=True, validators=[validate_hours]
     )
+    verification_reviewer = models.CharField(
+        max_length=160,
+        blank=True,
+        help_text="Name or role of the person who checked these branch facts.",
+    )
+    verification_source_url = models.URLField(
+        blank=True,
+        help_text="Optional proof or source URL used during verification.",
+    )
+    verification_notes = models.TextField(
+        blank=True,
+        help_text="Record what was checked and against which clinic/source record.",
+    )
     facts_verified_on = models.DateField(
         null=True,
         blank=True,
@@ -120,7 +133,19 @@ class ClinicSEOProfile(models.Model):
                 "10:00-13:00,17:00-20:00. Leave blank when not verified."
             ),
         ),
-        FieldPanel("facts_verified_on"),
+        MultiFieldPanel(
+            [
+                FieldPanel("verification_reviewer"),
+                FieldPanel("verification_source_url"),
+                FieldPanel("verification_notes"),
+                FieldPanel("facts_verified_on"),
+            ],
+            heading="Verification evidence",
+            help_text=(
+                "A verification date is not sufficient by itself. Record who checked "
+                "the facts and what source/record was used. The proof URL is optional."
+            ),
+        ),
     ]
 
     class Meta:
@@ -140,6 +165,26 @@ class ClinicSEOProfile(models.Model):
             raise ValidationError(
                 {"longitude": "Longitude must be between -180 and 180."}
             )
+        if self.facts_verified_on:
+            errors = {}
+            if not (self.verification_reviewer or "").strip():
+                errors["verification_reviewer"] = (
+                    "Record who verified these facts before setting a verification date."
+                )
+            if not (self.verification_notes or "").strip():
+                errors["verification_notes"] = (
+                    "Record what was checked and which source/record was used."
+                )
+            if errors:
+                raise ValidationError(errors)
+
+    @property
+    def verification_complete(self) -> bool:
+        return bool(
+            self.facts_verified_on
+            and (self.verification_reviewer or "").strip()
+            and (self.verification_notes or "").strip()
+        )
 
     @property
     def same_as_urls(self) -> list[str]:
@@ -192,6 +237,19 @@ class DoctorSEOProfile(models.Model):
     google_scholar_url = models.URLField(blank=True)
     orcid_url = models.URLField(blank=True)
     linkedin_url = models.URLField(blank=True)
+    verification_reviewer = models.CharField(
+        max_length=160,
+        blank=True,
+        help_text="Name or role of the person who checked these professional facts.",
+    )
+    verification_source_url = models.URLField(
+        blank=True,
+        help_text="Optional proof or source URL used during verification.",
+    )
+    verification_notes = models.TextField(
+        blank=True,
+        help_text="Record what was checked and against which professional/source record.",
+    )
     facts_verified_on = models.DateField(null=True, blank=True)
 
     panels = [
@@ -205,13 +263,48 @@ class DoctorSEOProfile(models.Model):
             ],
             heading="Verified professional profiles",
         ),
-        FieldPanel("facts_verified_on"),
+        MultiFieldPanel(
+            [
+                FieldPanel("verification_reviewer"),
+                FieldPanel("verification_source_url"),
+                FieldPanel("verification_notes"),
+                FieldPanel("facts_verified_on"),
+            ],
+            heading="Verification evidence",
+            help_text=(
+                "A verification date is not sufficient by itself. Record who checked "
+                "the professional identity and what source/record was used."
+            ),
+        ),
     ]
 
     class Meta:
         ordering = ["doctor__sort_order", "doctor__name"]
         verbose_name = "Doctor SEO profile"
         verbose_name_plural = "Doctor SEO profiles"
+
+    def clean(self):
+        super().clean()
+        if self.facts_verified_on:
+            errors = {}
+            if not (self.verification_reviewer or "").strip():
+                errors["verification_reviewer"] = (
+                    "Record who verified these facts before setting a verification date."
+                )
+            if not (self.verification_notes or "").strip():
+                errors["verification_notes"] = (
+                    "Record what was checked and which source/record was used."
+                )
+            if errors:
+                raise ValidationError(errors)
+
+    @property
+    def verification_complete(self) -> bool:
+        return bool(
+            self.facts_verified_on
+            and (self.verification_reviewer or "").strip()
+            and (self.verification_notes or "").strip()
+        )
 
     @property
     def same_as_urls(self) -> list[str]:

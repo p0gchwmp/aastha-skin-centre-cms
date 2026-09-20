@@ -47,6 +47,22 @@ class SEOProfileValidationTests(TestCase):
         with self.assertRaises(ValidationError):
             profile.full_clean()
 
+    def test_verification_date_requires_reviewer_and_notes(self):
+        profile = ClinicSEOProfile(
+            clinic=self.clinic,
+            facts_verified_on=date(2026, 9, 20),
+        )
+        with self.assertRaises(ValidationError):
+            profile.full_clean()
+
+        profile.verification_reviewer = "Clinic admin"
+        with self.assertRaises(ValidationError):
+            profile.full_clean()
+
+        profile.verification_notes = "Checked against current clinic records."
+        profile.full_clean()
+        self.assertTrue(profile.verification_complete)
+
     def test_opening_hours_convert_to_schema_specifications(self):
         profile = ClinicSEOProfile(
             clinic=self.clinic,
@@ -81,11 +97,15 @@ class SchemaEnrichmentTests(TestCase):
             justdial_url="https://www.justdial.com/example",
             monday_hours="10:00-20:00",
             service_area="Jammu, Udhampur",
+            verification_reviewer="SEO reviewer",
+            verification_notes="Checked against current branch records.",
             facts_verified_on=date(2026, 9, 18),
         )
         DoctorSEOProfile.objects.create(
             doctor=self.doctor,
             practo_url="https://www.practo.com/jammu/doctor/example",
+            verification_reviewer="SEO reviewer",
+            verification_notes="Checked against the professional profile.",
             facts_verified_on=date(2026, 9, 18),
         )
 
@@ -127,6 +147,35 @@ class SchemaEnrichmentTests(TestCase):
             ["https://www.practo.com/jammu/doctor/example"],
         )
 
+
+    def test_date_only_profiles_do_not_enrich_schema(self):
+        self.clinic.seo_profile.verification_reviewer = ""
+        self.clinic.seo_profile.save(update_fields=["verification_reviewer"])
+        self.doctor.seo_profile.verification_notes = ""
+        self.doctor.seo_profile.save(update_fields=["verification_notes"])
+
+        clinic_id = _clinic_id(self.clinic, self.request, self.origin)
+        doctor_id = _doctor_id(self.doctor, self.request, self.origin)
+        payload = {
+            "@context": "https://schema.org",
+            "@graph": [
+                {"@type": "MedicalClinic", "@id": clinic_id},
+                {"@type": "Physician", "@id": doctor_id},
+            ],
+        }
+
+        enriched = enrich_structured_data(
+            payload,
+            clinics=[self.clinic],
+            doctors=[self.doctor],
+            request=self.request,
+            origin=self.origin,
+        )
+
+        clinic_entity, doctor_entity = enriched["@graph"]
+        self.assertNotIn("geo", clinic_entity)
+        self.assertNotIn("sameAs", clinic_entity)
+        self.assertNotIn("sameAs", doctor_entity)
 
     def test_unverified_profiles_do_not_enrich_schema(self):
         self.clinic.seo_profile.facts_verified_on = None

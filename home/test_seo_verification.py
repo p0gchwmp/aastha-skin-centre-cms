@@ -130,8 +130,17 @@ class SEOVerificationStateTests(TestCase):
 
         profile = ClinicSEOProfile.objects.get(clinic=self.clinic)
         profile.service_area = "Gandhi Nagar"
+        profile.verification_reviewer = "SEO reviewer"
+        profile.verification_notes = "Checked against current branch service-area records."
         profile.facts_verified_on = date(2026, 9, 19)
-        profile.save(update_fields=["service_area", "facts_verified_on"])
+        profile.save(
+            update_fields=[
+                "service_area",
+                "verification_reviewer",
+                "verification_notes",
+                "facts_verified_on",
+            ]
+        )
 
         state = build_seo_verification_state()
         gandhi = next(item for item in state["areas"] if item["slug"] == "gandhi-nagar")
@@ -168,3 +177,4 @@ class SEOVerificationStateTests(TestCase):
         self.assertIn("Gandhi Nagar", body)
         self.assertIn("Clinical content review queue", body)
         self.assertIn("No bulk approval:", body)
+        self.assertIn("verification date, reviewer and verification notes", body)

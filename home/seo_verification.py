@@ -101,6 +101,10 @@ def _clinic_status(clinic: ClinicLocation) -> dict[str, object]:
             missing.append("Google Business / Maps URL")
         if not profile.service_areas:
             missing.append("service areas")
+        if not profile.verification_reviewer:
+            missing.append("verification reviewer")
+        if not profile.verification_notes:
+            missing.append("verification notes")
         if not profile.facts_verified_on:
             missing.append("verification date")
 
@@ -108,10 +112,10 @@ def _clinic_status(clinic: ClinicLocation) -> dict[str, object]:
         "name": clinic.name,
         "slug": clinic.slug,
         "profile": profile,
-        "verified": bool(profile and profile.facts_verified_on),
+        "verified": bool(profile and profile.verification_complete),
         "ready": bool(
             profile
-            and profile.facts_verified_on
+            and profile.verification_complete
             and profile.google_business_url
             and profile.service_areas
         ),
@@ -127,6 +131,10 @@ def _doctor_status(doctor: Doctor) -> dict[str, object]:
     else:
         if not profile.practo_url:
             missing.append("professional profile URL")
+        if not profile.verification_reviewer:
+            missing.append("verification reviewer")
+        if not profile.verification_notes:
+            missing.append("verification notes")
         if not profile.facts_verified_on:
             missing.append("verification date")
 
@@ -134,8 +142,8 @@ def _doctor_status(doctor: Doctor) -> dict[str, object]:
         "name": doctor.name,
         "slug": doctor.slug,
         "profile": profile,
-        "verified": bool(profile and profile.facts_verified_on),
-        "ready": bool(profile and profile.facts_verified_on and profile.practo_url),
+        "verified": bool(profile and profile.verification_complete),
+        "ready": bool(profile and profile.verification_complete and profile.practo_url),
         "missing": missing,
     }
 
@@ -158,9 +166,8 @@ def build_seo_verification_state() -> dict[str, object]:
 
     verified_service_areas = {
         area.casefold()
-        for profile in ClinicSEOProfile.objects.filter(
-            facts_verified_on__isnull=False
-        )
+        for profile in ClinicSEOProfile.objects.all()
+        if profile.verification_complete
         for area in profile.service_areas
     }
 

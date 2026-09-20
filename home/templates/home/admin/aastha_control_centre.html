@@ -85,7 +85,8 @@
                   {% if item.profile.google_business_url %}<a href="{{ item.profile.google_business_url }}" target="_blank" rel="noopener">Google ↗</a>{% endif %}
                   {% if item.profile.justdial_url %}<a href="{{ item.profile.justdial_url }}" target="_blank" rel="noopener">Justdial ↗</a>{% endif %}
                   {% if item.profile.practo_clinic_url %}<a href="{{ item.profile.practo_clinic_url }}" target="_blank" rel="noopener">Practo ↗</a>{% endif %}
-                  <span>{% if item.profile.facts_verified_on %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }}{% else %}Not approved yet{% endif %}</span>
+                  {% if item.profile.verification_source_url %}<a href="{{ item.profile.verification_source_url }}" target="_blank" rel="noopener">Evidence ↗</a>{% endif %}
+                  <span>{% if item.profile.verification_complete %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }} by {{ item.profile.verification_reviewer }}{% elif item.profile.facts_verified_on %}Evidence incomplete{% else %}Not approved yet{% endif %}</span>
                 </div>
               {% endif %}
             </article>
@@ -110,7 +111,8 @@
                   {% if item.profile.linkedin_url %}<a href="{{ item.profile.linkedin_url }}" target="_blank" rel="noopener">LinkedIn ↗</a>{% endif %}
                   {% if item.profile.google_scholar_url %}<a href="{{ item.profile.google_scholar_url }}" target="_blank" rel="noopener">Scholar ↗</a>{% endif %}
                   {% if item.profile.orcid_url %}<a href="{{ item.profile.orcid_url }}" target="_blank" rel="noopener">ORCID ↗</a>{% endif %}
-                  <span>{% if item.profile.facts_verified_on %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }}{% else %}Not approved yet{% endif %}</span>
+                  {% if item.profile.verification_source_url %}<a href="{{ item.profile.verification_source_url }}" target="_blank" rel="noopener">Evidence ↗</a>{% endif %}
+                  <span>{% if item.profile.verification_complete %}Verified {{ item.profile.facts_verified_on|date:"j M Y" }} by {{ item.profile.verification_reviewer }}{% elif item.profile.facts_verified_on %}Evidence incomplete{% else %}Not approved yet{% endif %}</span>
                 </div>
               {% endif %}
             </article>
@@ -150,7 +152,7 @@
 
     <div class="aastha-seo-safety">
       <strong>Safety rule</strong>
-      <p>No candidate URL or populated field unlocks local schema or locality indexing by itself. Approval still requires a dated SEO profile, and area pages remain noindex until the verified-only activation step is explicitly applied.</p>
+      <p>No candidate URL or populated field unlocks local schema or locality indexing by itself. Approval requires a verification date, reviewer and verification notes; the proof URL is optional. Area pages remain noindex until the verified-only activation step is explicitly applied.</p>
     </div>
   </section>
 

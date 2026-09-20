@@ -12,9 +12,8 @@ from seo_support.models import ClinicSEOProfile
 def verified_service_area_names() -> set[str]:
     return {
         area.casefold()
-        for profile in ClinicSEOProfile.objects.filter(
-            facts_verified_on__isnull=False
-        )
+        for profile in ClinicSEOProfile.objects.all()
+        if profile.verification_complete
         for area in profile.service_areas
     }
 
@@ -71,7 +70,7 @@ def local_search_activation_plan() -> dict[str, object]:
 class Command(BaseCommand):
     help = (
         "Preview or apply indexation for local-search pages whose service-area "
-        "facts have a dated Clinic SEO verification."
+        "facts have complete Clinic SEO verification evidence."
     )
 
     def add_arguments(self, parser):

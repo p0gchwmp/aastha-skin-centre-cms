@@ -37,7 +37,7 @@ def enrich_structured_data(
 
     for clinic in clinics:
         profile = _optional_profile(clinic)
-        if profile is None or not profile.facts_verified_on:
+        if profile is None or not profile.verification_complete:
             continue
         entity = _entity_by_id(graph, _clinic_id(clinic, request, origin))
         if entity is None:
@@ -64,7 +64,7 @@ def enrich_structured_data(
 
     for doctor in doctors:
         profile = _optional_profile(doctor)
-        if profile is None or not profile.facts_verified_on:
+        if profile is None or not profile.verification_complete:
             continue
         entity = _entity_by_id(graph, _doctor_id(doctor, request, origin))
         if entity is not None and profile.same_as_urls:

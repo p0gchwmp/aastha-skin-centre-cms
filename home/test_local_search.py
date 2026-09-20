@@ -61,17 +61,24 @@ class LocalSearchActivationTests(TestCase):
             is_active=True,
         )
 
-    def test_activation_is_dry_run_and_requires_dated_service_area_verification(self):
+    def test_activation_is_dry_run_and_requires_complete_service_area_verification(self):
         before = local_search_activation_plan()
         self.assertEqual(before["activate"], [])
         self.assertEqual(len(before["pending"]), len(LOCAL_SEARCH_AREAS))
 
         first = LOCAL_SEARCH_AREAS[0]
-        ClinicSEOProfile.objects.create(
+        profile = ClinicSEOProfile.objects.create(
             clinic=self.clinic,
             service_area=first["name"],
             facts_verified_on=date(2026, 9, 18),
         )
+
+        date_only = local_search_activation_plan()
+        self.assertEqual(date_only["activate"], [])
+
+        profile.verification_reviewer = "SEO reviewer"
+        profile.verification_notes = "Checked against current branch service-area records."
+        profile.save(update_fields=["verification_reviewer", "verification_notes"])
 
         ready = local_search_activation_plan()
         self.assertEqual([item["slug"] for item in ready["activate"]], [first["slug"]])
@@ -89,6 +96,8 @@ class LocalSearchActivationTests(TestCase):
         ClinicSEOProfile.objects.create(
             clinic=self.clinic,
             service_area=first["name"],
+            verification_reviewer="SEO reviewer",
+            verification_notes="Checked against current branch service-area records.",
             facts_verified_on=date(2026, 9, 18),
         )
 
@@ -105,6 +114,8 @@ class LocalSearchActivationTests(TestCase):
         ClinicSEOProfile.objects.create(
             clinic=self.clinic,
             service_area=first["name"],
+            verification_reviewer="SEO reviewer",
+            verification_notes="Checked against current branch service-area records.",
             facts_verified_on=date(2026, 9, 18),
         )
 

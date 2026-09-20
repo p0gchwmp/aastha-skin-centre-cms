@@ -103,8 +103,13 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
         verification_reasons = []
         if seo_profile is None:
             verification_reasons.append("local SEO profile is missing")
-        elif not seo_profile.facts_verified_on:
-            verification_reasons.append("local SEO facts have no verification date")
+        else:
+            if not seo_profile.facts_verified_on:
+                verification_reasons.append("local SEO facts have no verification date")
+            if not _clean(seo_profile.verification_reviewer):
+                verification_reasons.append("local SEO verification reviewer is missing")
+            if not _clean(seo_profile.verification_notes):
+                verification_reasons.append("local SEO verification notes are missing")
 
         row = {
             "name": clinic.name,
@@ -117,6 +122,17 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             "reception_hours": clinic.reception_hours,
             "doctor_hours": clinic.doctor_hours,
             "procedure_hours": clinic.procedure_hours,
+            "verification": (
+                {
+                    "date": seo_profile.facts_verified_on,
+                    "reviewer": seo_profile.verification_reviewer,
+                    "source_url": seo_profile.verification_source_url,
+                    "notes": seo_profile.verification_notes,
+                    "complete": seo_profile.verification_complete,
+                }
+                if seo_profile is not None
+                else None
+            ),
             "missing_fields": missing_fields,
             "verification_reasons": verification_reasons,
         }
@@ -148,10 +164,19 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
         verification_reasons = []
         if seo_profile is None:
             verification_reasons.append("professional SEO profile is missing")
-        elif not seo_profile.facts_verified_on:
-            verification_reasons.append(
-                "professional profile facts have no verification date"
-            )
+        else:
+            if not seo_profile.facts_verified_on:
+                verification_reasons.append(
+                    "professional profile facts have no verification date"
+                )
+            if not _clean(seo_profile.verification_reviewer):
+                verification_reasons.append(
+                    "professional profile verification reviewer is missing"
+                )
+            if not _clean(seo_profile.verification_notes):
+                verification_reasons.append(
+                    "professional profile verification notes are missing"
+                )
 
         row = {
             "name": doctor.name,
@@ -160,6 +185,17 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             "role": doctor.role,
             "registration_details": doctor.registration_details,
             "photo_present": bool(doctor.photo_id),
+            "verification": (
+                {
+                    "date": seo_profile.facts_verified_on,
+                    "reviewer": seo_profile.verification_reviewer,
+                    "source_url": seo_profile.verification_source_url,
+                    "notes": seo_profile.verification_notes,
+                    "complete": seo_profile.verification_complete,
+                }
+                if seo_profile is not None
+                else None
+            ),
             "missing_fields": missing_fields,
             "verification_reasons": verification_reasons,
         }
@@ -169,9 +205,8 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
 
     verified_service_areas = {
         area.casefold()
-        for profile in ClinicSEOProfile.objects.filter(
-            facts_verified_on__isnull=False
-        )
+        for profile in ClinicSEOProfile.objects.all()
+        if profile.verification_complete
         for area in profile.service_areas
     }
     local_search_ready = [
