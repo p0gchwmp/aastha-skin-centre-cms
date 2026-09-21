@@ -131,6 +131,25 @@ class ReleaseSignoffAuditTests(TestCase):
             if row["public_evidence"]["state"] == "conflict":
                 self.assertFalse((row.get("verification") or {}).get("complete", False))
 
+    def test_medical_queue_is_priority_grouped_without_bulk_approval(self):
+        report = build_release_signoff_report(self.site)
+
+        pending = report["medical_review_pending"]
+        self.assertTrue(pending)
+        self.assertTrue(all("priority_key" in item for item in pending))
+        self.assertEqual(
+            [group["key"] for group in report["medical_review_groups"]],
+            ["p1", "p2", "p3"],
+        )
+        grouped_total = sum(
+            len(group["items"]) for group in report["medical_review_groups"]
+        )
+        self.assertEqual(grouped_total, len(pending))
+        self.assertEqual(
+            report["summary"]["medical_pages_approved"],
+            report["summary"]["medical_pages_total"] - len(pending),
+        )
+
     def test_fail_on_pending_is_opt_in(self):
         call_command("audit_release_signoff")
         with self.assertRaises(CommandError):

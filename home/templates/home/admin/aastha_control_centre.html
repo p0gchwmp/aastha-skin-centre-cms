@@ -206,33 +206,85 @@
       <p><strong>No bulk approval:</strong> the queue is intentionally page-by-page so medical sign-off cannot be inferred from imported content or a completed SEO check.</p>
     </div>
 
-    <div class="aastha-review-list">
-      {% for item in release_signoff.medical_review_pending %}
-        <article class="aastha-review-row">
-          <div class="aastha-review-index">{{ forloop.counter|stringformat:"02d" }}</div>
-          <div class="aastha-review-main">
-            <div class="aastha-review-meta">
-              <span>{{ item.page_type }}</span>
-              <code>{{ item.path }}</code>
+    <div class="aastha-review-priority-summary" aria-label="Medical review priority summary">
+      <span><strong>{{ release_signoff.summary.medical_priority_1_pending }}</strong> P1 core treatments</span>
+      <span><strong>{{ release_signoff.summary.medical_priority_2_pending }}</strong> P2 clinical pages</span>
+      <span><strong>{{ release_signoff.summary.medical_priority_3_pending }}</strong> P3 journal</span>
+      <span><strong>{{ release_signoff.summary.medical_pages_approved }}</strong> approved</span>
+    </div>
+
+    <div class="aastha-review-groups">
+      {% for group in release_signoff.medical_review_groups %}
+        <details class="aastha-review-group" {% if group.key == "p1" %}open{% endif %}>
+          <summary>
+            <div>
+              <strong>{{ group.label }}</strong>
+              <span>{{ group.description }}</span>
             </div>
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.reasons|join:" · " }}</p>
-            <div class="aastha-review-state">
-              <span>Status: <strong>{{ item.review_status|default:"blank" }}</strong></span>
-              <span>Reviewer: <strong>{{ item.reviewer|default:"—" }}</strong></span>
-              <span>Review date: <strong>{{ item.medical_review_date|date:"j M Y"|default:"—" }}</strong></span>
-            </div>
+            <b>{{ group.items|length }} pending</b>
+          </summary>
+          <div class="aastha-review-list">
+            {% for item in group.items %}
+              <article class="aastha-review-row">
+                <div class="aastha-review-index">{{ forloop.counter|stringformat:"02d" }}</div>
+                <div class="aastha-review-main">
+                  <div class="aastha-review-meta">
+                    <span>{{ item.priority_label }}</span>
+                    <span>{{ item.page_type }}</span>
+                    <code>{{ item.path }}</code>
+                  </div>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.reasons|join:" · " }}</p>
+                  <div class="aastha-review-state">
+                    <span>Status: <strong>{{ item.review_status|default:"blank" }}</strong></span>
+                    <span>Reviewer: <strong>{{ item.reviewer|default:"—" }}</strong></span>
+                    <span>Review date: <strong>{{ item.medical_review_date|date:"j M Y"|default:"—" }}</strong></span>
+                  </div>
+                </div>
+                <div class="aastha-cc-route-actions">
+                  <a class="button button-small" href="/admin/pages/{{ item.page_id }}/edit/">Review page</a>
+                  <a class="button button-small button-secondary" href="{{ item.path }}" target="_blank" rel="noopener">Preview ↗</a>
+                </div>
+              </article>
+            {% empty %}
+              <div class="aastha-review-empty">
+                <strong>This priority group is clear.</strong>
+              </div>
+            {% endfor %}
           </div>
-          <div class="aastha-cc-route-actions">
-            <a class="button button-small" href="/admin/pages/{{ item.page_id }}/edit/">Review page</a>
-            <a class="button button-small button-secondary" href="{{ item.path }}" target="_blank" rel="noopener">Preview ↗</a>
-          </div>
-        </article>
+        </details>
       {% empty %}
         <div class="aastha-review-empty">
           <strong>Medical review queue is clear.</strong>
           <p>All live medical pages have an approved status, reviewer and review date.</p>
         </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="aastha-cc-panel aastha-doctor-media-admin" aria-labelledby="aastha-doctor-media-admin-title">
+    <div class="aastha-cc-heading">
+      <div>
+        <span class="aastha-cc-kicker">Doctor authority record</span>
+        <h2 id="aastha-doctor-media-admin-title">Professional work &amp; media</h2>
+      </div>
+      <strong class="aastha-review-count">{{ doctor_media|length }} verified source records</strong>
+    </div>
+    <div class="aastha-review-guidance">
+      <p>These records are now shown on Dr. Cheena Langer's public profile as outbound citations. We link to the original publisher, journal or professional body instead of copying their article text or imagery.</p>
+      <p><strong>Separate release blockers remain separate:</strong> the Doctor model photograph and the site's approved default social image must still be selected in Wagtail before cutover if the release audit reports them missing.</p>
+    </div>
+    <div class="aastha-media-record-grid">
+      {% for item in doctor_media %}
+        <article>
+          <div class="aastha-review-meta"><span>{{ item.kind }}</span><time>{{ item.date }}</time></div>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.summary }}</p>
+          <div class="aastha-media-record-links">
+            <a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.publisher }} ↗</a>
+            {% if item.secondary_url %}<a href="{{ item.secondary_url }}" target="_blank" rel="noopener">{{ item.secondary_label }} ↗</a>{% endif %}
+          </div>
+        </article>
       {% endfor %}
     </div>
   </section>

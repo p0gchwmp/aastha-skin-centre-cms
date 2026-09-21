@@ -20,6 +20,7 @@ from wagtail.admin.menu import MenuItem
 from wagtail.images import get_image_model
 from wagtail.models import Page
 
+from .doctor_media import doctor_media_records
 from .management.commands.audit_release_signoff import build_release_signoff_report
 from .models import BlogPage, ClinicLocation, Doctor, ExactPageLayout, TreatmentPage
 from .seo_verification import build_seo_verification_state
@@ -108,10 +109,12 @@ def aastha_control_centre(request):
 
     seo_verification = build_seo_verification_state()
     release_signoff = build_release_signoff_report()
+    doctor_media = doctor_media_records()
     context = {
         "route_cards": route_cards,
         "seo_verification": seo_verification,
         "release_signoff": release_signoff,
+        "doctor_media": doctor_media,
         "counts": {
             "pages": Page.objects.live().public().count(),
             "treatments": TreatmentPage.objects.live().count(),

@@ -755,3 +755,125 @@
     max-height: none;
   }
 }
+
+
+/* Milestone 2: priority-first medical sign-off + doctor media records. */
+.aastha-review-priority-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--aastha-line);
+  background: #fff;
+}
+
+.aastha-review-priority-summary span {
+  padding: .8rem 1rem;
+  border-right: 1px solid var(--aastha-line);
+  color: #756c73;
+  font-size: .76rem;
+}
+
+.aastha-review-priority-summary span:last-child {
+  border-right: 0;
+}
+
+.aastha-review-priority-summary strong {
+  color: var(--aastha-wine);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.aastha-review-groups {
+  display: grid;
+}
+
+.aastha-review-group {
+  border-bottom: 1px solid var(--aastha-line);
+}
+
+.aastha-review-group:last-child {
+  border-bottom: 0;
+}
+
+.aastha-review-group > summary {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  background: #fcfaf7;
+}
+
+.aastha-review-group > summary div {
+  display: grid;
+  gap: .2rem;
+}
+
+.aastha-review-group > summary span {
+  color: #756c73;
+  font-size: .78rem;
+}
+
+.aastha-review-group > summary b {
+  color: var(--aastha-wine);
+  white-space: nowrap;
+}
+
+.aastha-doctor-media-admin {
+  margin-bottom: 1.5rem;
+}
+
+.aastha-media-record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.aastha-media-record-grid article {
+  padding: 1rem 1.25rem;
+  border-right: 1px solid var(--aastha-line);
+  border-bottom: 1px solid var(--aastha-line);
+}
+
+.aastha-media-record-grid article:nth-child(2n) {
+  border-right: 0;
+}
+
+.aastha-media-record-grid h3 {
+  margin: .35rem 0 .45rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.aastha-media-record-grid p {
+  margin: 0;
+  color: #6e646a;
+  font-size: .8rem;
+  line-height: 1.55;
+}
+
+.aastha-media-record-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem .8rem;
+  margin-top: .7rem;
+}
+
+.aastha-media-record-links a {
+  color: var(--aastha-wine);
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .aastha-review-priority-summary,
+  .aastha-media-record-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aastha-review-priority-summary span,
+  .aastha-media-record-grid article {
+    border-right: 0;
+  }
+}

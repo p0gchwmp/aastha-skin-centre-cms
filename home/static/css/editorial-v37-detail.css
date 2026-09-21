@@ -643,3 +643,103 @@ html.editorial-v37 body.release-v24 [data-v37-clinic-choice]:focus-visible {
     scroll-margin-top: 78px;
   }
 }
+
+
+/* Verified professional/media record on Dr. Cheena Langer's profile. */
+html.editorial-v37 .doctor-media-section {
+  margin: clamp(3.5rem, 8vw, 7rem) 0;
+  padding: clamp(1.4rem, 4vw, 3rem);
+  border: 1px solid rgba(45, 35, 40, .13);
+  background: #f7f1ea;
+}
+
+html.editorial-v37 .doctor-media-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, .75fr);
+  gap: 1.5rem;
+  align-items: end;
+  margin-bottom: 1.4rem;
+}
+
+html.editorial-v37 .doctor-media-heading h2 {
+  max-width: 18ch;
+  margin: .35rem 0 0;
+}
+
+html.editorial-v37 .doctor-media-heading > p,
+html.editorial-v37 .doctor-media-note {
+  margin: 0;
+  color: var(--v37-muted, #6c6267);
+  line-height: 1.65;
+}
+
+html.editorial-v37 .doctor-media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid rgba(45, 35, 40, .14);
+  border-left: 1px solid rgba(45, 35, 40, .14);
+}
+
+html.editorial-v37 .doctor-media-card {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-right: 1px solid rgba(45, 35, 40, .14);
+  border-bottom: 1px solid rgba(45, 35, 40, .14);
+  background: rgba(255, 255, 255, .62);
+}
+
+html.editorial-v37 .doctor-media-card h3 {
+  margin: .55rem 0 .55rem;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  line-height: 1.15;
+}
+
+html.editorial-v37 .doctor-media-card > p {
+  margin: 0;
+  color: var(--v37-muted, #6c6267);
+  line-height: 1.6;
+}
+
+html.editorial-v37 .doctor-media-meta,
+html.editorial-v37 .doctor-media-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem .8rem;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .72rem;
+}
+
+html.editorial-v37 .doctor-media-meta span {
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+html.editorial-v37 .doctor-media-meta time,
+html.editorial-v37 .doctor-media-source span {
+  color: var(--v37-muted, #6c6267);
+}
+
+html.editorial-v37 .doctor-media-source {
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+html.editorial-v37 .doctor-media-source a {
+  color: inherit;
+  font-weight: 800;
+  text-underline-offset: .18em;
+}
+
+html.editorial-v37 .doctor-media-note {
+  margin-top: 1rem;
+  font-size: .76rem;
+}
+
+@media (max-width: 760px) {
+  html.editorial-v37 .doctor-media-heading,
+  html.editorial-v37 .doctor-media-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -17,6 +17,7 @@ from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
 
 from home.clinical_results_local import hero_gallery_markup
+from home.doctor_media import doctor_media_markup
 
 from .exact_editor import (
     ExactImageStreamBlock,
@@ -243,6 +244,27 @@ def inject_v37_clinical_hero(source: str, path: str) -> str:
     return V37_DETAIL_MEDIA_RE.sub(replacement, source, count=1)
 
 
+def inject_doctor_media_section(source: str, path: str) -> str:
+    """Add verified external professional/media records to the doctor profile."""
+
+    if path != "/dr-cheena-langer/" or 'id="professional-work-media"' in source:
+        return source
+
+    marker = "Choose a clinic in Jammu"
+    heading_index = source.find(marker)
+    if heading_index < 0:
+        marker = "Choose a clinic"
+        heading_index = source.find(marker)
+    if heading_index < 0:
+        return source
+
+    section_index = source.rfind("<section", 0, heading_index)
+    if section_index < 0:
+        return source
+
+    return source[:section_index] + doctor_media_markup() + source[section_index:]
+
+
 def restore_v37_doctor_photo_fallback(source: str, path: str) -> str:
     """Use the approved real doctor photograph when staging media rows are absent."""
     if path not in {"/", "/dr-cheena-langer/"}:
@@ -286,6 +308,7 @@ class V37MediaRestoreMiddleware:
         path = normalise_path(request.path_info)
         updated = inject_v37_clinical_hero(body, path)
         updated = restore_v37_doctor_photo_fallback(updated, path)
+        updated = inject_doctor_media_section(updated, path)
         if updated == body:
             return response
 

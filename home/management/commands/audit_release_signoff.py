@@ -8,7 +8,7 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
 from wagtail.models import Site
 
-from home.local_search import LOCAL_SEARCH_AREAS
+from home.local_search import LOCAL_SEARCH_AREAS, PRIORITY_TREATMENT_SLUGS
 from home.seo_verification import entity_evidence_snapshot
 from home.models import (
     BlogPage,
@@ -42,6 +42,7 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
     )
     medical_pages = [page for page in pages if isinstance(page, MEDICAL_PAGE_TYPES)]
 
+    priority_treatment_slugs = set(PRIORITY_TREATMENT_SLUGS)
     medical_pending = []
     for page in medical_pages:
         reasons = []
@@ -70,8 +71,65 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
                         page, "medical_review_date", None
                     ),
                     "reasons": reasons,
+                    "priority_key": (
+                        "p1"
+                        if isinstance(page, TreatmentPage)
+                        and page.slug in priority_treatment_slugs
+                        else "p2"
+                        if isinstance(page, (TreatmentPage, ConditionPage))
+                        else "p3"
+                    ),
+                    "priority_label": (
+                        "P1 · core treatment"
+                        if isinstance(page, TreatmentPage)
+                        and page.slug in priority_treatment_slugs
+                        else "P2 · clinical page"
+                        if isinstance(page, (TreatmentPage, ConditionPage))
+                        else "P3 · journal"
+                    ),
+                    "priority_rank": (
+                        1
+                        if isinstance(page, TreatmentPage)
+                        and page.slug in priority_treatment_slugs
+                        else 2
+                        if isinstance(page, (TreatmentPage, ConditionPage))
+                        else 3
+                    ),
                 }
             )
+
+    medical_pending.sort(
+        key=lambda item: (
+            item["priority_rank"],
+            item["page_type"],
+            item["title"].casefold(),
+        )
+    )
+    medical_review_groups = [
+        {
+            "key": key,
+            "label": label,
+            "description": description,
+            "items": [item for item in medical_pending if item["priority_key"] == key],
+        }
+        for key, label, description in (
+            (
+                "p1",
+                "Priority 1 — core treatment pages",
+                "Highest-impact treatment pages used in local search, navigation and patient conversion.",
+            ),
+            (
+                "p2",
+                "Priority 2 — remaining clinical pages",
+                "Other live treatment and condition pages requiring medical sign-off.",
+            ),
+            (
+                "p3",
+                "Priority 3 — journal & educational articles",
+                "Blog and educational content reviewed after patient-critical clinical pages.",
+            ),
+        )
+    ]
 
     clinic_rows = []
     clinic_pending = []
@@ -233,6 +291,16 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
         "summary": {
             "medical_pages_total": len(medical_pages),
             "medical_pages_pending": len(medical_pending),
+            "medical_pages_approved": len(medical_pages) - len(medical_pending),
+            "medical_priority_1_pending": sum(
+                1 for item in medical_pending if item["priority_key"] == "p1"
+            ),
+            "medical_priority_2_pending": sum(
+                1 for item in medical_pending if item["priority_key"] == "p2"
+            ),
+            "medical_priority_3_pending": sum(
+                1 for item in medical_pending if item["priority_key"] == "p3"
+            ),
             "clinics_total": len(clinic_rows),
             "clinics_pending": len(clinic_pending),
             "doctors_total": len(doctor_rows),
@@ -249,6 +317,7 @@ def build_release_signoff_report(site=None) -> dict[str, object]:
             ),
         },
         "medical_review_pending": medical_pending,
+        "medical_review_groups": medical_review_groups,
         "clinics": clinic_rows,
         "clinic_signoff_pending": clinic_pending,
         "doctors": doctor_rows,
