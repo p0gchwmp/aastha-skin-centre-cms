@@ -22,6 +22,8 @@ class CutoverManifestTests(TestCase):
         self.assertIn("technical_ready", manifest)
         self.assertIn("human_ready", manifest)
         self.assertIn("production_activation_ready", manifest)
+        self.assertEqual(len(manifest["manifest_fingerprint"]), 64)
+        self.assertTrue(manifest["explicit_go_live_required"])
         self.assertEqual(
             manifest["rollback"]["feature_flag"],
             "AASTHA_EDITORIAL_V37=0",

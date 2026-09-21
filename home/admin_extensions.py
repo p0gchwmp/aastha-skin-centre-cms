@@ -92,6 +92,27 @@ def _route_page(slug: str, path: str):
     return Page.objects.filter(slug=slug, live=True).specific().first()
 
 
+def _filter_medical_review_groups(groups, priority="", page_type="", query=""):
+    """Read-only queue filtering for the sign-off console."""
+
+    priority = (priority or "").strip().lower()
+    page_type = (page_type or "").strip()
+    query = (query or "").strip().casefold()
+    allowed_priorities = {"p1", "p2", "p3"}
+
+    filtered = []
+    for group in groups:
+        items = list(group["items"])
+        if priority in allowed_priorities and group["key"] != priority:
+            items = []
+        if page_type:
+            items = [item for item in items if item["page_type"] == page_type]
+        if query:
+            items = [item for item in items if query in item["title"].casefold() or query in item["path"].casefold()]
+        filtered.append({**group, "items": items})
+    return filtered
+
+
 @require_GET
 @login_required(login_url="/admin/login/")
 @permission_required("wagtailadmin.access_admin", raise_exception=True)
@@ -112,14 +133,18 @@ def aastha_control_centre(request):
     release_signoff = build_release_signoff_report()
     cutover_manifest = build_cutover_manifest()
     doctor_media = doctor_media_records()
-    next_medical_review = next(
-        (
-            item
-            for group in release_signoff["medical_review_groups"]
-            for item in group["items"]
-        ),
-        None,
+    review_filters = {
+        "priority": request.GET.get("priority", "").strip().lower(),
+        "page_type": request.GET.get("page_type", "").strip(),
+        "query": request.GET.get("q", "").strip(),
+    }
+    filtered_review_groups = _filter_medical_review_groups(
+        release_signoff["medical_review_groups"], **review_filters
     )
+    next_medical_review = next(
+        (item for group in filtered_review_groups for item in group["items"]), None
+    )
+    filtered_review_count = sum(len(group["items"]) for group in filtered_review_groups)
     context = {
         "route_cards": route_cards,
         "seo_verification": seo_verification,
@@ -127,6 +152,9 @@ def aastha_control_centre(request):
         "doctor_media": doctor_media,
         "cutover_manifest": cutover_manifest,
         "next_medical_review": next_medical_review,
+        "filtered_review_groups": filtered_review_groups,
+        "filtered_review_count": filtered_review_count,
+        "review_filters": review_filters,
         "counts": {
             "pages": Page.objects.live().public().count(),
             "treatments": TreatmentPage.objects.live().count(),

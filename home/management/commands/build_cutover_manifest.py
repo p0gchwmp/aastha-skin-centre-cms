@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -95,7 +96,21 @@ def build_cutover_manifest() -> dict[str, object]:
     technical_ready = not technical_blockers
     human_ready = not human_blockers
 
+    manifest_fingerprint_source = {
+        "release": release,
+        "route_count": route_count,
+        "pending_migrations": migrations,
+        "seo_verification": seo["counts"],
+        "signoff_summary": summary,
+        "technical_blockers": technical_blockers,
+        "human_blockers": human_blockers,
+    }
+    manifest_fingerprint = hashlib.sha256(
+        json.dumps(manifest_fingerprint_source, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")
+    ).hexdigest()
+
     return {
+        "manifest_fingerprint": manifest_fingerprint,
         "release": release,
         "service": service,
         "site_hostname": site.hostname,
@@ -120,6 +135,7 @@ def build_cutover_manifest() -> dict[str, object]:
         "technical_ready": technical_ready,
         "human_ready": human_ready,
         "production_activation_ready": bool(technical_ready and human_ready),
+        "explicit_go_live_required": True,
         "activation_sequence": [
             "Create and verify production database backup.",
             "Create and verify production media backup/snapshot.",

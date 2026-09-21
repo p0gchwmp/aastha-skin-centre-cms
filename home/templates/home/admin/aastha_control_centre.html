@@ -260,6 +260,24 @@
       <p><strong>No bulk approval:</strong> the queue is intentionally page-by-page so medical sign-off cannot be inferred from imported content or a completed SEO check.</p>
     </div>
 
+    <form class="aastha-review-filters" method="get" action="">
+      <label><span>Priority</span><select name="priority">
+        <option value="">All priorities</option>
+        <option value="p1" {% if review_filters.priority == "p1" %}selected{% endif %}>P1 · core treatments</option>
+        <option value="p2" {% if review_filters.priority == "p2" %}selected{% endif %}>P2 · clinical pages</option>
+        <option value="p3" {% if review_filters.priority == "p3" %}selected{% endif %}>P3 · journal</option>
+      </select></label>
+      <label><span>Page type</span><select name="page_type">
+        <option value="">All page types</option>
+        <option value="TreatmentPage" {% if review_filters.page_type == "TreatmentPage" %}selected{% endif %}>Treatment</option>
+        <option value="ConditionPage" {% if review_filters.page_type == "ConditionPage" %}selected{% endif %}>Condition</option>
+        <option value="BlogPage" {% if review_filters.page_type == "BlogPage" %}selected{% endif %}>Journal</option>
+      </select></label>
+      <label class="aastha-review-search"><span>Find page</span><input type="search" name="q" value="{{ review_filters.query }}" placeholder="acne, hair, laser…"></label>
+      <div class="aastha-review-filter-actions"><button class="button button-small" type="submit">Filter queue</button><a class="button button-small button-secondary" href="{% url 'aastha_control_centre' %}">Clear</a></div>
+      <strong>{{ filtered_review_count }} shown</strong>
+    </form>
+
     <div class="aastha-review-priority-summary" aria-label="Medical review priority summary">
       <span><strong>{{ release_signoff.summary.medical_priority_1_pending }}</strong> P1 core treatments</span>
       <span><strong>{{ release_signoff.summary.medical_priority_2_pending }}</strong> P2 clinical pages</span>
@@ -268,7 +286,7 @@
     </div>
 
     <div class="aastha-review-groups">
-      {% for group in release_signoff.medical_review_groups %}
+      {% for group in filtered_review_groups %}
         <details class="aastha-review-group" {% if group.key == "p1" %}open{% endif %}>
           <summary>
             <div>

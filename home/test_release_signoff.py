@@ -5,6 +5,7 @@ from django.core.management.base import CommandError
 from django.test import TestCase
 from wagtail.models import Site
 
+from home.admin_extensions import _filter_medical_review_groups
 from home.local_search import LOCAL_SEARCH_AREAS
 from home.management.commands.audit_release_signoff import (
     build_release_signoff_report,
@@ -149,6 +150,17 @@ class ReleaseSignoffAuditTests(TestCase):
             report["summary"]["medical_pages_approved"],
             report["summary"]["medical_pages_total"] - len(pending),
         )
+
+    def test_medical_queue_filters_are_read_only_and_composable(self):
+        report = build_release_signoff_report(self.site)
+        before = report["summary"]["medical_pages_pending"]
+        groups = _filter_medical_review_groups(
+            report["medical_review_groups"], priority="p2", page_type="TreatmentPage", query="signoff"
+        )
+        items = [item for group in groups for item in group["items"]]
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["page_id"], self.treatment.pk)
+        self.assertEqual(build_release_signoff_report(self.site)["summary"]["medical_pages_pending"], before)
 
     def test_fail_on_pending_is_opt_in(self):
         call_command("audit_release_signoff")

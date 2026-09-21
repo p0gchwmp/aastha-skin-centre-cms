@@ -967,3 +967,8 @@
     border-bottom: 0;
   }
 }
+
+.aastha-review-filters{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(160px,.9fr) minmax(220px,1.5fr) auto auto;gap:.8rem;align-items:end;padding:1rem 1.25rem;border-top:1px solid var(--aastha-line);border-bottom:1px solid var(--aastha-line);background:#fcfaf7}
+.aastha-review-filters label{display:grid;gap:.35rem}.aastha-review-filters label>span{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.aastha-review-filters select,.aastha-review-filters input{min-height:2.45rem;width:100%}.aastha-review-filter-actions{display:flex;gap:.45rem}.aastha-review-filters>strong{align-self:center;white-space:nowrap;font-size:.78rem}
+@media(max-width:900px){.aastha-review-filters{grid-template-columns:1fr}.aastha-review-filters>strong{justify-self:start}}
