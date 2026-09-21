@@ -25,6 +25,60 @@
     <article><strong>{{ counts.doctors }}</strong><span>doctor profiles</span></article>
   </section>
 
+  <section class="aastha-cc-panel aastha-release-preflight" aria-labelledby="aastha-release-preflight-title">
+    <div class="aastha-cc-heading">
+      <div>
+        <span class="aastha-cc-kicker">Final pre-production gate</span>
+        <h2 id="aastha-release-preflight-title">Cutover readiness</h2>
+      </div>
+      <span class="aastha-preflight-status {% if cutover_manifest.production_activation_ready %}is-ready{% elif cutover_manifest.technical_ready %}is-human{% else %}is-blocked{% endif %}">
+        {% if cutover_manifest.production_activation_ready %}Ready for explicit go-live approval{% elif cutover_manifest.technical_ready %}Technical gates clear · human sign-off pending{% else %}Technical blocker present{% endif %}
+      </span>
+    </div>
+
+    <div class="aastha-preflight-grid">
+      <article>
+        <span class="aastha-cc-kicker">Technical</span>
+        <h3>{% if cutover_manifest.technical_ready %}Ready{% else %}Blocked{% endif %}</h3>
+        {% if cutover_manifest.technical_blockers %}
+          <ul>{% for blocker in cutover_manifest.technical_blockers %}<li>{{ blocker }}</li>{% endfor %}</ul>
+        {% else %}
+          <p>Route count, migrations and protected local-search indexation gates are clear.</p>
+        {% endif %}
+      </article>
+
+      <article>
+        <span class="aastha-cc-kicker">Human sign-off</span>
+        <h3>{% if cutover_manifest.human_ready %}Complete{% else %}Still required{% endif %}</h3>
+        {% if cutover_manifest.human_blockers %}
+          <ul>{% for blocker in cutover_manifest.human_blockers %}<li>{{ blocker }}</li>{% endfor %}</ul>
+        {% else %}
+          <p>All required release approvals are recorded.</p>
+        {% endif %}
+      </article>
+
+      <article class="aastha-preflight-next">
+        <span class="aastha-cc-kicker">Next safe action</span>
+        {% if next_medical_review %}
+          <h3>{{ next_medical_review.priority_label }}</h3>
+          <p>{{ next_medical_review.title }} · {{ next_medical_review.path }}</p>
+          <div class="aastha-cc-route-actions">
+            <a class="button button-small" href="/admin/pages/{{ next_medical_review.page_id }}/edit/">Continue medical review</a>
+            <a class="button button-small button-secondary" href="{{ next_medical_review.path }}" target="_blank" rel="noopener">Preview ↗</a>
+          </div>
+        {% else %}
+          <h3>Medical queue clear</h3>
+          <p>Continue with clinic, doctor and locality verification shown below.</p>
+        {% endif %}
+      </article>
+    </div>
+
+    <div class="aastha-seo-safety">
+      <strong>Production lock</strong>
+      <p>This dashboard is advisory only. A green technical state never deploys production automatically; production remains blocked until the required human sign-offs are recorded and an explicit go-live instruction is given.</p>
+    </div>
+  </section>
+
   <section class="aastha-cc-panel aastha-seo-verification" aria-labelledby="aastha-seo-verification-title">
     <div class="aastha-cc-heading">
       <div>
@@ -272,7 +326,7 @@
     </div>
     <div class="aastha-review-guidance">
       <p>These records are now shown on Dr. Cheena Langer's public profile as outbound citations. We link to the original publisher, journal or professional body instead of copying their article text or imagery.</p>
-      <p><strong>Separate release blockers remain separate:</strong> the Doctor model photograph and the site's approved default social image must still be selected in Wagtail before cutover if the release audit reports them missing.</p>
+      <p><strong>Media bootstrap:</strong> blank Doctor/home/social slots may be populated from the already-approved real website portrait. Existing editor-selected images are never overwritten; if the source cannot be fetched, release sign-off remains blocked.</p>
     </div>
     <div class="aastha-media-record-grid">
       {% for item in doctor_media %}

@@ -34,6 +34,7 @@ if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.
     home.test_initialize_cms \
     home.test_cutover_manifest \
     home.test_clinical_results \
+    home.test_approved_media \
     home.test_doctor_media \
     home.test_local_search \
     home.test_release_signoff \

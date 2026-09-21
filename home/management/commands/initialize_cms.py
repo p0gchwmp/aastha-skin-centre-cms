@@ -8,6 +8,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from wagtail.models import Site
 
+from home.approved_media import sync_approved_doctor_media
 from home.exact_editor_sync import (
     sync_all_exact_layout_editor_fields,
     sync_uploaded_homepage_images,
@@ -338,6 +339,23 @@ class Command(BaseCommand):
                 "Connected uploaded Dr. Cheena Langer photos to: "
                 + ", ".join(image_updates)
                 + "."
+            )
+
+        approved_media = sync_approved_doctor_media(
+            Site.objects.filter(is_default_site=True).first()
+        )
+        if approved_media["updates"]:
+            self.stdout.write(
+                "Connected approved real Dr. Cheena Langer media to: "
+                + ", ".join(approved_media["updates"])
+                + "."
+            )
+        if approved_media["warning"]:
+            self.stdout.write(
+                self.style.WARNING(
+                    "Approved doctor media bootstrap skipped safely: "
+                    + approved_media["warning"]
+                )
             )
 
     def handle(self, *args, **options):

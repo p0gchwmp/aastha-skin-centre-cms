@@ -16,6 +16,7 @@ from wagtail.admin.panels import FieldPanel, HelpPanel, MultiFieldPanel
 from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
 
+from home.approved_media import APPROVED_DOCTOR_PORTRAIT_URL
 from home.clinical_results_local import hero_gallery_markup
 from home.doctor_media import doctor_media_markup
 
@@ -213,10 +214,7 @@ def configure_exact_content_editor() -> None:
 
 
 
-APPROVED_DOCTOR_FALLBACK_IMAGE = (
-    "https://www.aasthaskincentre.in/media/images/"
-    "DSC_5241_1.max-900x900.format-webp.webp"
-)
+APPROVED_DOCTOR_FALLBACK_IMAGE = APPROVED_DOCTOR_PORTRAIT_URL
 V37_DETAIL_MEDIA_RE = re.compile(
     r'<figure\b(?=[^>]*\bclass=(?P<quote>["\'])'
     r'[^"\']*\bv37-detail-media\b[^"\']*(?P=quote))[^>]*>'

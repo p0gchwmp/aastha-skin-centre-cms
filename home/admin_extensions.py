@@ -22,6 +22,7 @@ from wagtail.models import Page
 
 from .doctor_media import doctor_media_records
 from .management.commands.audit_release_signoff import build_release_signoff_report
+from .management.commands.build_cutover_manifest import build_cutover_manifest
 from .models import BlogPage, ClinicLocation, Doctor, ExactPageLayout, TreatmentPage
 from .seo_verification import build_seo_verification_state
 
@@ -109,12 +110,23 @@ def aastha_control_centre(request):
 
     seo_verification = build_seo_verification_state()
     release_signoff = build_release_signoff_report()
+    cutover_manifest = build_cutover_manifest()
     doctor_media = doctor_media_records()
+    next_medical_review = next(
+        (
+            item
+            for group in release_signoff["medical_review_groups"]
+            for item in group["items"]
+        ),
+        None,
+    )
     context = {
         "route_cards": route_cards,
         "seo_verification": seo_verification,
         "release_signoff": release_signoff,
         "doctor_media": doctor_media,
+        "cutover_manifest": cutover_manifest,
+        "next_medical_review": next_medical_review,
         "counts": {
             "pages": Page.objects.live().public().count(),
             "treatments": TreatmentPage.objects.live().count(),
