@@ -29,8 +29,8 @@
       "address": "Lane 2, Karan Nagar, near Amphalla Chowk, Jammu, Jammu & Kashmir – 180005",
       "landline": "0191-3509230",
       "google_maps": "https://maps.app.goo.gl/pHCQ1r4crKuZBSi98",
-      "reception_hours": "Daily 10:00 AM–8:00 PM",
-      "doctor_hours": "Daily 11:00 AM–3:00 PM",
+      "reception_hours": "10:00 AM–8:00 PM",
+      "doctor_hours": "11:00 AM–3:00 PM",
       "procedure_hours": "Mon–Sat 11:00 AM–8:00 PM"
     },
     "paloura": {
@@ -38,8 +38,8 @@
       "address": "Paloura Chowk, Top Paloura, opposite Government Senior Secondary School, Jammu, Jammu & Kashmir – 181121",
       "landline": "0191-3135864",
       "google_maps": "https://maps.app.goo.gl/kh4AqZoUkscpEgWc8",
-      "reception_hours": "Daily 10:00 AM–8:00 PM",
-      "doctor_hours": "Daily 6:00 PM–8:00 PM",
+      "reception_hours": "10:00 AM–8:00 PM",
+      "doctor_hours": "6:00 PM–8:00 PM",
       "procedure_hours": "Mon–Sat 10:00 AM–8:00 PM"
     }
   },
