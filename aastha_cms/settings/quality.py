@@ -17,12 +17,16 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "testserver",
+    "staging.onrender.com",
+    "aastha-skin-centre-cms.onrender.com",
     "aasthaskincentre.in",
     "www.aasthaskincentre.in",
     "aastha-editorial-cms-staging.onrender.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
+    "https://staging.onrender.com",
+    "https://aastha-skin-centre-cms.onrender.com",
     "https://aasthaskincentre.in",
     "https://www.aasthaskincentre.in",
     "https://aastha-editorial-cms-staging.onrender.com",
