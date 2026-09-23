@@ -13,8 +13,20 @@ os.environ.setdefault("SECRET_KEY", "quality-gate-only-not-for-production")
 from .production import *  # noqa: F403, E402
 
 DEBUG = False
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "testserver",
+    "aasthaskincentre.in",
+    "www.aasthaskincentre.in",
+    "aastha-editorial-cms-staging.onrender.com",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "https://aasthaskincentre.in",
+    "https://www.aasthaskincentre.in",
+    "https://aastha-editorial-cms-staging.onrender.com",
+]
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
