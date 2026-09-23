@@ -4,27 +4,35 @@ from home.models import ClinicLocation
 
 
 # Update only exact, known legacy values. This intentionally does not overwrite
-# values that an editor has changed in Wagtail.
+# values that an editor has changed in Wagtail. Both newline and inline-dot
+# variants are included because the historic importer and static config used
+# different formatting for the same public facts.
 LEGACY_HOUR_REPLACEMENTS = {
     "karan-nagar": {
         "reception_hours": {
+            "Mon–Sat 10:00 AM–8:00 PM\nSun 10:00 AM–3:00 PM": "Daily 10:00 AM–8:00 PM",
             "Mon–Sat 10:00 AM–8:00 PM · Sun 10:00 AM–3:00 PM": "Daily 10:00 AM–8:00 PM",
         },
         "doctor_hours": {
+            "Mon–Sat 11:00 AM–4:00 PM\nSun 11:00 AM–3:00 PM": "Daily 11:00 AM–3:00 PM",
             "Mon–Sat 11:00 AM–4:00 PM · Sun 11:00 AM–3:00 PM": "Daily 11:00 AM–3:00 PM",
         },
         "procedure_hours": {
+            "Mon–Sat 11:00 AM–8:00 PM\nSun 11:00 AM–3:00 PM": "Mon–Sat 11:00 AM–8:00 PM",
             "Mon–Sat 11:00 AM–8:00 PM · Sun 11:00 AM–3:00 PM": "Mon–Sat 11:00 AM–8:00 PM",
         },
     },
     "paloura": {
         "reception_hours": {
+            "Mon–Sat 10:00 AM–8:00 PM\nSun 10:00 AM–2:00 PM": "Daily 10:00 AM–8:00 PM",
             "Mon–Sat 10:00 AM–8:00 PM · Sun 10:00 AM–2:00 PM": "Daily 10:00 AM–8:00 PM",
         },
         "doctor_hours": {
+            "Mon–Sat 6:00 PM–8:00 PM\nSun 10:30 AM–12:00 PM": "Daily 6:00 PM–8:00 PM",
             "Mon–Sat 6:00 PM–8:00 PM · Sun 10:30 AM–12:00 PM": "Daily 6:00 PM–8:00 PM",
         },
         "procedure_hours": {
+            "Mon–Sat 10:00 AM–8:00 PM\nSun 10:30 AM–12:00 PM": "Mon–Sat 10:00 AM–8:00 PM",
             "Mon–Sat 10:00 AM–8:00 PM · Sun 10:30 AM–12:00 PM": "Mon–Sat 10:00 AM–8:00 PM",
         },
     },
