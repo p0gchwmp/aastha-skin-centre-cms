@@ -16,6 +16,7 @@ done
 python manage.py collectstatic --no-input
 python manage.py migrate --no-input
 python manage.py initialize_cms
+python manage.py sync_public_clinic_facts
 python manage.py audit_editorial_v37
 
 if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.com" ]]; then
@@ -37,6 +38,7 @@ if [[ "${RENDER_EXTERNAL_HOSTNAME:-}" == "aastha-editorial-cms-staging.onrender.
     home.test_approved_media \
     home.test_doctor_media \
     home.test_local_search \
+    home.test_public_clinic_facts \
     home.test_release_signoff \
     home.test_seo_foundation \
     home.test_seo_verification \
