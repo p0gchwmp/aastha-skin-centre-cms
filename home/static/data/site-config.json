@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_updated": "2026-07-30",
+  "last_updated": "2026-09-23",
   "clinic": {
     "name": "Aastha Skin & Dermato-Cosmetic Centre",
     "short_name": "Aastha Skin Centre",
@@ -29,18 +29,18 @@
       "address": "Lane 2, Karan Nagar, near Amphalla Chowk, Jammu, Jammu & Kashmir – 180005",
       "landline": "0191-3509230",
       "google_maps": "https://maps.app.goo.gl/pHCQ1r4crKuZBSi98",
-      "reception_hours": "Mon–Sat 10:00 AM–8:00 PM · Sun 10:00 AM–3:00 PM",
-      "doctor_hours": "Mon–Sat 11:00 AM–4:00 PM · Sun 11:00 AM–3:00 PM",
-      "procedure_hours": "Mon–Sat 11:00 AM–8:00 PM · Sun 11:00 AM–3:00 PM"
+      "reception_hours": "Daily 10:00 AM–8:00 PM",
+      "doctor_hours": "Daily 11:00 AM–3:00 PM",
+      "procedure_hours": "Mon–Sat 11:00 AM–8:00 PM"
     },
     "paloura": {
       "name": "Paloura Chowk",
       "address": "Paloura Chowk, Top Paloura, opposite Government Senior Secondary School, Jammu, Jammu & Kashmir – 181121",
       "landline": "0191-3135864",
       "google_maps": "https://maps.app.goo.gl/kh4AqZoUkscpEgWc8",
-      "reception_hours": "Mon–Sat 10:00 AM–8:00 PM · Sun 10:00 AM–2:00 PM",
-      "doctor_hours": "Mon–Sat 6:00 PM–8:00 PM · Sun 10:30 AM–12:00 PM",
-      "procedure_hours": "Mon–Sat 10:00 AM–8:00 PM · Sun 10:30 AM–12:00 PM"
+      "reception_hours": "Daily 10:00 AM–8:00 PM",
+      "doctor_hours": "Daily 6:00 PM–8:00 PM",
+      "procedure_hours": "Mon–Sat 10:00 AM–8:00 PM"
     }
   },
   "theme": {
