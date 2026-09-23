@@ -100,11 +100,26 @@ jobs:
             --fail-on-errors
           python manage.py qa_cms_release
 
-      - name: Run Django regression suite
+      - name: Run rollback-mode Django regression suite
+        env:
+          AASTHA_EDITORIAL_V37: "0"
         shell: bash
         run: |
           set -o pipefail
           python manage.py test 2>&1 | tee audit-artifacts/django-test.log
+
+      - name: Run editorial-v37 enabled regression contracts
+        env:
+          AASTHA_EDITORIAL_V37: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          python manage.py test \
+            home.test_editorial_v37 \
+            home.test_staging_robots \
+            home.test_domain_cutover \
+            home.test_google_measurement_readiness \
+            2>&1 | tee audit-artifacts/editorial-v37-test.log
 
       - name: Start compressed local CMS
         run: |
