@@ -101,7 +101,10 @@ jobs:
           python manage.py qa_cms_release
 
       - name: Run Django regression suite
-        run: python manage.py test
+        shell: bash
+        run: |
+          set -o pipefail
+          python manage.py test 2>&1 | tee audit-artifacts/django-test.log
 
       - name: Start compressed local CMS
         run: |
