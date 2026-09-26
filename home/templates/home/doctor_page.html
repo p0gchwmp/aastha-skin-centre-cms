@@ -2,6 +2,10 @@
 {% load wagtailimages_tags %}
 {% block extra_head %}
 {{ block.super }}
+{% if editorial_v37_enabled and page.doctor and page.doctor.photo %}
+  {% image page.doctor.photo fill-596x730-c100 format-webp as doctor_preload %}
+  <link rel="preload" as="image" href="{{ doctor_preload.url }}" fetchpriority="high" media="(max-width: 780px)">
+{% endif %}
 {% if page.doctor %}
 <script type="application/ld+json">
 {
