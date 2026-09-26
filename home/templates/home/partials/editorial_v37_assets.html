@@ -6,12 +6,17 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700;800&display=swap"></noscript>
 <script>document.documentElement.classList.add('editorial-v37');document.documentElement.dataset.editorialVersion='37';</script>
 <link rel="stylesheet" href="{% static 'css/editorial-v37.css' %}">
+{% if request.path == '/' %}
 <link rel="stylesheet" href="{% static 'css/editorial-v37-home.css' %}">
-<link rel="stylesheet" href="{% static 'css/editorial-v37-detail.css' %}">
-<link rel="stylesheet" href="{% static 'css/editorial-v37-conversion.css' %}">
-<link rel="stylesheet" href="{% static 'css/editorial-v37-shell.css' %}">
-<link rel="stylesheet" href="{% static 'css/editorial-v37-kokonut.css' %}">
+{% elif page.index_kind %}
 <link rel="stylesheet" href="{% static 'css/editorial-v37-index.css' %}">
+{% else %}
+<link rel="stylesheet" href="{% static 'css/editorial-v37-detail.css' %}">
+{% if request.path == '/book-appointment/' %}<link rel="stylesheet" href="{% static 'css/editorial-v37-conversion.css' %}">{% endif %}
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/editorial-v37-shell.css' %}">
+<link rel="preload" as="style" href="{% static 'css/editorial-v37-kokonut.css' %}" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{% static 'css/editorial-v37-kokonut.css' %}"></noscript>
 <link rel="stylesheet" href="{% static 'css/editorial-v37-pretty-a11y.css' %}">
 <link rel="stylesheet" href="{% static 'css/editorial-v37-dark-final.css' %}">
 <link rel="stylesheet" href="{% static 'css/editorial-v37-release-gate.css' %}">
