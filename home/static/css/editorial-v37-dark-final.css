@@ -1,4 +1,35 @@
-/* Final v37 dark-theme contrast authority. Loaded after all other v37 CSS. */
+/* Final v37 contrast authority. Loaded after all other v37 CSS. */
+
+/* Keep the two editorial sticky panels truly dark in both themes. This avoids
+ * legacy light-surface overrides making their intentionally light copy fail. */
+html.editorial-v37 body.release-v24 .v37-story-sticky,
+html.editorial-v37 body.release-v24 .v37-clinic-card {
+  color: #fffaf6 !important;
+  background: #681431 !important;
+}
+html.editorial-v37 body.release-v24 .v37-story-sticky :where(h2,p),
+html.editorial-v37 body.release-v24 .v37-clinic-card :where(h2,h3,p,address,strong) {
+  color: #fffaf6 !important;
+}
+html.editorial-v37 body.release-v24 .v37-story-sticky .v37-kicker,
+html.editorial-v37 body.release-v24 .v37-clinic-card .v37-kicker {
+  color: #f0d7a8 !important;
+}
+html.editorial-v37 body.release-v24 .v37-clinic-card .button {
+  color: #4f1028 !important;
+  background: #fffaf6 !important;
+  border-color: #fffaf6 !important;
+}
+
+/* Legacy/imported hero booking controls occasionally survive inside semantic
+ * index imports. Give the appointment CTA an explicit accessible pair. */
+html.editorial-v37 body.release-v24 .hero-actions > .button[href$="book-appointment/"],
+html.editorial-v37 body.release-v24 .hero-actions > a.button[href*="book-appointment"] {
+  color: #fffaf6 !important;
+  background: #74183c !important;
+  border-color: #74183c !important;
+}
+
 html.editorial-v37[data-theme="dark"] body.release-v24 :where(.button,.btn),
 html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] .v37-explore-trigger {
   color: #fffaf6 !important;
@@ -21,8 +52,6 @@ html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-she
   background: #e1c28e !important;
   border-color: #e1c28e !important;
 }
-html.editorial-v37[data-theme="dark"] .v37-story-sticky,
-html.editorial-v37[data-theme="dark"] .v37-clinic-card,
 html.editorial-v37[data-theme="dark"] .v37-choice[aria-selected="true"],
 html.editorial-v37[data-theme="dark"] .v37-choice:hover,
 html.editorial-v37[data-theme="dark"] .v37-concern-tabs button[aria-selected="true"],
@@ -33,31 +62,31 @@ html.editorial-v37[data-theme="dark"] .v37-atlas-nav button:hover {
   color: #fffaf6 !important;
   background: #681431 !important;
 }
-html.editorial-v37[data-theme="dark"] .v37-story-sticky :where(h2,p),
-html.editorial-v37[data-theme="dark"] .v37-clinic-card :where(h2,h3,p,address,strong),
 html.editorial-v37[data-theme="dark"] .v37-choice[aria-selected="true"] :where(small,strong,span),
 html.editorial-v37[data-theme="dark"] .v37-choice:hover :where(small,strong,span) {
   color: #fffaf6 !important;
 }
-html.editorial-v37[data-theme="dark"] .v37-story-sticky .v37-kicker,
-html.editorial-v37[data-theme="dark"] .v37-clinic-card .v37-kicker {
-  color: #f0d7a8 !important;
+
+/* Clinical-result gallery is injected below treatment content. Its existing
+ * dark-mode background needs a lighter muted foreground for AA. */
+html.editorial-v37[data-theme="dark"] :where(.clinical-results__intro,.clinical-results__counter) {
+  color: #d8ced1 !important;
 }
-html.editorial-v37[data-theme="dark"] .v37-clinic-card .button {
-  color: #4f1028 !important;
-  background: #fffaf6 !important;
-  border-color: #fffaf6 !important;
+html.editorial-v37[data-theme="dark"] .clinical-results :where(h2,h3,strong) {
+  color: #fffaf6 !important;
 }
 
 /* Explicit light-mode corrections for high-risk surfaces from the release audit. */
-html.editorial-v37:not([data-theme="dark"]) .v37-clinic-card address,
-html.editorial-v37:not([data-theme="dark"]) .v37-story-sticky p {
-  color: #fffaf6 !important;
-}
 html.editorial-v37:not([data-theme="dark"]) .v37-detail-section--dark .v37-reading-card .button-secondary,
 html.editorial-v37:not([data-theme="dark"]) .v37-section--dark .v37-clinic-grid .button-secondary {
   color: #fffaf6 !important;
   border-color: rgba(255,250,246,.65) !important;
+}
+
+/* Dark-mode directory cards use a dark canvas; keep their small category label
+ * readable instead of inheriting the pale gold used on warm paper. */
+html.editorial-v37[data-theme="dark"] .v37-index-card .v37-index-card-copy > span {
+  color: #efc8d6 !important;
 }
 
 /* The pinboard deliberately remains a warm-paper insert even in dark mode. */
