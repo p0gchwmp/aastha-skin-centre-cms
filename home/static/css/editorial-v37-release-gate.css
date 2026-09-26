@@ -44,6 +44,13 @@ html.editorial-v37 body.release-v24 main#main-content.v37-clinic-page .v37-clini
   color: #f0d7a8 !important;
 }
 
+/* The light-theme clinic renderer currently keeps the information panel on
+ * warm paper. Override only its address colour to match the actual rendered
+ * surface; dark mode has its own inverse rule below. */
+html.editorial-v37:not([data-theme="dark"]) body.release-v24 main#main-content.v37-clinic-page .v37-clinic-panel address {
+  color: #2f272a !important;
+}
+
 /* Primary CTAs that live on permanently dark sections: never white-on-pale-pink. */
 html.editorial-v37 body.release-v24 main#main-content .v37-section--dark .button:not(.button-secondary),
 html.editorial-v37 body.release-v24 main#main-content .v37-detail-section--dark .button:not(.button-secondary) {
