@@ -1,0 +1,284 @@
+/* Editorial v37 final visual polish + accessibility hardening.
+ * Loaded last so it can correct shared legacy/theme leakage without changing
+ * CMS content or the production-disabled v37 feature boundary.
+ */
+
+/* ---------- AA contrast corrections ---------- */
+html.editorial-v37 #approach .process-nav button {
+  color: #51484b !important;
+  opacity: 1 !important;
+}
+html.editorial-v37 #approach .process-nav button.is-active {
+  color: #fff !important;
+}
+
+html.editorial-v37 .v37-section--dark,
+html.editorial-v37 .v37-detail-section--dark {
+  --v37-ink: #fffaf6;
+  --v37-muted: #d5c9cd;
+  --v37-wine: #efc8d6;
+  --v37-line: rgba(255,255,255,.18);
+  --v37-line-strong: rgba(255,255,255,.3);
+}
+html.editorial-v37 .v37-section--dark :where(h2,h3,strong,summary,address),
+html.editorial-v37 .v37-detail-section--dark :where(h2,h3,strong,summary,address) {
+  color: #fffaf6 !important;
+}
+html.editorial-v37 .v37-section--dark :where(p,li,.v37-answer),
+html.editorial-v37 .v37-detail-section--dark :where(p,li,.v37-answer) {
+  color: #d5c9cd !important;
+}
+html.editorial-v37 .v37-section--dark :where(.v37-kicker,.v37-section-head > span),
+html.editorial-v37 .v37-detail-section--dark :where(.v37-kicker,.v37-detail-head > span) {
+  color: #f0d7a8 !important;
+}
+html.editorial-v37 .v37-section--dark .button-secondary,
+html.editorial-v37 .v37-detail-section--dark .button-secondary {
+  color: #fffaf6 !important;
+  background: transparent !important;
+  border-color: rgba(255,250,246,.64) !important;
+}
+html.editorial-v37 .v37-detail-section--dark .v37-accordion summary::after {
+  color: #f0d7a8 !important;
+}
+
+/* Dark footer is generated client-side; keep all inherited text readable. */
+html.editorial-v37 :where(.site-footer,.brand-footer,[data-site-footer] footer) :where(h2,h3,strong,a) {
+  color: #fffaf6 !important;
+}
+html.editorial-v37 :where(.site-footer,.brand-footer,[data-site-footer] footer) :where(p,small,address,span) {
+  color: #d8ced1 !important;
+}
+html.editorial-v37 :where(.site-footer,.brand-footer,[data-site-footer] footer) .button-secondary {
+  color: #fffaf6 !important;
+  border-color: rgba(255,250,246,.58) !important;
+}
+
+/* Small gold controls need dark foreground, not wine-on-gold. */
+html.editorial-v37 .button-small {
+  color: #21191c !important;
+}
+
+/* Phone links on light clinic surfaces need full AA contrast. */
+html.editorial-v37 .v37-clinic-page a[href^="tel:"] {
+  color: #6a1031 !important;
+}
+
+/* Choice matrix: proper tablist wrapper while preserving the 3-up layout. */
+html.editorial-v37 body.release-v24 .v37-choice-matrix {
+  display: block !important;
+}
+html.editorial-v37 body.release-v24 .v37-choice-tabs {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+html.editorial-v37 body.release-v24 .v37-choice-tabs .v37-choice:nth-child(3n) {
+  border-right: 0;
+}
+
+/* ---------- Dark theme support ---------- */
+html.editorial-v37[data-theme="dark"] {
+  --v37-paper: #171315;
+  --v37-paper-2: #21191c;
+  --v37-paper-3: #2b2024;
+  --v37-ink: #fffaf6;
+  --v37-muted: #d2c6ca;
+  --v37-wine: #e9a9bf;
+  --v37-wine-dark: #f0bfd0;
+  --v37-gold: #e1c28e;
+  --v37-line: rgba(255,255,255,.15);
+  --v37-line-strong: rgba(255,255,255,.28);
+  color-scheme: dark;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24,
+html.editorial-v37[data-theme="dark"] body.release-v24 .site-header {
+  color: var(--v37-ink) !important;
+  background-color: var(--v37-paper) !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .site-header {
+  background: rgba(23,19,21,.94) !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] {
+  background: var(--v37-paper-2) !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .brand,
+html.editorial-v37[data-theme="dark"] body.release-v24 .brand strong,
+html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] > a,
+html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] > button {
+  color: #fffaf6 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .brand small {
+  color: #d2c6ca !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-appointment-form :where(label > span,input,select,textarea),
+html.editorial-v37[data-theme="dark"] .v37-form-submit p,
+html.editorial-v37[data-theme="dark"] .v37-consent span {
+  color: #fffaf6 !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-appointment-form :where(input,select,textarea) {
+  background: #21191c !important;
+  border-color: rgba(255,255,255,.34) !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-appointment-form :where(input,textarea)::placeholder {
+  color: #bfb2b7 !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-reading-card,
+html.editorial-v37[data-theme="dark"] .v37-index-card,
+html.editorial-v37[data-theme="dark"] .v37-route-finder,
+html.editorial-v37[data-theme="dark"] #approach .process-stage {
+  background: #21191c !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-reading-card :where(h3,p,strong),
+html.editorial-v37[data-theme="dark"] .v37-index-card :where(h3,p,strong),
+html.editorial-v37[data-theme="dark"] .v37-route-finder :where(h3,p,legend),
+html.editorial-v37[data-theme="dark"] #approach .process-stage :where(h3,p) {
+  color: #fffaf6 !important;
+}
+
+/* ---------- Pinterest-inspired editorial image journal ---------- */
+html.editorial-v37 .v37-visual-journal {
+  position: relative;
+  overflow: clip;
+  padding: clamp(72px,9vw,140px) 0;
+  border-bottom: 1px solid var(--v37-line);
+  background:
+    radial-gradient(circle at 12% 16%, rgba(134,22,63,.08), transparent 28%),
+    radial-gradient(circle at 86% 82%, rgba(185,151,102,.12), transparent 26%),
+    var(--v37-paper-2);
+}
+html.editorial-v37 .v37-visual-journal::before {
+  content: "SKIN  /  HAIR  /  TEXTURE  /  TONE";
+  position: absolute;
+  top: 28px;
+  right: -26px;
+  color: color-mix(in srgb,var(--v37-muted) 34%, transparent);
+  font: 800 clamp(.65rem,1vw,.82rem)/1 var(--v37-sans);
+  letter-spacing: .22em;
+  writing-mode: vertical-rl;
+}
+html.editorial-v37 .v37-journal-intro {
+  display: grid;
+  grid-template-columns: minmax(150px,.34fr) minmax(0,1.66fr);
+  gap: clamp(28px,6vw,92px);
+  margin-bottom: clamp(40px,6vw,82px);
+}
+html.editorial-v37 .v37-journal-intro h2 {
+  max-width: 12ch;
+  margin: 0 0 16px;
+  font: 500 clamp(3.4rem,6vw,6.8rem)/.87 var(--v37-display);
+  letter-spacing: -.055em;
+}
+html.editorial-v37 .v37-journal-intro p {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--v37-muted);
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+html.editorial-v37 .v37-pinboard {
+  display: grid;
+  grid-template-columns: repeat(12,minmax(0,1fr));
+  gap: clamp(12px,1.6vw,24px);
+  align-items: start;
+}
+html.editorial-v37 .v37-pin {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--v37-line-strong);
+  background: #fffaf4;
+  color: var(--v37-ink);
+  text-decoration: none;
+  box-shadow: 0 18px 60px rgba(46,27,34,.08);
+  transform: translateZ(0);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+html.editorial-v37 .v37-pin:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 28px 80px rgba(46,27,34,.14);
+}
+html.editorial-v37 .v37-pin:nth-child(1) { grid-column: 1 / span 4; margin-top: 26px; }
+html.editorial-v37 .v37-pin:nth-child(2) { grid-column: 5 / span 3; }
+html.editorial-v37 .v37-pin:nth-child(3) { grid-column: 8 / span 5; margin-top: 58px; }
+html.editorial-v37 .v37-pin:nth-child(4) { grid-column: 2 / span 5; margin-top: -28px; }
+html.editorial-v37 .v37-pin:nth-child(5) { grid-column: 8 / span 4; margin-top: 22px; }
+html.editorial-v37 .v37-pin-media {
+  position: relative;
+  overflow: hidden;
+  background: var(--v37-paper-3);
+}
+html.editorial-v37 .v37-pin:nth-child(1) .v37-pin-media { aspect-ratio: 4 / 5; }
+html.editorial-v37 .v37-pin:nth-child(2) .v37-pin-media { aspect-ratio: 3 / 4; }
+html.editorial-v37 .v37-pin:nth-child(3) .v37-pin-media { aspect-ratio: 16 / 11; }
+html.editorial-v37 .v37-pin:nth-child(4) .v37-pin-media { aspect-ratio: 16 / 10; }
+html.editorial-v37 .v37-pin:nth-child(5) .v37-pin-media { aspect-ratio: 4 / 5; }
+html.editorial-v37 .v37-pin img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(.78) contrast(1.03) sepia(.04);
+  transition: transform .45s cubic-bezier(.2,.7,.2,1), filter .3s ease;
+}
+html.editorial-v37 .v37-pin:hover img {
+  transform: scale(1.035);
+  filter: saturate(.9) contrast(1.04);
+}
+html.editorial-v37 .v37-pin-copy {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+html.editorial-v37 .v37-pin-copy small {
+  color: #761236;
+  font: 800 .53rem/1.2 var(--v37-sans);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+html.editorial-v37 .v37-pin-copy strong {
+  color: #21191c;
+  font: 500 clamp(1.65rem,2.3vw,2.55rem)/.95 var(--v37-display);
+  letter-spacing: -.025em;
+}
+html.editorial-v37 .v37-pin-copy span {
+  color: #5b5356;
+  font-size: .74rem;
+  line-height: 1.55;
+}
+html.editorial-v37 .v37-pin-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 7px 9px;
+  color: #21191c;
+  background: rgba(255,250,244,.91);
+  border: 1px solid rgba(33,25,28,.18);
+  backdrop-filter: blur(10px);
+  font: 800 .5rem/1 var(--v37-sans);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  html.editorial-v37 .v37-journal-intro { grid-template-columns: 1fr; gap: 16px; }
+  html.editorial-v37 .v37-pinboard { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  html.editorial-v37 .v37-pin:nth-child(n) { grid-column: auto; margin-top: 0; }
+  html.editorial-v37 .v37-pin:nth-child(3) { grid-column: 1 / -1; }
+}
+
+@media (max-width: 580px) {
+  html.editorial-v37 body.release-v24 .v37-choice-tabs { grid-template-columns: 1fr; }
+  html.editorial-v37 body.release-v24 .v37-choice-tabs .v37-choice { border-right: 0; }
+  html.editorial-v37 .v37-visual-journal { padding-block: 64px; }
+  html.editorial-v37 .v37-pinboard { grid-template-columns: 1fr; gap: 18px; }
+  html.editorial-v37 .v37-pin:nth-child(n) { grid-column: 1; }
+  html.editorial-v37 .v37-pin:nth-child(odd) { width: 92%; }
+  html.editorial-v37 .v37-pin:nth-child(even) { width: 92%; margin-left: auto; }
+  html.editorial-v37 .v37-pin:nth-child(3) { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.editorial-v37 .v37-pin,
+  html.editorial-v37 .v37-pin img { transition: none !important; }
+}
