@@ -79,80 +79,96 @@ jobs:
 
       - name: Build production-like local CMS
         run: |
-          bash ./build.sh
+          rm -f db.sqlite3
+          rm -rf staticfiles
+          python tools/build_visual_cue_assets.py
+          python tools/install_curated_visual_cue_assets.py
+          python tools/generate_responsive_clinical_images.py
+          python tools/audit_clinical_result_images.py
+          python tools/verify_exact_page_snapshots.py
+          npm --prefix frontend run build
+          python manage.py collectstatic --no-input
+          python manage.py migrate --no-input
+          python manage.py initialize_cms
+          python manage.py sync_public_clinic_facts
+          python manage.py audit_editorial_v37
 
       - name: Run CMS release evidence audits
         run: |
           mkdir -p audit-artifacts
-          python manage.py audit_release --output audit-artifacts/release-audit.json
-          python manage.py audit_editorial_v37 --output audit-artifacts/editorial-v37-audit.json
-          python manage.py audit_seo_content --output audit-artifacts/seo-content.json
-          python tools/audit_clinical_result_images.py --output audit-artifacts/clinical-result-images.json
-          python tools/generate_responsive_clinical_images.py --check --output audit-artifacts/responsive-clinical-images.json
+          python manage.py check_launch_config
+          python manage.py audit_seo_content \
+            --json audit-artifacts/seo-content.json \
+            --fail-on-errors
+          python manage.py qa_cms_release
 
       - name: Run rollback-mode Django regression suite
         env:
           AASTHA_EDITORIAL_V37: "0"
+        shell: bash
         run: |
-          python manage.py test home 2>&1 | tee audit-artifacts/django-test.log
+          set -o pipefail
+          python manage.py test 2>&1 | tee audit-artifacts/django-test.log
 
       - name: Run editorial-v37 enabled regression contracts
         env:
           AASTHA_EDITORIAL_V37: "1"
+        shell: bash
         run: |
-          python manage.py test home.test_editorial_v37 home.test_staging_robots 2>&1 | tee audit-artifacts/editorial-v37-test.log
+          set -o pipefail
+          python manage.py test \
+            home.test_editorial_v37 \
+            home.test_staging_robots \
+            home.test_domain_cutover \
+            home.test_google_measurement_readiness \
+            2>&1 | tee audit-artifacts/editorial-v37-test.log
 
       - name: Start compressed local CMS
         run: |
-          python -m gunicorn aastha_cms.wsgi:application --bind 127.0.0.1:8000 --workers 1 --timeout 120 --access-logfile - --error-logfile - > audit-artifacts/quality-server.log 2>&1 &
-          echo $! > /tmp/quality-server.pid
-          python - <<'PY'
-          import time
-          import urllib.request
-          for _ in range(60):
-              try:
-                  urllib.request.urlopen("http://127.0.0.1:8000/", timeout=2)
-                  break
-              except Exception:
-                  time.sleep(1)
-          else:
-              raise SystemExit("quality server failed to start")
-          PY
+          nohup gunicorn aastha_cms.wsgi:application \
+            --bind 127.0.0.1:8000 \
+            --workers 2 \
+            --access-logfile - \
+            --error-logfile - \
+            > /tmp/aastha-quality.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/healthz/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/aastha-quality.log
+          exit 1
 
       - name: Run WCAG accessibility audit
         run: |
           node tools/audit_accessibility.mjs \
             --base-url http://127.0.0.1:8000 \
             --output audit-artifacts/accessibility
+          cat audit-artifacts/accessibility/summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run mobile Lighthouse gate
         env:
           LHCI_FORM_FACTOR: mobile
-        run: |
-          npx lhci autorun --config=./lighthouserc.cjs
+        run: npx lhci autorun --config=lighthouserc.cjs
 
       - name: Run desktop Lighthouse gate
         if: always()
         env:
           LHCI_FORM_FACTOR: desktop
-        run: |
-          npx lhci autorun --config=./lighthouserc.cjs
+        run: npx lhci autorun --config=lighthouserc.cjs
 
       - name: Publish Lighthouse scorecard
         if: always()
         run: |
           python tools/summarize_lighthouse.py \
-            --mobile audit-artifacts/lighthouse-mobile \
-            --desktop audit-artifacts/lighthouse-desktop \
+            --root audit-artifacts \
             --output audit-artifacts/lighthouse-summary.md
           cat audit-artifacts/lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Include local server log
         if: always()
-        run: |
-          if [ -f audit-artifacts/quality-server.log ]; then
-            tail -200 audit-artifacts/quality-server.log >> audit-artifacts/quality-server-tail.log
-          fi
+        run: cp /tmp/aastha-quality.log audit-artifacts/quality-server.log || true
 
       - name: Upload quality evidence
         if: always()
