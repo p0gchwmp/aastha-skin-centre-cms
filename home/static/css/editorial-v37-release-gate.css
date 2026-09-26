@@ -1,0 +1,119 @@
+/*
+ * Editorial v37 release-gate overrides.
+ * Exact, high-specificity corrections for the representative WCAG/Lighthouse
+ * audit. Kept separate so these can later be folded into the component files.
+ */
+
+/* Hydrated footer microcopy: the legacy footer rule is unusually specific. */
+html.editorial-v37 body.release-v24 .site-footer .brand-footer > span:nth-child(2) > small {
+  color: #d8ced1 !important;
+}
+
+/* Hydrated desktop header booking control. */
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a.button.button-small.v37-book,
+html.editorial-v37 body.release-v24 .primary-nav[data-v37-shell="true"] > a.button.button-small {
+  color: #21191c !important;
+  background: #d3b27d !important;
+  border-color: #d3b27d !important;
+}
+
+/* The two sticky editorial cards must remain dark even when legacy surface
+ * rules touch their ancestors. */
+html.editorial-v37 body.release-v24 main#main-content .v37-story .v37-story-sticky {
+  color: #fffaf6 !important;
+  background: #681431 !important;
+}
+html.editorial-v37 body.release-v24 main#main-content .v37-story .v37-story-sticky :where(h2,p),
+html.editorial-v37 body.release-v24 main#main-content .v37-story .v37-story-sticky p[data-v37-story-copy] {
+  color: #fffaf6 !important;
+  opacity: 1 !important;
+}
+html.editorial-v37 body.release-v24 main#main-content .v37-story .v37-story-sticky .v37-kicker {
+  color: #f0d7a8 !important;
+}
+
+/* Clinic information card is another intentionally dark editorial moment. */
+html.editorial-v37 body.release-v24 main#main-content.v37-clinic-page .v37-clinic-card {
+  color: #fffaf6 !important;
+  background: #681431 !important;
+}
+html.editorial-v37 body.release-v24 main#main-content.v37-clinic-page .v37-clinic-card :where(h2,h3,p,address,strong) {
+  color: #fffaf6 !important;
+}
+html.editorial-v37 body.release-v24 main#main-content.v37-clinic-page .v37-clinic-card .v37-kicker {
+  color: #f0d7a8 !important;
+}
+
+/* Primary CTAs that live on permanently dark sections: never white-on-pale-pink. */
+html.editorial-v37 body.release-v24 main#main-content .v37-section--dark .button:not(.button-secondary),
+html.editorial-v37 body.release-v24 main#main-content .v37-detail-section--dark .button:not(.button-secondary) {
+  color: #fffaf6 !important;
+  background: #7b1f45 !important;
+  border-color: #a54a6b !important;
+}
+html.editorial-v37 body.release-v24 main#main-content .v37-section--dark .button-secondary,
+html.editorial-v37 body.release-v24 main#main-content .v37-detail-section--dark .button-secondary {
+  color: #fffaf6 !important;
+  background: transparent !important;
+  border-color: rgba(255,250,246,.68) !important;
+}
+
+/* Dark-theme navigation and conversion surfaces. */
+html.editorial-v37[data-theme="dark"] body.release-v24 #approach .process-nav button {
+  color: #d8ced1 !important;
+  opacity: 1 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 #approach .process-nav button.is-active {
+  color: #fffaf6 !important;
+  background: #74183c !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-final-cta {
+  color: #fffaf6 !important;
+  background: #681431 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-final-cta .v37-kicker {
+  color: #f0d7a8 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-final-cta h2 {
+  color: #fffaf6 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-final-cta p {
+  color: #eadde2 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-final-cta .button:not(.button-secondary),
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-quickbar > a[href$="book-appointment/"] {
+  color: #fffaf6 !important;
+  background: #74183c !important;
+  border-color: #a54a6b !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .v37-final-cta .button-secondary {
+  color: #fffaf6 !important;
+  background: transparent !important;
+  border-color: rgba(255,250,246,.7) !important;
+}
+
+/* Phone links use a dark plum in light mode and a light rose in dark mode. */
+html.editorial-v37[data-theme="dark"] body.release-v24 main#main-content.v37-clinic-page a[href^="tel:"] {
+  color: #f3b9cc !important;
+}
+
+/* The clinical-results component intentionally retains a warm-light photo
+ * surface in dark mode. Its captions therefore need dark ink, not inverted ink. */
+html.editorial-v37[data-theme="dark"] body.release-v24 main#main-content .clinical-results.clinical-results--hero .clinical-results__hero-label,
+html.editorial-v37[data-theme="dark"] body.release-v24 main#main-content .clinical-results.clinical-results--hero .clinical-results__counter,
+html.editorial-v37[data-theme="dark"] body.release-v24 main#main-content .clinical-results.clinical-results--hero .clinical-results__note {
+  color: #4f1028 !important;
+}
+
+/* Light-theme explicit phone colour retained for AA on paper. */
+html.editorial-v37:not([data-theme="dark"]) body.release-v24 main#main-content.v37-clinic-page a[href^="tel:"] {
+  color: #6a1031 !important;
+}
+
+@media (max-width: 1080px) {
+  html.editorial-v37[data-theme="dark"] body.release-v24 .v37-quickbar > a[href$="book-appointment/"] {
+    color: #fffaf6 !important;
+    background: #74183c !important;
+    border-color: #a54a6b !important;
+  }
+}
