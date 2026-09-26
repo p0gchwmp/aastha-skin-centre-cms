@@ -1,0 +1,69 @@
+/* Final v37 dark-theme contrast authority. Loaded after all other v37 CSS. */
+html.editorial-v37[data-theme="dark"] body.release-v24 :where(.button,.btn),
+html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] .v37-explore-trigger {
+  color: #fffaf6 !important;
+  background: #74183c !important;
+  border-color: #9f3f62 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 :where(.button,.btn):hover,
+html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] .v37-explore-trigger:hover {
+  color: #fff !important;
+  background: #8b234b !important;
+  border-color: #b45173 !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 :where(.button-secondary,.btn.alt) {
+  color: #fffaf6 !important;
+  background: transparent !important;
+  border-color: rgba(255,250,246,.56) !important;
+}
+html.editorial-v37[data-theme="dark"] body.release-v24 .primary-nav[data-v37-shell="true"] .v37-book {
+  color: #21191c !important;
+  background: #e1c28e !important;
+  border-color: #e1c28e !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-story-sticky,
+html.editorial-v37[data-theme="dark"] .v37-clinic-card,
+html.editorial-v37[data-theme="dark"] .v37-choice[aria-selected="true"],
+html.editorial-v37[data-theme="dark"] .v37-choice:hover,
+html.editorial-v37[data-theme="dark"] .v37-concern-tabs button[aria-selected="true"],
+html.editorial-v37[data-theme="dark"] .v37-route-controls button[aria-pressed="true"],
+html.editorial-v37[data-theme="dark"] #approach .process-nav button.is-active,
+html.editorial-v37[data-theme="dark"] .v37-atlas-nav button[aria-selected="true"],
+html.editorial-v37[data-theme="dark"] .v37-atlas-nav button:hover {
+  color: #fffaf6 !important;
+  background: #681431 !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-story-sticky :where(h2,p),
+html.editorial-v37[data-theme="dark"] .v37-clinic-card :where(h2,h3,p,address,strong),
+html.editorial-v37[data-theme="dark"] .v37-choice[aria-selected="true"] :where(small,strong,span),
+html.editorial-v37[data-theme="dark"] .v37-choice:hover :where(small,strong,span) {
+  color: #fffaf6 !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-story-sticky .v37-kicker,
+html.editorial-v37[data-theme="dark"] .v37-clinic-card .v37-kicker {
+  color: #f0d7a8 !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-clinic-card .button {
+  color: #4f1028 !important;
+  background: #fffaf6 !important;
+  border-color: #fffaf6 !important;
+}
+
+/* Explicit light-mode corrections for high-risk surfaces from the release audit. */
+html.editorial-v37:not([data-theme="dark"]) .v37-clinic-card address,
+html.editorial-v37:not([data-theme="dark"]) .v37-story-sticky p {
+  color: #fffaf6 !important;
+}
+html.editorial-v37:not([data-theme="dark"]) .v37-detail-section--dark .v37-reading-card .button-secondary,
+html.editorial-v37:not([data-theme="dark"]) .v37-section--dark .v37-clinic-grid .button-secondary {
+  color: #fffaf6 !important;
+  border-color: rgba(255,250,246,.65) !important;
+}
+
+/* The pinboard deliberately remains a warm-paper insert even in dark mode. */
+html.editorial-v37[data-theme="dark"] .v37-pin {
+  background: #fffaf4 !important;
+}
+html.editorial-v37[data-theme="dark"] .v37-pin-copy small { color: #761236 !important; }
+html.editorial-v37[data-theme="dark"] .v37-pin-copy strong { color: #21191c !important; }
+html.editorial-v37[data-theme="dark"] .v37-pin-copy span { color: #5b5356 !important; }
