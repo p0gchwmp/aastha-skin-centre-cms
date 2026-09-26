@@ -3,6 +3,9 @@
 {% block body_class %}cms-home-page{% endblock %}
 {% block extra_head %}
   {% if editorial_v37_enabled %}
+    {% if not page.hero_image %}
+      <link rel="preload" as="image" href="{% static 'images/visual-cues/personalised-plan-512.webp' %}" fetchpriority="high" media="(max-width: 780px)">
+    {% endif %}
     {% include "home/partials/editorial_v37_assets.html" %}
   {% else %}
     <link rel="stylesheet" href="{% static 'css/premium-icons.css' %}">
