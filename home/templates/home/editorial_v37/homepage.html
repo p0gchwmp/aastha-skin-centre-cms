@@ -89,10 +89,41 @@
     </div>
   </section>
 
+  <section class="v37-visual-journal" aria-labelledby="v37-journal-title">
+    <div class="v37-shell">
+      <header class="v37-journal-intro">
+        <span class="v37-kicker">04 / Visual journal</span>
+        <div><h2 id="v37-journal-title">A little more visual. Still medical.</h2><p>A curated, image-led way to browse common skin and hair concerns. Think editorial moodboard rather than procedure catalogue — each image still leads to dermatologist-reviewed information.</p></div>
+      </header>
+      <div class="v37-pinboard">
+        <a class="v37-pin" href="/treatments/acne-treatment/">
+          <div class="v37-pin-media"><span class="v37-pin-tag">Skin diary 01</span><img src="{% static 'images/visual-cue-sources/acne.webp' %}" alt="Close-up visual representing acne-prone skin" width="256" height="256" loading="lazy" decoding="async"></div>
+          <div class="v37-pin-copy"><small>Breakouts</small><strong>Acne, decoded.</strong><span>Patterns, triggers, marks and when to see a dermatologist.</span></div>
+        </a>
+        <a class="v37-pin" href="/treatments/pigmentation-treatment/">
+          <div class="v37-pin-media"><span class="v37-pin-tag">Tone study</span><img src="{% static 'images/visual-cue-sources/pigmentation.webp' %}" alt="Close-up visual representing pigmentation concerns" width="256" height="256" loading="lazy" decoding="async"></div>
+          <div class="v37-pin-copy"><small>Pigmentation</small><strong>Colour has a cause.</strong><span>Melasma, post-inflammatory change and uneven tone need different thinking.</span></div>
+        </a>
+        <a class="v37-pin" href="/treatments/hair-fall-treatment/">
+          <div class="v37-pin-media"><span class="v37-pin-tag">Scalp notes</span><img src="{% static 'images/visual-cue-sources/hair.webp' %}" alt="Visual representing hair and scalp care" width="256" height="256" loading="lazy" decoding="async"></div>
+          <div class="v37-pin-copy"><small>Hair &amp; scalp</small><strong>Start with the pattern.</strong><span>Shedding, thinning and scalp symptoms often need a cause-first approach.</span></div>
+        </a>
+        <a class="v37-pin" href="/treatments/acne-scar-treatment/">
+          <div class="v37-pin-media"><span class="v37-pin-tag">Texture file</span><img src="{% static 'images/visual-cue-sources/scars.webp' %}" alt="Close-up visual representing skin texture and acne scars" width="256" height="256" loading="lazy" decoding="async"></div>
+          <div class="v37-pin-copy"><small>Texture</small><strong>Not every scar is the same.</strong><span>Rolling, boxcar and ice-pick patterns can require different strategies.</span></div>
+        </a>
+        <a class="v37-pin" href="/treatments/">
+          <div class="v37-pin-media"><span class="v37-pin-tag">Skin quality</span><img src="{% static 'images/visual-cue-sources/ageing.webp' %}" alt="Visual representing skin quality and ageing concerns" width="256" height="256" loading="lazy" decoding="async"></div>
+          <div class="v37-pin-copy"><small>Skin quality</small><strong>Subtle, not overdone.</strong><span>Hydration, texture, firmness and ageing concerns assessed individually.</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <section class="v37-section v37-section--tone" id="approach">
     <div class="v37-shell">
       <header class="v37-section-head">
-        <span>04 / How care works</span>
+        <span>05 / How care works</span>
         <div><h2>The treatment should follow the diagnosis.</h2><p>Care moves from history and examination to explanation, planning and review.</p></div>
       </header>
       <div class="process-stage">
@@ -110,12 +141,14 @@
 
   <section class="v37-section" id="v37-doctor">
     <div class="v37-shell">
-      <header class="v37-section-head"><span>05 / Your dermatologist</span><div><h2>Diagnosis before treatment.</h2><p>Dr. Cheena Langer is MBBS and MD Dermatology qualified, with more than 20 years in medicine.</p></div></header>
+      <header class="v37-section-head"><span>06 / Your dermatologist</span><div><h2>Diagnosis before treatment.</h2><p>Dr. Cheena Langer is MBBS and MD Dermatology qualified, with more than 20 years in medicine.</p></div></header>
       {% with doctor=active_doctors.0 %}
       <div class="v37-doctor-grid">
         <figure>
           {% if doctor and doctor.photo %}
-            {% image doctor.photo fill-900x1100-c100 loading="lazy" decoding="async" %}
+            {% image doctor.photo fill-480x590-c100 as doctor_home_sm %}
+            {% image doctor.photo fill-900x1100-c100 as doctor_home_lg %}
+            <img src="{{ doctor_home_sm.url }}" srcset="{{ doctor_home_sm.url }} 480w, {{ doctor_home_lg.url }} 900w" sizes="(max-width: 780px) 100vw, 40vw" alt="Dr. Cheena Langer, Consultant Dermatologist at Aastha Skin Centre" width="{{ doctor_home_lg.width }}" height="{{ doctor_home_lg.height }}" loading="lazy" decoding="async">
           {% else %}
             <img src="{% static 'images/visual-cues/dermatologist-diagnosis-512.webp' %}" alt="Dermatologist-led care at Aastha Skin Centre" width="512" height="512" loading="lazy" decoding="async">
           {% endif %}
@@ -128,7 +161,7 @@
 
   <section class="v37-section v37-section--dark" id="v37-clinics">
     <div class="v37-shell">
-      <header class="v37-section-head"><span>06 / Visit Aastha</span><div><h2>Two clinics in Jammu.</h2><p>Choose the branch that suits your schedule. Confirm procedure availability when booking.</p></div></header>
+      <header class="v37-section-head"><span>07 / Visit Aastha</span><div><h2>Two clinics in Jammu.</h2><p>Choose the branch that suits your schedule. Confirm procedure availability when booking.</p></div></header>
       <div class="v37-clinic-grid">
         {% for clinic in clinic_locations %}
           <article><span class="v37-kicker">Clinic 0{{ forloop.counter }}</span><h3>{{ clinic.name }}</h3><address>{{ clinic.address }}</address>{% if clinic.doctor_hours %}<p><strong>Dr. Cheena:</strong> {{ clinic.doctor_hours }}</p>{% endif %}{% if clinic.reception_hours %}<p><strong>Reception:</strong> {{ clinic.reception_hours }}</p>{% endif %}<div class="v37-actions"><a class="button" href="/locations/{{ clinic.slug }}/">Clinic details</a>{% if clinic.google_maps_url %}<a class="button button-secondary" href="{{ clinic.google_maps_url }}" target="_blank" rel="noopener">Directions ↗</a>{% endif %}</div></article>
