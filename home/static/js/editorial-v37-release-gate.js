@@ -2,8 +2,9 @@
   const patchHydratedShell = () => {
     const brand = document.querySelector('[data-site-header] a.brand[href="/"]');
     if (brand) {
-      const visibleName = brand.querySelector('strong')?.textContent?.trim() || 'Aastha Skin Centre';
-      brand.setAttribute('aria-label', `${visibleName} — home`);
+      // Let the visible brand text provide the accessible name. An explicit
+      // aria-label hid visible copy from Lighthouse's label-content-name audit.
+      brand.removeAttribute('aria-label');
     }
   };
 
