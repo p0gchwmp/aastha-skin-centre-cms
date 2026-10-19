@@ -1,7 +1,7 @@
 # OmniRush takeover handoff — Aastha website renovation
 **Prepared:** 19 October 2026  
 **Status:** safe work branch prepared; **production not changed**  
-**Read with:** `AGENTS.md`, `EDITORIAL_V37_ROLLOUT.md`, `docs/editorial-v37-cutover.md`, `docs/BACKUP_AND_RECOVERY.md`
+**Read with (the user's creative brief is required, not optional):** `AGENTS.md`, `docs/AASTHA_2_0_CREATIVE_DEVELOPMENT_BRIEF.md`, `EDITORIAL_V37_ROLLOUT.md`, `docs/editorial-v37-cutover.md`, `docs/BACKUP_AND_RECOVERY.md`
 
 ## 1. Identity and source of truth
 
@@ -77,36 +77,58 @@ That workflow was subsequently corrected on the work branch and latest chat-repo
 
 The workflow in the handoff branch currently triggers for `concept/editorial-production-v37` and `work/editorial-v37-final-qa` only. The handoff branch is intentionally **not a Render branch** and does not yet automatically run that QA workflow on commits.
 
-## 4. First OmniRush mission
+## 4. First OmniRush mission — Aastha 2.0 five-phase agency workflow
+
+**Creative brief:** `docs/AASTHA_2_0_CREATIVE_DEVELOPMENT_BRIEF.md` is the owner-supplied primary creative direction. Follow its full five-phase sequence. Technical due diligence belongs inside Phase 1; hardening belongs in Phase 5. Preserve the existing QA debt and test it throughout, but do **not** start wholesale visual rewrites or deploy anything before understanding the project.
 
 Work in a *new* `omnirush/<task-name>` branch derived from `handoff/omnirush-2026-10-19`.
 
-### Mission A — recreate the ground truth
-1. `git fetch --all --prune`; inspect `git status`, `git log`, branch comparisons, workflow history and repository docs.
-2. Verify code in `AGENTS.md` and the four deployment/rollback runbooks above.
-3. Inspect the current `.github/workflows/quality-gates.yml`, `tools/audit_accessibility.mjs`, `lighthouserc.cjs`, `tools/summarize_lighthouse.py` and the release/SEO management commands. **Do not run an old audit command by memory.**
-4. Establish a clean local Python virtualenv and Node installation. Use dummy credentials, a local disposable SQLite test database, and the existing `aastha_cms.settings.quality` settings for CI-parity builds.
-5. Review latest failed/passing Actions evidence on the isolated work branch before editing; distinguish infrastructure failures from a real accessibility/performance regression.
+### Phase 1 — audit everything before designing
 
-### Mission B — complete the release gate
-1. Fix actual WCAG contrast/ARIA/visible-label findings, without suppressing or ignoring axe rules. Recheck mobile dark/light and Karan Nagar address card.
-2. Verify homepage/doctor hero preload behavior, proper responsive images (`srcset`/`sizes`/`width`/`height`), LCP discoverability and no duplicate preload downloads. Confirm images remain real approved photos.
-3. Meet the existing mobile and desktop Lighthouse budgets; optimize real bottlenecks, do not simply lower scores or remove failed assertions.
-4. Verify all 12 representative WCAG desktop/mobile cases with **0 blocking violations**, 256 legacy tests and 42 v37 contract tests or their then-current exact counts, SEO release audit, 96 route parity, appointment functions, and editor access.
-5. Record exact revision SHA, commands, failing/passing tests, representative scorecard and artifact links. Only claim the exact SHA green when it is.
-6. Prepare a code review / pull request; **do not merge to Render staging or production without approval**.
+1. Fetch/inspect both `p0gchwmp/aastha-skin-centre` (`concept/editorial-interactive-v1`) and `p0gchwmp/aastha-skin-centre-cms` (production `main`, staging `concept/editorial-production-v37`, and the handoff branch). Inspect actual Git history, assets, dependencies, route/render architecture, stylesheet cascade, image delivery, JavaScript/React islands, and current animations.
+2. Inspect `https://aastha-editorial-concept-preview.onrender.com/` visually on desktop and mobile, and the CMS staging and actual production website where accessible. The linked *concept preview* is the owner's reference; the CMS branch is what launches.
+3. Study `https://www.allthingsniro.com/` and `https://www.allthingswtf.com/` as inspiration for pacing, expressive typography, choreography and distinctiveness **without copying their style or implementing a soda aesthetic**. If blocked, say exactly which aspects could not be inspected.
+4. Map actual homepage, concerns, treatments, doctor profile, location, booking and blog user journeys. Inventory real approved photography versus decorative/stock assets and existing CMS editor functionality.
+5. Inspect `.github/workflows/quality-gates.yml`, `tools/audit_accessibility.mjs`, `lighthouserc.cjs`, `tools/summarize_lighthouse.py`, and actual management commands. Review the latest isolated QA runs; separate workflow/config failure from a real site defect.
+6. Establish clean **local** CI-parity build with dummy credentials, disposable database, and no Render deployment. Summarize strengths, exact shortcomings and what must be preserved.
+7. **Deliver an audit and prioritized creative/engineering opportunity report before broad visual changes.**
 
-### Mission C — finish comprehensive renovation, not just a benchmark
-After the release gate is stable, complete page-by-page quality assurance: hero and navigation, doctor profile credibility, both location pages, all high-intent treatment pages, real approved images, clinical editorial hierarchy, appointment conversion and admin editability. Preserve premium aesthetic, excellent mobile layout and accessibility. Remove placeholders/duplicate legacy scripts only after verifiable parity. Medical efficacy claims require review.
+### Phase 2 — distinctive creative direction for approval
 
-### Mission D — launch only after owner authorizes
-- Recheck live CMS deploy and rollback SHA first.
-- Back up production PostgreSQL and persistent media, independently.
-- Promote the reviewed commit into staging once; test with noindex.
-- Use existing two-step feature-flag cutover in `EDITORIAL_V37_ROLLOUT.md` and `docs/editorial-v37-cutover.md`. Do not change domain/DNS.
-- Keep flag off when initially promoting code to production, then enable after green smoke tests and specific approval.
-- Post-launch audit canonical, robots, sitemap, schema, both branch pages, forms, calls, WhatsApp, redirects, admin, analytics, 404/5xx and real mobile devices.
-- Roll back via the flag if anything critical fails. Restore DB only if a separate data-changing incident requires it.
+1. Propose bespoke typography hierarchy, refined warm medical colour system, asymmetrical editorial layouts, Pinterest-style imagery composition using owned/licensed images, whitespace, responsive grid, and doctor/clinic photo treatment.
+2. Propose specific interaction beats, not repetitive fade-ins: choreographed homepage opening, intuitive concern explorer, interactive treatment stories, transitions and meaningful feedback. Ensure medical info and booking remain clear and accessible.
+3. Choose the **smallest effective animation toolkit**, based on inspected code: consider GSAP and ScrollTrigger for measured, maintainable choreography; Lenis only where integration improves UX; SplitText or an accessible equivalent for expressive headlines; Three.js/R3F only with a justified, lightweight need. Do not install overlapping libraries speculatively.
+4. Provide desktop/mobile storyboard, reduced-motion behavior, contrast and performance design constraints, page-by-page renovation sequence and dependency tradeoffs.
+5. **Show the owner the direction and seek feedback before substantial homepage implementation.**
+
+### Phase 3 — real CMS-integrated homepage prototype
+
+1. Implement a working homepage prototype in the Wagtail CMS app (not just Figma images or disconnected static HTML) on an isolated `omnirush/*` branch.
+2. Include live navigation, real content, working call/WhatsApp/booking, expressive typography, intentional visual storytelling and refined yet usable interactive concern/treatment entry points.
+3. Produce desktop/mobile screenshot or recording evidence, accessible reduced-motion and keyboard alternatives, and measurable build/page audit results.
+4. Send a reviewable local/CI preview or screenshots; **do not push directly to Render-watched branches** to generate screenshots.
+
+### Phase 4 — renovate all page families
+
+After owner approves homepage direction, extend it across conditions, treatments, doctor, branches, booking/contact, blog/long-tail pages without damaging URLs, SEO/schema, existing CMS editing, actual clinic details or medically reviewed content. Use approved real clinic/doctor photos and licensed/original supplementary visuals. Test route/appointment behavior throughout; no fictional treatment outcomes or case imagery.
+
+### Phase 5 — final full-site engineering and release QA
+
+1. Fix actual WCAG contrast, ARIA, accessible-name and light/dark theme issues, including Karan Nagar address card. Do **not** suppress failing axe rules.
+2. Verify homepage/doctor image loading, `srcset`/`sizes`/`width`/`height`, WebP, LCP discoverability, and no duplicated preloads. Optimize real mobile bottlenecks, not just the audit thresholds.
+3. Preserve protected rollback suite (`AASTHA_EDITORIAL_V37=0`) and enabled editorial contracts (`AASTHA_EDITORIAL_V37=1`). Historical green runs showed 256 rollback tests and 42 v37 tests, but freshly verify test counts and pass status on the exact final SHA.
+4. Require 12/12 WCAG representative desktop/mobile scenarios with **zero blocking AA violations**, full mobile and desktop Lighthouse budgets, SEO audit with zero errors, ~96 native routes and internal-link parity, working appointment/Maps/WhatsApp/call flows, and Wagtail admin access.
+5. Record exact commit SHA, commands, audit artifacts, page screenshots, tested URLs and a rollback-ready deployment manifest. Do not claim a green gate unless **that same SHA** passed.
+6. Prepare a reviewable PR; **no merge to staging or production until the owner specifically authorizes it**.
+
+### Deployment — separate owner-authorized step (not part of automatic Phase 5)
+
+- Confirm Render build-minute capacity before triggering **one** planned staging deployment.
+- Recheck current production deploy/rollback anchor before making assumptions.
+- Back up production PostgreSQL and persistent media independently.
+- Follow `EDITORIAL_V37_ROLLOUT.md` and `docs/editorial-v37-cutover.md`: promote approved code with `AASTHA_EDITORIAL_V37=0` on production, verify, and enable v37 only after explicit approval.
+- Do not change domain/DNS. Audit canonicals, robots, sitemap, schema, redirects, Wagtail admin, branch/location links, analytics, booking and 404/5xx.
+- Roll back through the feature flag for presentation incidents; DB restore only for an independent data incident.
 
 ## 5. Quality commands (verify against current repo)
 
@@ -158,4 +180,4 @@ For full asset regeneration and Lighthouse/axe, use the exact steps in `.github/
 
 ## 8. Suggested very first prompt to OmniRush
 
-> Read AGENTS.md and docs/OMNIRUSH_HANDOFF_2026-10-19.md completely. Take ownership of the Aastha editorial-v37 website renovation, starting from this isolated handoff branch. Inspect the actual code, recent commits, workflows and release runbooks. First audit the current state; identify precise blockers to the 12-case WCAG and mobile/desktop Lighthouse gate. Fix those in a new omnirush/* branch, validate the exact commit locally and in CI, then produce a diff-based, test-backed release recommendation. Continue the full premium-medical site renovation page by page without replacing the existing Wagtail CMS or disturbing production. Never deploy, push to Render-watched branches, change DNS, read private patient data or expose secrets without my express approval.
+> Read AGENTS.md, docs/AASTHA_2_0_CREATIVE_DEVELOPMENT_BRIEF.md and docs/OMNIRUSH_HANDOFF_2026-10-19.md completely. Take ownership of Aastha 2.0 as both creative director and senior engineer. Begin with **Phase 1 audit only**: inspect both actual GitHub repos, code, dependencies, existing visual/motion language, current concept preview, CMS staging, production safety, user journeys and QA history. Study NIRO and WTF as creative quality references where accessible. Present the existing architecture, strengths, flaws, preservation rules and a distinctive Aastha 2.0 creative direction, specifying the smallest useful GSAP/ScrollTrigger/Lenis/Three toolkit and explaining tradeoffs. Get the owner's feedback on the creative direction before major implementation. Then prototype a working CMS-integrated homepage; renovate all page families; finally complete the strict CI/Playwright/axe/Lighthouse and SEO gates. Work only in isolated omnirush/* branches. Do not push to Render-watched branches, deploy, alter production, or expose secrets/patient data without express approval.
