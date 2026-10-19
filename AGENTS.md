@@ -1,6 +1,6 @@
 # Aastha Skin Centre — instructions for OmniRush agents
 
-Read `docs/OMNIRUSH_HANDOFF_2026-10-19.md` and `EDITORIAL_V37_ROLLOUT.md` before doing any work.
+**Required reading in order:** `AGENTS.md` → `docs/AASTHA_2_0_CREATIVE_DEVELOPMENT_BRIEF.md` (the owner's complete creative vision) → `docs/OMNIRUSH_HANDOFF_2026-10-19.md` (technical handoff) → `EDITORIAL_V37_ROLLOUT.md` (deployment safeguards). The creative brief directs the design; the technical handoff controls the existing architecture, protected clinic facts, and production safety.
 
 ## Project and goal
 - This repository (`p0gchwmp/aastha-skin-centre-cms`) is the **production Wagtail/Django CMS**, not the old static-only concept.
@@ -37,6 +37,15 @@ Read `docs/OMNIRUSH_HANDOFF_2026-10-19.md` and `EDITORIAL_V37_ROLLOUT.md` before
 - Do not create an appointment automatically from a WhatsApp request: appointment workflow submits a prefilled **request** and reception confirms it.
 - Do not invent efficacy rates, case counts, superiority claims, pricing, reviews, medical affiliations, awards, branch availability or doctor credentials. Any new treatment copy requires clinic medical review before public publishing.
 
+## Aastha 2.0 creative direction and execution order
+- The owner wants **award-worthy, memorable editorial medical design**, inspired by the *creative quality and interaction concepts* of `https://www.allthingsniro.com/` and `https://www.allthingswtf.com/`, not a soda-site clone. Read the complete specifications in `docs/AASTHA_2_0_CREATIVE_DEVELOPMENT_BRIEF.md` before recommending a visual language.
+- Preserve/advance the current concept preview at `https://aastha-editorial-concept-preview.onrender.com/`. Build toward **CMS-integrated, maintained** visual parity, never an unrelated static redesign.
+- Use oversized expressive typography, refined medical copy, dynamic but readable composition, Pinterest-inspired licensed/owned images, intelligent concern exploration, distinctive treatment narratives, engaging but straightforward booking and rich real doctor/clinic imagery.
+- Avoid generic AI landing pages, repetitive cards, gradients/glassmorphism, excessive animation and fabricated clinical media.
+- **Work order**: Phase 1 inspect BOTH GitHub repos, preview/live/staging, deployments, visual strengths, stack, dependencies, flows, outstanding QA; Phase 2 present a cohesive Aastha 2.0 concept with typography, colour, page-by-page choreography, meaningful technology trade-offs, and get owner direction; Phase 3 implement an interactive, accessible **CMS-based** homepage prototype; Phase 4 renovate page families; Phase 5 harden with all quality gates. Diagnose material blockers during audit, but do not make broad visual changes before Phases 1–2.
+- Consider GSAP/ScrollTrigger for justified choreographed motion; Lenis only if smooth scrolling adds value without scroll hijacking; SplitText or equivalent only with accessible natural text and reduced-motion fallback; Three.js/React Three Fiber only for a proven meaningful 3D interaction. Prefer the **smallest effective toolkit** and do not install technologies speculatively.
+- Meet WCAG AA, keyboard and touch interaction needs, `prefers-reduced-motion`, LCP/CLS targets, semantic SEO, real medical credibility and fast mobile interactions. Use Playwright and Lighthouse as evidence. Explain design decisions and provide working previews/screenshots for approval.
+
 ## Engineering and quality
 1. First establish reproducible local builds and **fix the QA pipeline itself**; separate infra/test errors from product defects. Preserve helpful audit artifacts.
 2. Fix known contrast/ARIA/accessible-name issues based on actual rendered DOM; do not lower WCAG thresholds to hide failures.
@@ -49,4 +58,4 @@ Read `docs/OMNIRUSH_HANDOFF_2026-10-19.md` and `EDITORIAL_V37_ROLLOUT.md` before
 9. Commit coherent, small diffs; give exact file paths, command output, links and measurable results. Do not claim a green test unless that exact SHA passed.
 
 ## First task
-Follow `docs/OMNIRUSH_HANDOFF_2026-10-19.md` section "First OmniRush mission". Audit current branch & GitHub Actions, diagnose latest isolated QA failure, fix the workflow and remaining real frontend issues on a **non-Render** feature branch. Do not deploy.
+**Start with Phase 1, not an immediate code rewrite:** inspect `docs/AASTHA_2_0_CREATIVE_DEVELOPMENT_BRIEF.md` and `docs/OMNIRUSH_HANDOFF_2026-10-19.md` in full, audit the two existing repositories, review the live concept and CMS staging, verify app dependencies and GitHub Actions, map the current design and user journeys, and report all confirmed QA gaps. Then deliver a bold, medically credible design system and page-by-page interaction concept, plus a reasoned minimal animation toolkit (Phase 2). Seek owner feedback on creative direction before substantial visual implementation. Subsequently implement/test on a **non-Render** feature branch; do not deploy.
