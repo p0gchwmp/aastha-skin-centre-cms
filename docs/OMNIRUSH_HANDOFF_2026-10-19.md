@@ -28,6 +28,26 @@ On 19 Oct 2026 GitHub comparison confirmed:
 
 Use these relative positions as the verified handoff snapshot; **recheck Git refs and deployed releases** before making decisions because they can move.
 
+## 1A. The exact visual preview the owner wants updated
+
+**Confirmed by inspecting Render's live service configuration on 19 Oct 2026:**
+
+| URL | Render service | Source repository | Source branch | Role |
+|---|---|---|---|---|
+| https://aastha-editorial-concept-preview.onrender.com/ | `aastha-editorial-concept-preview` | `p0gchwmp/aastha-skin-centre` | `concept/editorial-interactive-v1` | **Owner's desired visual design**; separate static Render service |
+| https://aastha-editorial-cms-staging.onrender.com/ | `aastha-editorial-cms-staging` | `p0gchwmp/aastha-skin-centre-cms` | `concept/editorial-production-v37` | CMS-integrated staging; noindex |
+| https://www.aasthaskincentre.in/ | `aastha-skin-centre-cms` | `p0gchwmp/aastha-skin-centre-cms` | `main` | Real public production website; do not touch until approved |
+
+**Clarification from website owner:** The first URL is the look and experience they have been renovating and want continued, aesthetically enhanced, and kept updated as they review work. Do **not** treat it as the final production application. Its static source is not the Wagtail CMS. The CMS-staging URL is the actual launch candidate.
+
+**Design acceptance and update workflow:**
+1. Inspect the owner's exact editorial concept preview as a visual reference and compare its real desktop/mobile layout against the current v37 CMS output: homepage, doctor profile, booking, treatment, blog, both locations and navigation.
+2. Carry forward the best components into the CMS **in one maintainable implementation**, including asymmetrical Pinterest-inspired editorial photo boards, elegant crops, thoughtful typography, whitespace, mobile visual rhythm, tasteful transitions, accessible contrast and rich visual browsing paths.
+3. Improve with genuinely licensed/original design assets and approved real clinic/Dr Cheena images, never hotlink random Pinterest images, fake clinician images, fake before-and-after outcomes or invented patients.
+4. When owner needs a fresh shareable visual preview, produce local/CI screenshot evidence or an isolated preview artifact first. Once Render build capacity is confirmed, update the **actual CMS staging** with a reviewed batch so the owner can review the future live site. If the owner explicitly wants the original static preview URL refreshed too, synchronize the static concept source **as a secondary demo**, not as an independent production codebase.
+5. Never confuse a change on the static concept branch with a change on the CMS. These are two repositories and two independently deploying services. Never claim one URL has updated until its Render deployment has succeeded and browser validation confirms the served SHA.
+6. Avoid repeated Render pushes: a previous incident exhausted workspace build minutes and sent many failure emails. Neither staging nor production should auto-deploy during exploratory agent work.
+
 ## 2. What has been built
 
 The current editorial-v37 stage is well beyond a mock-up:
