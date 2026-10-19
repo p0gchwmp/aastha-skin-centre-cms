@@ -6,6 +6,7 @@ Read `docs/OMNIRUSH_HANDOFF_2026-10-19.md` and `EDITORIAL_V37_ROLLOUT.md` before
 - This repository (`p0gchwmp/aastha-skin-centre-cms`) is the **production Wagtail/Django CMS**, not the old static-only concept.
 - Renovate the **existing** Aastha Skin & Dermato-Cosmetic Centre website into a premium, fast, accessible, medically trustworthy, SEO/AEO/GEO-ready experience, while preserving its CMS, public routes, editor control, redirects, and verified content.
 - Site: https://www.aasthaskincentre.in/
+- **Owner-confirmed visual inspiration / review preview:** https://aastha-editorial-concept-preview.onrender.com/ . Render confirms this is a separate static concept site: repository `p0gchwmp/aastha-skin-centre`, branch `concept/editorial-interactive-v1`, built using `scripts/build_concept_preview.py`. The editable CMS on this repository remains the implementation to ship. Preserve and improve the concept's visual direction on CMS v37, not on an unrelated new site.
 - Site owner wants an elegant, restrained, high-quality *luxury medical* design, meaningful mobile interaction, excellent conversion paths, real approved clinical/doctor imagery, and excellent technical SEO. Do not use AI-generated doctor photographs or invent patient results/testimonials.
 
 ## Branch safety — mandatory
@@ -25,6 +26,8 @@ Read `docs/OMNIRUSH_HANDOFF_2026-10-19.md` and `EDITORIAL_V37_ROLLOUT.md` before
 - Runtime/public rendering controlled by `AASTHA_EDITORIAL_V37`.
 - Existing QA: `.github/workflows/quality-gates.yml`, `tools/audit_accessibility.mjs`, `lighthouserc.cjs`, `tools/summarize_lighthouse.py`, `home/test_editorial_v37.py`.
 - Always inspect actual code and docs before changing; project README describes an older v28 milestone and is **not** the latest release specification.
+- **Design synchronization requirement:** compare CMS v37 desktop/mobile pages directly against the static concept preview. Keep the premium look, add well-curated, appropriately licensed Pinterest-inspired imagery and asymmetrical editorial cards while retaining approved real clinician/clinical imagery, SEO, semantic markup and speed. When preview updates are needed, batch them and coordinate with the site owner; the separate static preview does not auto-update when CMS source changes.
+- Do not push frequently to either Render-watched branch simply to refresh screenshots: previously the Render workspace exhausted build minutes and sent repeated failure notifications. Use local/CI browser screenshots and an isolated review branch first; only deliberately deploy a reviewed snapshot once capacity is confirmed.
 
 ## Clinic truth constraints
 - Brand: Aastha Skin & Dermato-Cosmetic Centre; two Jammu branches: Karan Nagar/Amphalla and Paloura.
